@@ -373,4 +373,72 @@ Réponds UNIQUEMENT en JSON valide :
   }
 });
 
+// ============================================================
+// POST /api/ai/demo — Route publique pour la démo (sans auth)
+// Rate limit très strict : 3 req/heure par IP
+// ============================================================
+const demoLimiter = require('express-rate-limit')({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  keyGenerator: (req) => req.ip,
+  message: { error: 'Limite de démo atteinte (3/heure). Créez un compte pour un accès illimité.' },
+});
+
+router.post('/demo', demoLimiter, async (req, res) => {
+  const { type, matiere, classe, titre, duree, type_eval } = req.body;
+
+  if (!matiere || !titre) {
+    return res.status(400).json({ error: 'Matière et titre requis.' });
+  }
+
+  const start = Date.now();
+
+  let prompt;
+  if (type === 'devoir') {
+    prompt = `Tu es un professeur expert du programme ivoirien MENA.
+Compose un ${type_eval || 'devoir surveillé'} court (démo — 4 questions) pour :
+- Matière : ${matiere} - Classe : ${classe || 'non précisée'} - Thème : ${titre}
+
+Réponds en JSON strict sans markdown :
+{"titre":"...","consigne":"...","questions":[
+  {"numero":1,"type":"QCM","enonce":"...","points":2,"options":["A) ...","B) ...","C) ..."],"reponse":"A"},
+  {"numero":2,"type":"Vrai/Faux","enonce":"...","points":1,"reponse":"Vrai"},
+  {"numero":3,"type":"Question ouverte","enonce":"...","points":4,"bareme":"..."},
+  {"numero":4,"type":"Exercice","enonce":"...","points":3,"bareme":"..."}
+]}`;
+  } else {
+    prompt = `Tu es un conseiller pédagogique expert du programme MENA de Côte d'Ivoire.
+Génère une fiche de préparation courte (résumé démo) pour :
+- Matière : ${matiere} - Classe : ${classe || 'non précisée'} - Leçon : ${titre} - Durée : ${duree || 55} min
+
+Réponds en JSON strict sans markdown :
+{"objectif_general":"...","objectifs_specifiques":["...","...","..."],"phases":[
+  {"nom":"Mise en situation","duree":"10 min","desc":"..."},
+  {"nom":"Développement","duree":"${(parseInt(duree) || 55) - 20} min","desc":"..."},
+  {"nom":"Synthèse et évaluation","duree":"10 min","desc":"..."}
+],"evaluation":"..."}`;
+  }
+
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const latence = Date.now() - start;
+    const rawText = response.content.map(b => b.text || '').join('');
+    const clean = rawText.replace(/```json|```/g, '').trim();
+    const data = JSON.parse(clean);
+
+    await logGeneration(null, null, `demo_${type||'fiche'}`, matiere, classe, titre,
+      response.usage?.input_tokens, response.usage?.output_tokens, latence, true);
+
+    res.json({ data, type: type || 'fiche' });
+  } catch (err) {
+    console.error('[AI Demo]', err.message);
+    res.status(500).json({ error: 'Erreur de génération. Réessayez dans quelques instants.' });
+  }
+});
+
 module.exports = router;
