@@ -2,13 +2,8 @@
   publish = "."
 
 [[redirects]]
-  from = "/app"
-  to = "/app.html"
-  status = 200
-
-[[redirects]]
-  from = "/admin"
-  to = "/admin.html"
+  from = "/"
+  to = "/index.html"
   status = 200
 
 [[headers]]
