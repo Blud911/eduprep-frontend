@@ -1,5 +1,4 @@
 const express = require('express');
-const Anthropic = require('@anthropic-ai/sdk');
 const pool = require('../db/pool');
 const { requireAuth } = require('../middleware/auth');
 const {
@@ -11,10 +10,35 @@ const {
 } = require('../middleware/subscription');
 
 const router = express.Router();
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const MODEL = 'claude-opus-4-6';
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+const MODEL = 'mistral-large-latest';
 const MAX_TOKENS = 2000;
+
+// Appel Mistral API
+async function callMistral(prompt, maxTokens = MAX_TOKENS) {
+  const resp = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + MISTRAL_API_KEY,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error('Mistral API error: ' + err);
+  }
+  const data = await resp.json();
+  return {
+    text: data.choices[0].message.content,
+    usage: data.usage,
+  };
+}
 
 // Log une génération IA en base
 const logGeneration = async (userId, subId, type, matiere, classe, titre, tokensIn, tokensOut, latence, success, errorMsg = null) => {
@@ -100,21 +124,17 @@ Réponds UNIQUEMENT en JSON valide strict, sans balises markdown, selon ce sché
 }`;
 
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await callMistral(prompt, MAX_TOKENS);
 
     const latence = Date.now() - start;
-    const rawText = response.content.map(b => b.text || '').join('');
+    const rawText = response.text;
     const clean = rawText.replace(/```json|```/g, '').trim();
     const data = JSON.parse(clean);
 
     await incrementFicheUsage(req.user.id);
     await logGeneration(
       req.user.id, req.subscription?.id, 'fiche', matiere, classe, titre_lecon,
-      response.usage?.input_tokens, response.usage?.output_tokens, latence, true
+      response.usage?.prompt_tokens, response.usage?.completion_tokens, latence, true
     );
 
     res.json({ fiche: data, usage: response.usage });
@@ -191,21 +211,17 @@ Réponds UNIQUEMENT en JSON valide strict, sans balises markdown :
 }`;
 
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await callMistral(prompt, MAX_TOKENS);
 
     const latence = Date.now() - start;
-    const rawText = response.content.map(b => b.text || '').join('');
+    const rawText = response.text;
     const clean = rawText.replace(/```json|```/g, '').trim();
     const data = JSON.parse(clean);
 
     await incrementDevoirUsage(req.user.id);
     await logGeneration(
       req.user.id, req.subscription?.id, 'devoir', matiere, classe, titre_lecon,
-      response.usage?.input_tokens, response.usage?.output_tokens, latence, true
+      response.usage?.prompt_tokens, response.usage?.completion_tokens, latence, true
     );
 
     res.json({ devoir: data, usage: response.usage });
@@ -258,14 +274,10 @@ Réponds UNIQUEMENT en JSON valide :
   "temps_correction_estime": "X minutes"
 }`;
 
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await callMistral(prompt, MAX_TOKENS);
 
     const latence = Date.now() - start;
-    const rawText = response.content.map(b => b.text || '').join('');
+    const rawText = response.text;
     const clean = rawText.replace(/```json|```/g, '').trim();
     const corrige = JSON.parse(clean);
 
@@ -277,7 +289,7 @@ Réponds UNIQUEMENT en JSON valide :
 
     await logGeneration(
       req.user.id, null, 'corrige', devoir.matiere, devoir.classe, devoir.titre,
-      response.usage?.input_tokens, response.usage?.output_tokens, latence, true
+      response.usage?.prompt_tokens, response.usage?.completion_tokens, latence, true
     );
 
     res.json({ corrige });
@@ -344,14 +356,10 @@ Réponds UNIQUEMENT en JSON valide :
   }
 }`;
 
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await callMistral(prompt, MAX_TOKENS);
 
     const latence = Date.now() - start;
-    const rawText = response.content.map(b => b.text || '').join('');
+    const rawText = response.text;
     const clean = rawText.replace(/```json|```/g, '').trim();
     const variantes = JSON.parse(clean);
 
@@ -363,7 +371,7 @@ Réponds UNIQUEMENT en JSON valide :
 
     await logGeneration(
       req.user.id, null, 'variante', devoir.matiere, devoir.classe, devoir.titre,
-      response.usage?.input_tokens, response.usage?.output_tokens, latence, true
+      response.usage?.prompt_tokens, response.usage?.completion_tokens, latence, true
     );
 
     res.json({ variantes });
@@ -379,9 +387,9 @@ Réponds UNIQUEMENT en JSON valide :
 // ============================================================
 const demoLimiter = require('express-rate-limit')({
   windowMs: 60 * 60 * 1000,
-  max: 3,
-  keyGenerator: (req) => req.ip,
-  message: { error: 'Limite de démo atteinte (3/heure). Créez un compte pour un accès illimité.' },
+  max: 5,
+  validate: { xForwardedForHeader: false },
+  message: { error: 'Limite de démo atteinte (5/heure). Créez un compte pour un accès illimité.' },
 });
 
 router.post('/demo', demoLimiter, async (req, res) => {
@@ -420,19 +428,15 @@ Réponds en JSON strict sans markdown :
   }
 
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await callMistral(prompt, 800);
 
     const latence = Date.now() - start;
-    const rawText = response.content.map(b => b.text || '').join('');
+    const rawText = response.text;
     const clean = rawText.replace(/```json|```/g, '').trim();
     const data = JSON.parse(clean);
 
     await logGeneration(null, null, `demo_${type||'fiche'}`, matiere, classe, titre,
-      response.usage?.input_tokens, response.usage?.output_tokens, latence, true);
+      response.usage?.prompt_tokens, response.usage?.completion_tokens, latence, true);
 
     res.json({ data, type: type || 'fiche' });
   } catch (err) {

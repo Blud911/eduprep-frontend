@@ -18,6 +18,9 @@ const PORT = process.env.PORT || 3000;
 // SÉCURITÉ & MIDDLEWARE GLOBAUX
 // ============================================================
 
+// Nécessaire pour Render (reverse proxy)
+app.set('trust proxy', 1);
+
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: false,

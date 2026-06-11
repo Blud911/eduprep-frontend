@@ -1,7 +1,7 @@
 {
   "name": "eduprep-backend",
   "version": "1.0.0",
-  "description": "Backend API EduPrep CI — Préparation de cours IA pour enseignants ivoiriens",
+  "description": "Backend API EduPrep CI \u2014 Pr\u00e9paration de cours IA pour enseignants ivoiriens",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,7 +12,6 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.24.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
