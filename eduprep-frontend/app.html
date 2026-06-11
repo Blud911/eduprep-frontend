@@ -434,10 +434,16 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Classe</label>
             <select id="f-classe">
-              <option>CP1</option><option>CP2</option><option>CE1</option><option>CE2</option>
-              <option>CM1</option><option>CM2</option><option>6ème</option><option>5ème</option>
-              <option>4ème</option><option>3ème</option><option>2nde</option>
-              <option>1ère</option><option>Terminale</option>
+              <optgroup label="Primaire">
+                <option>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée">
+                <option>2nde</option><option>1ère</option><option>Terminale</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -511,8 +517,16 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Classe</label>
             <select id="dv-classe">
-              <option>6ème</option><option>5ème</option><option>4ème</option>
-              <option>3ème</option><option>2nde</option><option>1ère</option><option>Terminale</option>
+              <optgroup label="Primaire">
+                <option>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée">
+                <option>2nde</option><option>1ère</option><option>Terminale</option>
+              </optgroup>
             </select>
           </div>
         </div>

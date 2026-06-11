@@ -561,9 +561,16 @@ footer strong { color: rgba(255,255,255,0.85); }
             <div class="form-group">
               <label>Classe</label>
               <select id="d-classe">
-                <option>6ème</option><option>5ème</option><option>4ème</option>
-                <option>3ème</option><option>2nde</option><option>1ère</option>
-                <option>Terminale</option>
+                <optgroup label="Primaire">
+                  <option>CP1</option><option>CP2</option><option>CE1</option>
+                  <option>CE2</option><option>CM1</option><option>CM2</option>
+                </optgroup>
+                <optgroup label="Collège">
+                  <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+                </optgroup>
+                <optgroup label="Lycée">
+                  <option>2nde</option><option>1ère</option><option>Terminale</option>
+                </optgroup>
               </select>
             </div>
             <div class="form-group">
@@ -599,8 +606,16 @@ footer strong { color: rgba(255,255,255,0.85); }
             <div class="form-group">
               <label>Classe</label>
               <select id="dv-classe">
-                <option>6ème</option><option>5ème</option><option>4ème</option>
-                <option>3ème</option><option>2nde</option><option>Terminale</option>
+                <optgroup label="Primaire">
+                  <option>CP1</option><option>CP2</option><option>CE1</option>
+                  <option>CE2</option><option>CM1</option><option>CM2</option>
+                </optgroup>
+                <optgroup label="Collège">
+                  <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+                </optgroup>
+                <optgroup label="Lycée">
+                  <option>2nde</option><option>1ère</option><option>Terminale</option>
+                </optgroup>
               </select>
             </div>
             <div class="form-group">
@@ -827,129 +842,62 @@ function resetDemo() {
 // ============================================================
 // DEMO GÉNÉRATION FICHE (via Claude API)
 // ============================================================
+const BACKEND = 'https://eduprep-backend-km19.onrender.com/api';
+
 async function demoGenererFiche() {
   const matiere = document.getElementById('d-matiere').value;
   const classe = document.getElementById('d-classe').value;
   const lecon = document.getElementById('d-lecon').value.trim();
   const duree = document.getElementById('d-duree').value;
-  if (!lecon) { alert('Entrez le titre de la leçon.'); return; }
-
+  if (!lecon) { alert('Entrez le titre de la lecon.'); return; }
   const btn = document.getElementById('btn-gen-fiche');
   btn.disabled = true;
   document.getElementById('demo-result').classList.remove('show');
   document.getElementById('demo-loading').classList.add('show');
-  document.getElementById('loading-msg').textContent = 'L\'IA prépare votre fiche...';
-
-  const prompt = `Tu es un conseiller pédagogique expert du programme MENA de Côte d'Ivoire.
-Génère une fiche de préparation COURTE (résumé démo) pour :
-- Matière : ${matiere} - Classe : ${classe} - Leçon : ${lecon} - Durée : ${duree} min
-
-Réponds en JSON strict sans markdown :
-{"objectif_general":"...","objectifs_specifiques":["...","...","..."],"phases":[{"nom":"Mise en situation","duree":"10 min","desc":"..."},{"nom":"Développement","duree":"${parseInt(duree)-20} min","desc":"..."},{"nom":"Synthèse","duree":"10 min","desc":"..."}],"evaluation":"..."}`;
-
+  document.getElementById('loading-msg').textContent = "L'IA prepare votre fiche...";
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch(`${BACKEND}/ai/demo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ type: 'fiche', matiere, classe, titre: lecon, duree })
     });
-    const data = await resp.json();
-    const raw = data.content.map(b => b.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const fiche = JSON.parse(clean);
-    renderFicheDemo(fiche, lecon, matiere, classe);
+    const d = await resp.json();
+    if (!resp.ok) throw new Error(d.error || 'Erreur');
+    renderFicheDemo(d.data, lecon, matiere, classe);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">Erreur de génération. Réessayez.</p>';
+    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">' + (e.message || 'Erreur. Reessayez.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
 }
 
-function renderFicheDemo(f, lecon, matiere, classe) {
-  document.getElementById('demo-loading').classList.remove('show');
-  const phases = (f.phases || []).map(p => `<li><strong>${p.nom}</strong> (${p.duree}) — ${p.desc}</li>`).join('');
-  const objs = (f.objectifs_specifiques || []).map(o => `<li>${o}</li>`).join('');
-  document.getElementById('demo-result-body').innerHTML = `
-    <strong>📌 ${lecon} — ${matiere} ${classe}</strong>
-    <strong>Objectif général</strong>${f.objectif_general}
-    <strong>Objectifs spécifiques</strong><ul>${objs}</ul>
-    <strong>Déroulement</strong><ul>${phases}</ul>
-    <strong>Évaluation formative</strong>${f.evaluation}
-  `;
-  document.getElementById('demo-result').querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Fiche générée — ' + matiere + ' ' + classe;
-  document.getElementById('demo-result').classList.add('show');
-  document.getElementById('demo-note').style.display = 'block';
-}
-
-// ============================================================
-// DEMO GÉNÉRATION DEVOIR
-// ============================================================
 async function demoGenererDevoir() {
   const matiere = document.getElementById('dv-matiere').value;
   const classe = document.getElementById('dv-classe').value;
   const lecon = document.getElementById('dv-lecon').value.trim();
-  const type = document.getElementById('dv-type').value;
-  if (!lecon) { alert('Entrez le thème évalué.'); return; }
-
+  const type_eval = document.getElementById('dv-type').value;
+  if (!lecon) { alert('Entrez le theme evalue.'); return; }
   const btn = document.getElementById('btn-gen-devoir');
   btn.disabled = true;
   document.getElementById('demo-result').classList.remove('show');
   document.getElementById('demo-loading').classList.add('show');
-  document.getElementById('loading-msg').textContent = 'L\'IA compose votre devoir...';
-
-  const prompt = `Tu es un professeur expert du programme ivoirien MENA.
-Compose un ${type} court (démo — 4 questions) pour :
-- Matière : ${matiere} - Classe : ${classe} - Thème : ${lecon}
-
-Réponds en JSON strict sans markdown :
-{"titre":"...","consigne":"...","questions":[{"numero":1,"type":"QCM","enonce":"...","points":2,"options":["A)...","B)...","C)..."],"reponse":"A"},{"numero":2,"type":"Vrai/Faux","enonce":"...","points":1,"reponse":"Vrai"},{"numero":3,"type":"Question ouverte","enonce":"...","points":4,"bareme":"..."},{"numero":4,"type":"Exercice","enonce":"...","points":3,"bareme":"..."}]}`;
-
+  document.getElementById('loading-msg').textContent = "L'IA compose votre devoir...";
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch(`${BACKEND}/ai/demo`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ type: 'devoir', matiere, classe, titre: lecon, type_eval })
     });
-    const data = await resp.json();
-    const raw = data.content.map(b => b.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const devoir = JSON.parse(clean);
-    renderDevoirDemo(devoir, matiere, classe, type);
+    const d = await resp.json();
+    if (!resp.ok) throw new Error(d.error || 'Erreur');
+    renderDevoirDemo(d.data, matiere, classe, type_eval);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">Erreur de génération. Réessayez.</p>';
+    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">' + (e.message || 'Erreur. Reessayez.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
-}
-
-function renderDevoirDemo(d, matiere, classe, type) {
-  document.getElementById('demo-loading').classList.remove('show');
-  const qs = (d.questions || []).map(q => `
-    <li style="margin-bottom:8px">
-      <strong>Q${q.numero}. (${q.points} pt${q.points>1?'s':''})</strong> [${q.type}]<br>
-      ${q.enonce}
-      ${q.options ? '<br><em>' + q.options.join(' · ') + '</em>' : ''}
-    </li>`).join('');
-  const total = (d.questions || []).reduce((s, q) => s + (q.points || 0), 0);
-  document.getElementById('demo-result-body').innerHTML = `
-    <strong>📝 ${d.titre || type} — ${matiere} ${classe}</strong>
-    <em style="color:var(--text-3);font-size:0.8rem">${d.consigne || ''}</em>
-    <ul style="margin-top:8px">${qs}</ul>
-    <strong style="color:var(--forest)">Total : ${total} points</strong>
-  `;
-  document.getElementById('demo-result').querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Devoir généré — ' + matiere + ' ' + classe;
-  document.getElementById('demo-result').classList.add('show');
-  document.getElementById('demo-note').style.display = 'block';
 }
 
 // Copier résultat
