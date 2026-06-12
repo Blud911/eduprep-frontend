@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const validator = require('validator');
 const pool = require('../db/pool');
 const { requireAuth } = require('../middleware/auth');
+const emailService = require('../services/email');
 
 const router = express.Router();
 
@@ -79,6 +80,9 @@ router.post('/register', async (req, res) => {
     );
 
     await client.query('COMMIT');
+
+    // Email de bienvenue (non bloquant)
+    emailService.sendBienvenue({ email: email.toLowerCase(), nom: nom.trim(), prenoms: prenoms?.trim() }).catch(() => {});
 
     const { accessToken, refreshToken } = generateTokens(user.id);
 

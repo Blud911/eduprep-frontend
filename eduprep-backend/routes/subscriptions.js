@@ -269,6 +269,16 @@ router.post('/admin/confirm/:paymentId', requireAuth, requireAdmin, async (req, 
       ]
     );
 
+    // Email de confirmation (non bloquant)
+    pool.query(`SELECT u.email, u.nom, u.prenoms, s.date_fin, s.plan
+      FROM users u JOIN subscriptions s ON s.id = $1 WHERE u.id = $2`,
+      [payment.subscription_id, payment.user_id])
+      .then(ur => {
+        if (ur.rows.length) {
+          emailService.sendActivation(ur.rows[0], ur.rows[0].plan, ur.rows[0].date_fin).catch(() => {});
+        }
+      }).catch(() => {});
+
     await client.query('COMMIT');
 
     res.json({

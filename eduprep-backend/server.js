@@ -10,6 +10,7 @@ const aiRoutes = require('./routes/ai');
 const contentRoutes = require('./routes/content');
 const adminRoutes = require('./routes/admin');
 const programmesRoutes = require('./routes/programmes');
+const { demarrerScheduler } = require('./services/cron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,6 +20,8 @@ const PORT = process.env.PORT || 3000;
 // ============================================================
 
 // Nécessaire pour Render (reverse proxy)
+app.set('trust proxy', 1);
+
 app.set('trust proxy', 1);
 
 app.use(helmet({
@@ -118,6 +121,7 @@ app.listen(PORT, () => {
 ║  Port: ${PORT}   Env: ${(process.env.NODE_ENV || 'development').padEnd(11)} ║
 ╚═══════════════════════════════════════╝
   `);
+  demarrerScheduler();
 });
 
 module.exports = app;
