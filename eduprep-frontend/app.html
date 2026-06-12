@@ -811,6 +811,19 @@ function showAuthError(msg) {
   el.textContent = msg; el.classList.add('show');
 }
 
+
+// Rafraîchit les données d'abonnement depuis le serveur
+async function refreshSubscription() {
+  try {
+    const r = await fetch(`${API}/auth/me`, { headers: {'Authorization': 'Bearer ' + token} });
+    if (!r.ok) return;
+    const d = await r.json();
+    subscription = d.subscription;
+    localStorage.setItem('edp_sub', JSON.stringify(subscription));
+    updateQuotaDisplay();
+  } catch(e) {}
+}
+
 function doLogout() {
   localStorage.removeItem('edp_token');
   localStorage.removeItem('edp_user');
@@ -872,6 +885,7 @@ async function genererFiche() {
     currentFiche = { data: d.fiche, meta: {matiere, classe, lecon, duree} };
     renderFiche(d.fiche, lecon, matiere, classe);
     savedFicheId = null;
+    refreshSubscription();
   } catch(e) {
     alert('Erreur réseau.');
   }
@@ -928,6 +942,7 @@ async function genererDevoir() {
     currentDevoir = { data: d.devoir, meta: {matiere, classe, lecon, type_eval, points} };
     renderDevoir(d.devoir, lecon, matiere, classe, type_eval, points);
     savedDevoirId = null;
+    refreshSubscription();
   } catch(e) {
     alert('Erreur réseau.');
   }
