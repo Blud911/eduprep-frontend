@@ -3,18 +3,18 @@ const pool = require('../db/pool');
 // Vérifie que l'utilisateur a un abonnement actif
 const requireSubscription = async (req, res, next) => {
   try {
+    // Les admins passent toujours
+    if (req.user.role === 'admin') return next();
+
     const result = await pool.query(
       `SELECT s.*, u.role FROM subscriptions s
        JOIN users u ON u.id = s.user_id
        WHERE s.user_id = $1
-         AND s.status = 'active'
+         AND s.status IN ('active', 'trial')
          AND (s.date_fin IS NULL OR s.date_fin >= CURRENT_DATE)
        ORDER BY s.created_at DESC LIMIT 1`,
       [req.user.id]
     );
-
-    // Les admins passent toujours
-    if (req.user.role === 'admin') return next();
 
     if (!result.rows.length) {
       return res.status(403).json({
