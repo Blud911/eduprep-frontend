@@ -295,6 +295,10 @@ section { padding: 4rem 1.25rem; }
 .demo-result-body strong:first-child { margin-top: 0; }
 .demo-result-body ul { padding-left: 1.2rem; }
 .demo-result-body li { margin-bottom: 3px; }
+.demo-result-body pre {
+  white-space: pre-wrap; font-size: 0.82rem;
+  font-family: 'Inter', sans-serif; line-height: 1.6;
+}
 
 .demo-loading {
   display: none; padding: 2rem;
@@ -809,7 +813,7 @@ footer strong { color: rgba(255,255,255,0.85); }
     <a href="admin.html">Admin</a>
   </div>
   <p><strong>EduPrep CI</strong> — Plateforme pédagogique pour enseignants ivoiriens</p>
-  <p style="margin-top:4px">Programme MENA/DREN · Propulsé par Claude AI · © 2026 NexeraSecurité</p>
+  <p style="margin-top:4px">Programme MENA/DREN · Propulsé par Mistral AI · © 2026 NexeraSecurité</p>
 </footer>
 
 <script>
@@ -840,75 +844,243 @@ function resetDemo() {
 }
 
 // ============================================================
-// DEMO GÉNÉRATION FICHE (via Claude API)
+// BACKEND URL
 // ============================================================
 const BACKEND = 'https://eduprep-backend-km19.onrender.com/api';
 
+// ============================================================
+// RENDER FICHE — parse la réponse et injecte le HTML
+// ============================================================
+function renderFicheDemo(data, lecon, matiere, classe) {
+  document.getElementById('demo-loading').classList.remove('show');
+
+  let html = '';
+
+  if (data && typeof data === 'object') {
+    // Objectifs
+    if (data.objectifs) {
+      html += '<strong>🎯 Objectifs</strong><ul>';
+      const items = Array.isArray(data.objectifs) ? data.objectifs : [data.objectifs];
+      items.forEach(o => { html += '<li>' + o + '</li>'; });
+      html += '</ul>';
+    }
+    // Matériel
+    if (data.materiel) {
+      const mat = Array.isArray(data.materiel) ? data.materiel.join(', ') : data.materiel;
+      html += '<strong>📦 Matériel</strong><p>' + mat + '</p>';
+    }
+    // Introduction / mise en situation
+    if (data.introduction || data.mise_en_situation) {
+      html += '<strong>🔰 Introduction</strong><p>' + (data.introduction || data.mise_en_situation) + '</p>';
+    }
+    // Déroulement
+    if (data.deroulement) {
+      html += '<strong>📋 Déroulement</strong>';
+      const phases = Array.isArray(data.deroulement) ? data.deroulement : [data.deroulement];
+      phases.forEach(function(phase) {
+        if (typeof phase === 'object' && phase !== null) {
+          var titre = phase.phase || phase.titre || phase.etape || '';
+          var contenu = phase.contenu || phase.description || phase.activites || '';
+          if (typeof contenu === 'object') contenu = JSON.stringify(contenu);
+          html += '<p><strong style="font-size:0.8rem;color:var(--forest);display:inline">' + titre + '</strong>';
+          if (contenu) html += ' — ' + contenu;
+          html += '</p>';
+        } else {
+          html += '<p>' + phase + '</p>';
+        }
+      });
+    }
+    // Évaluation
+    if (data.evaluation) {
+      var evalStr = typeof data.evaluation === 'object' ? JSON.stringify(data.evaluation) : data.evaluation;
+      html += '<strong>✅ Évaluation</strong><p>' + evalStr + '</p>';
+    }
+    // Conclusion
+    if (data.conclusion) {
+      html += '<strong>🏁 Conclusion</strong><p>' + data.conclusion + '</p>';
+    }
+    // Compétences
+    if (data.competences) {
+      html += '<strong>📚 Compétences visées</strong><p>' + (Array.isArray(data.competences) ? data.competences.join(' · ') : data.competences) + '</p>';
+    }
+    // Fallback si objet non reconnu
+    if (!html) {
+      html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+  } else if (typeof data === 'string') {
+    // Réponse texte brut — convertit markdown basique en HTML
+    html = data
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    html = '<p>' + html + '</p>';
+  } else {
+    html = '<p style="color:#c62828">Format de réponse inattendu.</p>';
+  }
+
+  document.getElementById('demo-result-body').innerHTML = html;
+  document.getElementById('demo-result').classList.add('show');
+  document.getElementById('demo-note').style.display = 'block';
+  document.getElementById('demo-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ============================================================
+// RENDER DEVOIR — parse la réponse et injecte le HTML
+// ============================================================
+function renderDevoirDemo(data, matiere, classe, type_eval) {
+  document.getElementById('demo-loading').classList.remove('show');
+
+  let html = '';
+
+  if (data && typeof data === 'object') {
+    // Consignes
+    if (data.consignes) {
+      html += '<strong>📌 Consignes</strong><p>' + data.consignes + '</p>';
+    }
+    // Durée
+    if (data.duree) {
+      html += '<strong>⏱ Durée</strong><p>' + data.duree + '</p>';
+    }
+    // Questions
+    if (data.questions) {
+      html += '<strong>📝 Questions</strong><ul>';
+      const qs = Array.isArray(data.questions) ? data.questions : [data.questions];
+      qs.forEach(function(q, i) {
+        if (typeof q === 'object' && q !== null) {
+          var pts = q.points || q.note || '';
+          var enonce = q.question || q.enonce || q.texte || JSON.stringify(q);
+          html += '<li><strong style="display:inline;color:var(--forest)">Q' + (i+1) + (pts ? ' (' + pts + ' pts)' : '') + '</strong> — ' + enonce + '</li>';
+        } else {
+          html += '<li>' + q + '</li>';
+        }
+      });
+      html += '</ul>';
+    }
+    // Barème
+    if (data.bareme || data.total) {
+      var bStr = data.bareme
+        ? (typeof data.bareme === 'object' ? JSON.stringify(data.bareme) : data.bareme)
+        : 'Total : ' + data.total + ' pts';
+      html += '<strong>📊 Barème</strong><p>' + bStr + '</p>';
+    }
+    // Corrigé partiel
+    if (data.corriges || data.corriges_partiels) {
+      var corr = data.corriges || data.corriges_partiels;
+      html += '<strong>✅ Éléments de corrigé</strong><p>' + (typeof corr === 'object' ? JSON.stringify(corr) : corr) + '</p>';
+    }
+    // Fallback
+    if (!html) {
+      html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+  } else if (typeof data === 'string') {
+    html = data
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+    html = '<p>' + html + '</p>';
+  } else {
+    html = '<p style="color:#c62828">Format de réponse inattendu.</p>';
+  }
+
+  // Mise à jour du header "Fiche générée" → "Devoir généré"
+  document.querySelector('.demo-result-header span').innerHTML =
+    '<i class="ti ti-check" style="margin-right:4px"></i> Devoir généré';
+
+  document.getElementById('demo-result-body').innerHTML = html;
+  document.getElementById('demo-result').classList.add('show');
+  document.getElementById('demo-note').style.display = 'block';
+  document.getElementById('demo-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ============================================================
+// DEMO GÉNÉRATION FICHE
+// ============================================================
 async function demoGenererFiche() {
   const matiere = document.getElementById('d-matiere').value;
   const classe = document.getElementById('d-classe').value;
   const lecon = document.getElementById('d-lecon').value.trim();
   const duree = document.getElementById('d-duree').value;
-  if (!lecon) { alert('Entrez le titre de la lecon.'); return; }
+  if (!lecon) { alert('Entrez le titre de la leçon.'); return; }
+
   const btn = document.getElementById('btn-gen-fiche');
   btn.disabled = true;
-  document.getElementById('demo-result').classList.remove('show');
+  resetDemo();
   document.getElementById('demo-loading').classList.add('show');
-  document.getElementById('loading-msg').textContent = "L'IA prepare votre fiche...";
+  document.getElementById('loading-msg').textContent = "L'IA prépare votre fiche...";
+
+  // Remettre le header à l'état fiche
+  document.querySelector('.demo-result-header span').innerHTML =
+    '<i class="ti ti-check" style="margin-right:4px"></i> Fiche générée';
+
   try {
-    const resp = await fetch(`${BACKEND}/ai/demo`, {
+    const resp = await fetch(BACKEND + '/ai/demo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'fiche', matiere, classe, titre: lecon, duree })
     });
     const d = await resp.json();
-    if (!resp.ok) throw new Error(d.error || 'Erreur');
+    if (!resp.ok) throw new Error(d.error || 'Erreur serveur (' + resp.status + ')');
     renderFicheDemo(d.data, lecon, matiere, classe);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">' + (e.message || 'Erreur. Reessayez.') + '</p>';
+    document.getElementById('demo-result-body').innerHTML =
+      '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez dans quelques secondes.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
 }
 
+// ============================================================
+// DEMO GÉNÉRATION DEVOIR
+// ============================================================
 async function demoGenererDevoir() {
   const matiere = document.getElementById('dv-matiere').value;
   const classe = document.getElementById('dv-classe').value;
   const lecon = document.getElementById('dv-lecon').value.trim();
   const type_eval = document.getElementById('dv-type').value;
-  if (!lecon) { alert('Entrez le theme evalue.'); return; }
+  if (!lecon) { alert('Entrez le thème évalué.'); return; }
+
   const btn = document.getElementById('btn-gen-devoir');
   btn.disabled = true;
-  document.getElementById('demo-result').classList.remove('show');
+  resetDemo();
   document.getElementById('demo-loading').classList.add('show');
   document.getElementById('loading-msg').textContent = "L'IA compose votre devoir...";
+
   try {
-    const resp = await fetch(`${BACKEND}/ai/demo`, {
+    const resp = await fetch(BACKEND + '/ai/demo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'devoir', matiere, classe, titre: lecon, type_eval })
     });
     const d = await resp.json();
-    if (!resp.ok) throw new Error(d.error || 'Erreur');
+    if (!resp.ok) throw new Error(d.error || 'Erreur serveur (' + resp.status + ')');
     renderDevoirDemo(d.data, matiere, classe, type_eval);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828">' + (e.message || 'Erreur. Reessayez.') + '</p>';
+    document.getElementById('demo-result-body').innerHTML =
+      '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez dans quelques secondes.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
 }
 
-// Copier résultat
+// ============================================================
+// COPIER RÉSULTAT
+// ============================================================
 function copyResult() {
   const text = document.getElementById('demo-result-body').innerText;
-  navigator.clipboard.writeText(text).then(() => alert('Copié !'));
+  navigator.clipboard.writeText(text).then(function() {
+    alert('Copié dans le presse-papiers !');
+  }).catch(function() {
+    alert('Copie non supportée sur ce navigateur.');
+  });
 }
 
-// PWA Service Worker
+// ============================================================
+// PWA SERVICE WORKER
+// ============================================================
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').catch(function() {});
 }
 </script>
 </body>
