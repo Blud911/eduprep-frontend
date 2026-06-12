@@ -226,7 +226,7 @@ textarea { resize: vertical; min-height: 80px; }
   width: 28px; height: 28px; border-radius: 6px;
   background: rgba(255,255,255,0.15); border: none; cursor: pointer;
   color: var(--white); display: flex; align-items: center; justify-content: center;
-  font-size: 14px; transition: background 0.12s;
+  font-size: 14px; transition: background 0.12px;
 }
 .btn-result-action:hover { background: rgba(255,255,255,0.25); }
 .result-body { padding: 1rem; font-size: 0.875rem; line-height: 1.7; color: var(--text-2); }
@@ -405,7 +405,7 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="topbar-right">
       <span class="topbar-quota" id="topbar-quota"></span>
       <span class="topbar-user" id="topbar-user"></span>
-      <button id="btn-install" onclick="installPWA()" title="Installer l'application" style="display:none;background:rgba(249,168,37,0.15);border:1px solid rgba(249,168,37,0.4);color:var(--gold);width:32px;height:32px;border-radius:8px;cursor:pointer;display:none;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">
+      <button id="btn-install" onclick="installPWA()" title="Installer l'application" style="display:none;background:rgba(249,168,37,0.15);border:1px solid rgba(249,168,37,0.4);color:var(--gold);width:32px;height:32px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">
         <i class="ti ti-download"></i>
       </button>
       <button class="btn-logout" onclick="doLogout()" title="Déconnexion"><i class="ti ti-logout"></i></button>
@@ -734,6 +734,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (token && user) {
     showApp();
     loadHistory();
+    // Rafraîchir les quotas au démarrage depuis le serveur
+    refreshSubscription();
   }
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 });
@@ -797,10 +799,33 @@ async function doRegister() {
   btn.disabled=false; btn.innerHTML='<i class="ti ti-user-plus"></i> Créer mon compte';
 }
 
+// ============================================================
+// FIX : storeSession normalise les deux formats possibles
+// - /login et /me  renvoient { subscription: { plan, fiches_utilisees, ... } }
+// - /register      renvoie  { trial: { fin, fiches, devoirs } } sans subscription
+// ============================================================
 function storeSession(d) {
   token = d.accessToken;
   user = d.user;
-  subscription = d.subscription || d.trial || null;
+
+  if (d.subscription) {
+    // Format login / /me : objet complet
+    subscription = d.subscription;
+  } else if (d.trial) {
+    // Format register : on construit un objet subscription normalisé
+    subscription = {
+      plan: 'trial',
+      status: 'trial',
+      date_fin: d.trial.fin,
+      fiches_limite: d.trial.fiches || 5,
+      devoirs_limite: d.trial.devoirs || 3,
+      fiches_utilisees: 0,
+      devoirs_utilises: 0,
+    };
+  } else {
+    subscription = null;
+  }
+
   localStorage.setItem('edp_token', token);
   localStorage.setItem('edp_user', JSON.stringify(user));
   localStorage.setItem('edp_sub', JSON.stringify(subscription));
@@ -811,16 +836,22 @@ function showAuthError(msg) {
   el.textContent = msg; el.classList.add('show');
 }
 
-
-// Rafraîchit les données d'abonnement depuis le serveur
+// ============================================================
+// FIX : refreshSubscription — recharge depuis /auth/me et met
+// à jour topbar + panel abonnement
+// ============================================================
 async function refreshSubscription() {
   try {
-    const r = await fetch(`${API}/auth/me`, { headers: {'Authorization': 'Bearer ' + token} });
+    const r = await fetch(`${API}/auth/me`, {
+      headers: {'Authorization': 'Bearer ' + token}
+    });
     if (!r.ok) return;
     const d = await r.json();
-    subscription = d.subscription;
+    // /auth/me renvoie toujours { user, subscription }
+    subscription = d.subscription || subscription;
     localStorage.setItem('edp_sub', JSON.stringify(subscription));
     updateQuotaDisplay();
+    updateSubPanel();
   } catch(e) {}
 }
 
@@ -844,9 +875,17 @@ function showApp() {
   updateSubPanel();
 }
 
+// ============================================================
+// FIX : updateQuotaDisplay lit les bons champs
+// ============================================================
 function updateQuotaDisplay() {
-  if (!subscription) return;
-  const f = subscription.fiches_limite === -1 ? '∞' : `${subscription.fiches_utilisees||0}/${subscription.fiches_limite}`;
+  if (!subscription) {
+    document.getElementById('topbar-quota').textContent = '';
+    return;
+  }
+  const used  = subscription.fiches_utilisees ?? 0;
+  const limit = subscription.fiches_limite ?? 5;
+  const f = limit === -1 ? '∞' : `${used}/${limit}`;
   document.getElementById('topbar-quota').textContent = `${f} fiches`;
 }
 
@@ -885,7 +924,8 @@ async function genererFiche() {
     currentFiche = { data: d.fiche, meta: {matiere, classe, lecon, duree} };
     renderFiche(d.fiche, lecon, matiere, classe);
     savedFicheId = null;
-    refreshSubscription();
+    // Recharge les quotas depuis le serveur pour refléter la consommation réelle
+    await refreshSubscription();
   } catch(e) {
     alert('Erreur réseau.');
   }
@@ -942,7 +982,8 @@ async function genererDevoir() {
     currentDevoir = { data: d.devoir, meta: {matiere, classe, lecon, type_eval, points} };
     renderDevoir(d.devoir, lecon, matiere, classe, type_eval, points);
     savedDevoirId = null;
-    refreshSubscription();
+    // Recharge les quotas depuis le serveur pour refléter la consommation réelle
+    await refreshSubscription();
   } catch(e) {
     alert('Erreur réseau.');
   }
@@ -1081,14 +1122,15 @@ function updateSubPanel() {
     return;
   }
   const jours = sub.date_fin ? Math.max(0, Math.ceil((new Date(sub.date_fin)-new Date())/(86400000))) : '∞';
-  const fUsed = sub.fiches_utilisees || 0;
-  const fLimit = sub.fiches_limite === -1 ? '∞' : sub.fiches_limite;
-  const dUsed = sub.devoirs_utilises || 0;
-  const dLimit = sub.devoirs_limite === -1 ? '∞' : sub.devoirs_limite;
+  const fUsed  = sub.fiches_utilisees ?? 0;
+  const fLimit = sub.fiches_limite === -1 ? '∞' : (sub.fiches_limite ?? 5);
+  const dUsed  = sub.devoirs_utilises ?? 0;
+  const dLimit = sub.devoirs_limite === -1 ? '∞' : (sub.devoirs_limite ?? 3);
+  const planLabel = (sub.plan||'Trial').charAt(0).toUpperCase()+(sub.plan||'Trial').slice(1);
   document.getElementById('sub-info').innerHTML = `
     <div class="sub-card">
       <div class="sub-plan">Abonnement actuel</div>
-      <div class="sub-name">${(sub.plan||'Trial').charAt(0).toUpperCase()+(sub.plan||'Trial').slice(1)}</div>
+      <div class="sub-name">${planLabel}</div>
       <div class="sub-dates">${sub.date_fin ? 'Expire le '+new Date(sub.date_fin).toLocaleDateString('fr-FR')+' ('+jours+' j)' : 'Sans expiration'}</div>
       <div class="sub-quota">
         <div class="sub-quota-item"><span class="sub-quota-num">${fUsed}/${fLimit}</span><span class="sub-quota-label">Fiches</span></div>
