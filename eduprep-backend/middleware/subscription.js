@@ -5,6 +5,15 @@ const requireSubscription = async (req, res, next) => {
   try {
     if (req.user.role === 'admin') return next();
 
+    // H3 FIX : bloquer si email non vérifié
+    if (!req.user.email_verified) {
+      return res.status(403).json({
+        error: 'Email non vérifié.',
+        code: 'EMAIL_NOT_VERIFIED',
+        message: 'Veuillez vérifier votre adresse email pour activer votre essai gratuit. Consultez votre boîte mail.',
+      });
+    }
+
     const result = await pool.query(
       `SELECT s.*, u.role FROM subscriptions s
        JOIN users u ON u.id = s.user_id
@@ -85,7 +94,7 @@ const checkDevoirQuota = async (req, res, next) => {
   }
 };
 
-// FIX M4 : inclure 'trial' dans le filtre status pour que les quotas trial soient bien décrémentés
+// M4 FIX : inclure 'trial' dans le filtre status
 const incrementFicheUsage = async (userId) => {
   await pool.query(
     `UPDATE subscriptions

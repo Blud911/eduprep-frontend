@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const validator = require('validator');
 const pool = require('../db/pool');
 const { requireAuth } = require('../middleware/auth');
@@ -38,8 +39,6 @@ router.post('/register', async (req, res) => {
   if (password.length < 8) {
     return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères.' });
   }
-
-  // FIX H2 : validation longueurs maximales
   if (nom.trim().length > 100) {
     return res.status(400).json({ error: 'Nom trop long (100 caractères max).' });
   }
@@ -64,9 +63,16 @@ router.post('/register', async (req, res) => {
 
     const password_hash = await bcrypt.hash(password, 12);
 
+    // H3 FIX : générer un token de vérification email sécurisé (32 octets hex = 64 chars)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
     const result = await client.query(
-      `INSERT INTO users (email, password_hash, nom, prenoms, telephone, etablissement_id, matieres, niveaux)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO users (
+         email, password_hash, nom, prenoms, telephone, etablissement_id, matieres, niveaux,
+         email_verified, email_verification_token, email_verification_expires
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, FALSE, $9, $10)
        RETURNING id, email, nom, prenoms, role`,
       [
         email.toLowerCase(),
@@ -77,22 +83,32 @@ router.post('/register', async (req, res) => {
         etablissement_id || null,
         matieres || [],
         niveaux || [],
+        verificationToken,
+        verificationExpires,
       ]
     );
 
     const user = result.rows[0];
 
+    // Créer l'abonnement trial (inactif jusqu'à vérification email)
     const trialEnd = new Date();
     trialEnd.setDate(trialEnd.getDate() + 7);
 
     await client.query(
       `INSERT INTO subscriptions (user_id, plan, status, date_debut, date_fin, fiches_limite, devoirs_limite, reset_date)
-       VALUES ($1, 'trial', 'trial', CURRENT_DATE, $2, 5, 3, $3)`,
+       VALUES ($1, 'trial', 'pending', CURRENT_DATE, $2, 5, 3, $3)`,
       [user.id, trialEnd.toISOString().split('T')[0], trialEnd.toISOString().split('T')[0]]
     );
 
     await client.query('COMMIT');
 
+    // Envoyer email de vérification (non bloquant)
+    emailService.sendVerificationEmail(
+      { email: email.toLowerCase(), nom: nom.trim() },
+      verificationToken
+    ).catch(() => {});
+
+    // Envoyer aussi le bienvenue (non bloquant)
     emailService.sendBienvenue({ email: email.toLowerCase(), nom: nom.trim(), prenoms: prenoms?.trim() }).catch(() => {});
 
     const { accessToken, refreshToken } = generateTokens(user.id);
@@ -105,10 +121,11 @@ router.post('/register', async (req, res) => {
     );
 
     res.status(201).json({
-      message: 'Inscription réussie ! Vous bénéficiez de 7 jours d\'essai gratuit.',
+      message: 'Inscription réussie ! Vérifiez votre email pour activer votre essai gratuit.',
       user: { id: user.id, email: user.email, nom: user.nom, prenoms: user.prenoms, role: user.role },
       accessToken,
       refreshToken,
+      email_verified: false,
       trial: { fin: trialEnd.toISOString().split('T')[0], fiches: 5, devoirs: 3 },
     });
   } catch (err) {
@@ -121,6 +138,126 @@ router.post('/register', async (req, res) => {
 });
 
 // ============================================================
+// GET /api/auth/verify-email/:token — H3 FIX
+// ============================================================
+router.get('/verify-email/:token', async (req, res) => {
+  const { token } = req.params;
+
+  if (!token || token.length !== 64 || !/^[a-f0-9]+$/.test(token)) {
+    return res.status(400).send(`
+      <html><body style="font-family:Arial;text-align:center;padding:60px;background:#FFEBEE">
+        <h2 style="color:#C62828">❌ Lien invalide</h2>
+        <p>Ce lien de vérification est invalide ou malformé.</p>
+        <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}" style="color:#1B5E20">Retour à EduPrep CI</a>
+      </body></html>
+    `);
+  }
+
+  try {
+    // Chercher l'utilisateur avec ce token non expiré
+    const result = await pool.query(
+      `SELECT id, nom, email, email_verified
+       FROM users
+       WHERE email_verification_token = $1
+         AND email_verification_expires > NOW()
+         AND email_verified = FALSE`,
+      [token]
+    );
+
+    if (!result.rows.length) {
+      return res.status(400).send(`
+        <html><body style="font-family:Arial;text-align:center;padding:60px;background:#FFEBEE">
+          <h2 style="color:#C62828">❌ Lien expiré ou déjà utilisé</h2>
+          <p>Ce lien a expiré (validité 24h) ou votre email est déjà vérifié.</p>
+          <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}/app.html" style="color:#1B5E20">
+            Se connecter
+          </a>
+        </body></html>
+      `);
+    }
+
+    const user = result.rows[0];
+
+    // Marquer email comme vérifié + activer l'abonnement trial
+    await pool.query('BEGIN');
+    try {
+      await pool.query(
+        `UPDATE users
+         SET email_verified = TRUE,
+             email_verification_token = NULL,
+             email_verification_expires = NULL
+         WHERE id = $1`,
+        [user.id]
+      );
+
+      // Activer le trial (passer de 'pending' à 'trial')
+      await pool.query(
+        `UPDATE subscriptions
+         SET status = 'trial'
+         WHERE user_id = $1 AND status = 'pending'`,
+        [user.id]
+      );
+
+      await pool.query('COMMIT');
+    } catch (e) {
+      await pool.query('ROLLBACK');
+      throw e;
+    }
+
+    // Rediriger vers l'app avec message de succès
+    const frontendUrl = process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev';
+    return res.redirect(`${frontendUrl}/app.html?verified=1`);
+
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') console.error('[Verify Email]', err.message);
+    return res.status(500).send(`
+      <html><body style="font-family:Arial;text-align:center;padding:60px;background:#FFEBEE">
+        <h2 style="color:#C62828">❌ Erreur serveur</h2>
+        <p>Une erreur est survenue. Réessayez ou contactez le support.</p>
+        <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}" style="color:#1B5E20">Retour</a>
+      </body></html>
+    `);
+  }
+});
+
+// ============================================================
+// POST /api/auth/resend-verification — Renvoyer le lien
+// ============================================================
+router.post('/resend-verification', requireAuth, async (req, res) => {
+  try {
+    const user = await pool.query(
+      'SELECT id, email, nom, email_verified FROM users WHERE id = $1',
+      [req.user.id]
+    );
+
+    if (!user.rows.length) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+    if (user.rows[0].email_verified) {
+      return res.status(400).json({ error: 'Email déjà vérifié.' });
+    }
+
+    const newToken = crypto.randomBytes(32).toString('hex');
+    const newExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await pool.query(
+      `UPDATE users
+       SET email_verification_token = $1, email_verification_expires = $2
+       WHERE id = $3`,
+      [newToken, newExpires, req.user.id]
+    );
+
+    emailService.sendVerificationEmail(
+      { email: user.rows[0].email, nom: user.rows[0].nom },
+      newToken
+    ).catch(() => {});
+
+    res.json({ message: 'Email de vérification renvoyé. Vérifiez votre boîte mail.' });
+  } catch (err) {
+    if (process.env.NODE_ENV !== 'production') console.error('[Resend Verification]', err.message);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
+// ============================================================
 // POST /api/auth/login
 // ============================================================
 router.post('/login', async (req, res) => {
@@ -129,15 +266,13 @@ router.post('/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: 'Email et mot de passe requis.' });
   }
-
-  // FIX H2 : rejeter les inputs manifestement aberrants
   if (email.length > 255 || password.length > 128) {
     return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
   }
 
   try {
     const result = await pool.query(
-      `SELECT u.id, u.email, u.password_hash, u.nom, u.prenoms, u.role, u.is_active,
+      `SELECT u.id, u.email, u.password_hash, u.nom, u.prenoms, u.role, u.is_active, u.email_verified,
               s.plan, s.status as sub_status, s.date_fin, s.fiches_limite, s.devoirs_limite,
               s.fiches_utilisees, s.devoirs_utilises
        FROM users u
@@ -181,7 +316,10 @@ router.post('/login', async (req, res) => {
     );
 
     res.json({
-      user: { id: user.id, email: user.email, nom: user.nom, prenoms: user.prenoms, role: user.role },
+      user: {
+        id: user.id, email: user.email, nom: user.nom, prenoms: user.prenoms, role: user.role,
+        email_verified: user.email_verified,
+      },
       subscription: user.plan ? {
         plan: user.plan, status: user.sub_status, date_fin: user.date_fin,
         fiches_limite: user.fiches_limite, devoirs_limite: user.devoirs_limite,
@@ -207,7 +345,6 @@ router.post('/refresh', async (req, res) => {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
     const tokens = await pool.query(
       `SELECT * FROM refresh_tokens WHERE user_id = $1 AND expires_at > NOW()`,
       [decoded.userId]
@@ -221,12 +358,9 @@ router.post('/refresh', async (req, res) => {
       }
     }
 
-    if (!valid) {
-      return res.status(401).json({ error: 'Refresh token invalide ou révoqué.' });
-    }
+    if (!valid) return res.status(401).json({ error: 'Refresh token invalide ou révoqué.' });
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(decoded.userId);
-
     const newHash = await bcrypt.hash(newRefreshToken, 8);
     await pool.query(
       `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
@@ -247,7 +381,7 @@ router.get('/me', requireAuth, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT u.id, u.email, u.nom, u.prenoms, u.telephone, u.role, u.matieres, u.niveaux,
-              u.etablissement_id, u.created_at,
+              u.etablissement_id, u.created_at, u.email_verified,
               e.nom as etablissement_nom,
               s.plan, s.status as sub_status, s.date_fin,
               s.fiches_limite, s.devoirs_limite,
@@ -262,9 +396,7 @@ router.get('/me', requireAuth, async (req, res) => {
       [req.user.id]
     );
 
-    if (!result.rows.length) {
-      return res.status(404).json({ error: 'Utilisateur introuvable.' });
-    }
+    if (!result.rows.length) return res.status(404).json({ error: 'Utilisateur introuvable.' });
 
     const u = result.rows[0];
     res.json({
@@ -272,7 +404,7 @@ router.get('/me', requireAuth, async (req, res) => {
         id: u.id, email: u.email, nom: u.nom, prenoms: u.prenoms,
         telephone: u.telephone, role: u.role, matieres: u.matieres,
         niveaux: u.niveaux, etablissement: u.etablissement_nom,
-        created_at: u.created_at,
+        created_at: u.created_at, email_verified: u.email_verified,
       },
       subscription: u.plan ? {
         plan: u.plan, status: u.sub_status, date_fin: u.date_fin,
@@ -292,7 +424,6 @@ router.get('/me', requireAuth, async (req, res) => {
 router.put('/profile', requireAuth, async (req, res) => {
   const { nom, prenoms, telephone, matieres, niveaux, password, new_password } = req.body;
 
-  // FIX H2 : validation longueurs
   if (nom && nom.trim().length > 100) return res.status(400).json({ error: 'Nom trop long (100 caractères max).' });
   if (prenoms && prenoms.trim().length > 150) return res.status(400).json({ error: 'Prénoms trop longs (150 caractères max).' });
   if (telephone && telephone.trim().length > 25) return res.status(400).json({ error: 'Numéro de téléphone invalide.' });
@@ -321,25 +452,16 @@ router.put('/profile', requireAuth, async (req, res) => {
       updates.push(`password_hash = $${idx++}`);
       values.push(newHash);
 
-      // FIX H1 : révoquer TOUS les refresh tokens existants après changement de MDP
+      // H1 FIX : révoquer tous les refresh tokens
       await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
     }
 
-    if (!updates.length) {
-      return res.status(400).json({ error: 'Aucune modification fournie.' });
-    }
+    if (!updates.length) return res.status(400).json({ error: 'Aucune modification fournie.' });
 
     values.push(req.user.id);
-    await pool.query(
-      `UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`,
-      values
-    );
+    await pool.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`, values);
 
-    res.json({
-      message: 'Profil mis à jour avec succès.',
-      // Informer le client que les sessions ont été révoquées si MDP changé
-      sessions_revoked: !!new_password,
-    });
+    res.json({ message: 'Profil mis à jour avec succès.', sessions_revoked: !!new_password });
   } catch (err) {
     if (process.env.NODE_ENV !== 'production') console.error('[Profile Update]', err.message);
     res.status(500).json({ error: 'Erreur lors de la mise à jour.' });
@@ -353,10 +475,7 @@ router.post('/logout', requireAuth, async (req, res) => {
   try {
     const { refreshToken } = req.body;
     if (refreshToken) {
-      const tokens = await pool.query(
-        'SELECT * FROM refresh_tokens WHERE user_id = $1',
-        [req.user.id]
-      );
+      const tokens = await pool.query('SELECT * FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
       for (const row of tokens.rows) {
         if (await bcrypt.compare(refreshToken, row.token_hash)) {
           await pool.query('DELETE FROM refresh_tokens WHERE id = $1', [row.id]);

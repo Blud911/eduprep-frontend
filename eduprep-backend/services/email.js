@@ -13,7 +13,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Vérification de la connexion au démarrage
 transporter.verify().then(() => {
   console.log('[Email] Connexion Brevo SMTP établie');
 }).catch(err => {
@@ -35,8 +34,6 @@ const baseTemplate = (content) => `
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F1F8E9;padding:32px 16px;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(27,94,32,0.1);">
-        
-        <!-- HEADER -->
         <tr>
           <td style="background:linear-gradient(135deg,#1B5E20,#2E7D32);padding:28px 32px;text-align:center;">
             <div style="display:inline-flex;align-items:center;gap:10px;">
@@ -46,15 +43,11 @@ const baseTemplate = (content) => `
             <p style="color:rgba(255,255,255,0.7);font-size:13px;margin:6px 0 0;">Plateforme pédagogique pour enseignants ivoiriens</p>
           </td>
         </tr>
-
-        <!-- BODY -->
         <tr>
           <td style="padding:32px;">
             ${content}
           </td>
         </tr>
-
-        <!-- FOOTER -->
         <tr>
           <td style="background:#F1F8E9;padding:20px 32px;text-align:center;border-top:1px solid #C8E6C9;">
             <p style="font-size:12px;color:#757575;margin:0;">
@@ -65,7 +58,6 @@ const baseTemplate = (content) => `
             </p>
           </td>
         </tr>
-
       </table>
     </td></tr>
   </table>
@@ -73,10 +65,33 @@ const baseTemplate = (content) => `
 </html>`;
 
 // ============================================================
-// TEMPLATES PAR TYPE D'EMAIL
+// TEMPLATES
 // ============================================================
-
 const templates = {
+
+  // H3 FIX — Vérification email (nouveau)
+  verification_email: (nom, lienVerification) => baseTemplate(`
+    <h2 style="color:#1B5E20;font-family:Georgia,serif;margin:0 0 16px;">Bonjour ${nom},</h2>
+    <p style="color:#4A4A4A;font-size:15px;line-height:1.7;margin:0 0 20px;">
+      Merci de vous être inscrit sur <strong>EduPrep CI</strong>. Pour activer votre essai gratuit de 7 jours
+      et commencer à générer vos fiches pédagogiques, veuillez confirmer votre adresse email.
+    </p>
+    <div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;padding:20px;margin:0 0 24px;text-align:center;">
+      <p style="margin:0 0 16px;color:#1B5E20;font-size:14px;font-weight:600;">
+        🎁 5 fiches gratuites vous attendent !
+      </p>
+      <a href="${lienVerification}"
+         style="display:inline-block;background:#1B5E20;color:#ffffff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;">
+        ✅ Confirmer mon email
+      </a>
+    </div>
+    <p style="color:#9E9E9E;font-size:12px;line-height:1.6;margin:0;">
+      Ce lien est valable <strong>24 heures</strong>. Si vous n'avez pas créé de compte sur EduPrep CI,
+      ignorez simplement cet email.<br><br>
+      Ou copiez ce lien dans votre navigateur :<br>
+      <span style="color:#1B5E20;word-break:break-all;">${lienVerification}</span>
+    </p>
+  `),
 
   // Expiration J-3
   expiration_j3: (nom, dateExpiration, plan) => baseTemplate(`
@@ -95,7 +110,7 @@ const templates = {
       Paiement accepté via <strong>Wave CI</strong>, <strong>Orange Money</strong> ou <strong>MTN Money</strong>.
     </p>
     <div style="text-align:center;">
-      <a href="https://eduprep-frontend.netlify.app/app.html" 
+      <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}/app.html"
          style="display:inline-block;background:#1B5E20;color:#ffffff;padding:13px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
         Renouveler mon abonnement
       </a>
@@ -117,14 +132,14 @@ const templates = {
       Renouvelez dès maintenant pour continuer à préparer vos cours sans interruption.
     </p>
     <div style="text-align:center;">
-      <a href="https://eduprep-frontend.netlify.app/app.html" 
+      <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}/app.html"
          style="display:inline-block;background:#C62828;color:#ffffff;padding:13px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
         Renouveler maintenant
       </a>
     </div>
   `),
 
-  // Abonnement activé (confirmation)
+  // Abonnement activé
   abonnement_active: (nom, plan, dateFin) => baseTemplate(`
     <h2 style="color:#1B5E20;font-family:Georgia,serif;margin:0 0 16px;">Félicitations ${nom} ! 🎉</h2>
     <p style="color:#4A4A4A;font-size:15px;line-height:1.7;margin:0 0 20px;">
@@ -132,30 +147,24 @@ const templates = {
     </p>
     <div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;padding:20px;margin:0 0 24px;">
       <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td style="font-size:13px;color:#4A4A4A;padding:4px 0;">✅ Accès aux fiches pédagogiques</td>
-        </tr>
-        <tr>
-          <td style="font-size:13px;color:#4A4A4A;padding:4px 0;">✅ Composition de devoirs et corrigés</td>
-        </tr>
-        <tr>
-          <td style="font-size:13px;color:#4A4A4A;padding:4px 0;">📅 Valide jusqu'au <strong>${dateFin}</strong></td>
-        </tr>
+        <tr><td style="font-size:13px;color:#4A4A4A;padding:4px 0;">✅ Accès aux fiches pédagogiques</td></tr>
+        <tr><td style="font-size:13px;color:#4A4A4A;padding:4px 0;">✅ Composition de devoirs et corrigés</td></tr>
+        <tr><td style="font-size:13px;color:#4A4A4A;padding:4px 0;">📅 Valide jusqu'au <strong>${dateFin}</strong></td></tr>
       </table>
     </div>
     <div style="text-align:center;">
-      <a href="https://eduprep-frontend.netlify.app/app.html" 
+      <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}/app.html"
          style="display:inline-block;background:#1B5E20;color:#ffffff;padding:13px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
         Accéder à l'application
       </a>
     </div>
   `),
 
-  // Bienvenue après inscription
+  // Bienvenue
   bienvenue: (nom) => baseTemplate(`
     <h2 style="color:#1B5E20;font-family:Georgia,serif;margin:0 0 16px;">Bienvenue sur EduPrep CI, ${nom} ! 👋</h2>
     <p style="color:#4A4A4A;font-size:15px;line-height:1.7;margin:0 0 20px;">
-      Votre compte a été créé avec succès. Vous bénéficiez de <strong>7 jours d'essai gratuit</strong> 
+      Votre compte a été créé avec succès. Vous bénéficiez de <strong>7 jours d'essai gratuit</strong>
       pour découvrir toutes les fonctionnalités.
     </p>
     <div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:12px;padding:20px;margin:0 0 24px;">
@@ -168,7 +177,7 @@ const templates = {
       </table>
     </div>
     <div style="text-align:center;">
-      <a href="https://eduprep-frontend.netlify.app/app.html" 
+      <a href="${process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev'}/app.html"
          style="display:inline-block;background:#1B5E20;color:#ffffff;padding:13px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
         Commencer maintenant
       </a>
@@ -207,7 +216,17 @@ module.exports = {
   sendEmail,
   templates,
 
-  // Helpers directs
+  // H3 FIX — Envoi email de vérification
+  async sendVerificationEmail(user, token) {
+    const frontendUrl = process.env.FRONTEND_URL || 'https://eduprep-frontend.pages.dev';
+    const lien = `${process.env.BACKEND_URL || 'https://eduprep-backend-km19.onrender.com'}/api/auth/verify-email/${token}`;
+    return sendEmail({
+      to: user.email,
+      subject: '✅ Confirmez votre email — EduPrep CI',
+      html: templates.verification_email(user.nom || 'Enseignant(e)', lien),
+    });
+  },
+
   async sendExpiration(user, joursRestants) {
     const dateExp = new Date(user.date_fin).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
     const plan = user.plan ? (user.plan.charAt(0).toUpperCase() + user.plan.slice(1)) : 'Starter';

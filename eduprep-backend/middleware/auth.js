@@ -12,8 +12,9 @@ const requireAuth = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // H3 FIX : inclure email_verified dans req.user
     const result = await pool.query(
-      'SELECT id, email, nom, prenoms, role, is_active FROM users WHERE id = $1',
+      'SELECT id, email, nom, prenoms, role, is_active, email_verified FROM users WHERE id = $1',
       [decoded.userId]
     );
 
@@ -30,7 +31,7 @@ const requireAuth = async (req, res, next) => {
     if (err.name === 'JsonWebTokenError') {
       return res.status(401).json({ error: 'Token invalide.' });
     }
-    console.error('[Auth Middleware]', err.message);
+    if (process.env.NODE_ENV !== 'production') console.error('[Auth Middleware]', err.message);
     res.status(500).json({ error: 'Erreur d\'authentification.' });
   }
 };
