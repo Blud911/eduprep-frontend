@@ -19,9 +19,7 @@ const PORT = process.env.PORT || 3000;
 // SÉCURITÉ & MIDDLEWARE GLOBAUX
 // ============================================================
 
-// Nécessaire pour Render (reverse proxy)
-app.set('trust proxy', 1);
-
+// FIX C1 : une seule déclaration trust proxy (supprimé le doublon)
 app.set('trust proxy', 1);
 
 app.use(helmet({
@@ -46,8 +44,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true }));
+// FIX M2 : body JSON global limité à 50kb (les routes qui ont besoin de plus ont leur propre limite)
+app.use(express.json({ limit: '50kb' }));
+app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 
 // Rate limiting global
 const globalLimiter = rateLimit({
@@ -77,20 +76,20 @@ const authLimiter = rateLimit({
 // ROUTES
 // ============================================================
 
+// FIX C2 : /health ne révèle plus version, env ni timestamp
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    app: 'EduPrep CI API',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV,
-  });
+  res.json({ status: 'ok' });
 });
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/ai', aiLimiter, aiRoutes);
-app.use('/api/content', contentRoutes);
+
+// FIX M2 : routes IA limitées à 10kb (inputs texte courts)
+app.use('/api/ai', aiLimiter, express.json({ limit: '10kb' }), aiRoutes);
+
+// FIX M2 : content accepte jusqu'à 500kb (sauvegarde fiches/devoirs JSON)
+app.use('/api/content', express.json({ limit: '500kb' }), contentRoutes);
+
 app.use('/api/admin', adminRoutes);
 app.use('/api/programmes', programmesRoutes);
 
@@ -102,10 +101,13 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route non trouvée.' });
 });
 
+// FIX H4 : stack trace jamais exposée, même en développement côté client
 app.use((err, req, res, next) => {
-  console.error(`[${new Date().toISOString()}] ERREUR:`, err.message);
-  if (process.env.NODE_ENV === 'development') {
-    return res.status(500).json({ error: err.message, stack: err.stack });
+  const isProd = process.env.NODE_ENV === 'production';
+  if (!isProd) {
+    console.error(`[${new Date().toISOString()}] ERREUR:`, err.message, err.stack);
+  } else {
+    console.error(`[${new Date().toISOString()}] ERREUR [${err.code || 'UNKNOWN'}]:`, err.message);
   }
   res.status(500).json({ error: 'Erreur interne du serveur.' });
 });

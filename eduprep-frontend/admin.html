@@ -28,17 +28,12 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(--text); font-size: 14px; }
 
-/* ============ AUTH ============ */
 .auth-overlay {
   position: fixed; inset: 0; z-index: 200;
   background: linear-gradient(135deg, #1B5E20, #33691E);
   display: flex; align-items: center; justify-content: center; padding: 1rem;
 }
-.auth-box {
-  background: var(--white); border-radius: var(--radius-lg);
-  padding: 2rem; width: 100%; max-width: 380px;
-  box-shadow: var(--shadow-lg);
-}
+.auth-box { background: var(--white); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
 .auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
 .auth-logo-leaf { width: 34px; height: 34px; background: var(--forest); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; }
 .auth-logo-leaf i { transform: rotate(45deg); color: var(--gold); font-size: 16px; }
@@ -46,84 +41,50 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 .auth-sub { font-size: 0.8rem; color: var(--text-3); text-align: center; margin-bottom: 1.5rem; }
 .field { margin-bottom: 1rem; }
 .field label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-.field input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.875rem; font-family: 'Inter', sans-serif; transition: border-color 0.15s; }
+.field input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.875rem; font-family: 'Inter', sans-serif; }
 .field input:focus { outline: none; border-color: var(--forest-light); box-shadow: 0 0 0 3px rgba(27,94,32,0.08); }
-.btn-auth { width: 100%; padding: 11px; border-radius: var(--radius); background: var(--forest); color: var(--white); border: none; font-size: 0.9rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; }
+.btn-auth { width: 100%; padding: 11px; border-radius: var(--radius); background: var(--forest); color: var(--white); border: none; font-size: 0.9rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-auth:hover { background: var(--forest-mid); }
 .btn-auth:disabled { opacity: 0.6; cursor: not-allowed; }
 .auth-error { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 1rem; display: none; }
 .auth-error.show { display: block; }
 
-/* ============ LAYOUT ============ */
 .admin-layout { display: none; min-height: 100svh; }
 .admin-layout.show { display: flex; }
 
-/* SIDEBAR */
-.sidebar {
-  width: var(--sidebar-w); background: var(--forest); color: var(--white);
-  display: flex; flex-direction: column;
-  position: fixed; top: 0; left: 0; bottom: 0; z-index: 40;
-  transform: translateX(-100%); transition: transform 0.25s ease;
-}
-.sidebar.open, .sidebar-desktop { transform: translateX(0); }
+.sidebar { width: var(--sidebar-w); background: var(--forest); color: var(--white); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 40; transform: translateX(-100%); transition: transform 0.25s ease; }
+.sidebar.open { transform: translateX(0); }
 @media (min-width: 768px) { .sidebar { transform: translateX(0); } }
-
-.sidebar-logo {
-  padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);
-  display: flex; align-items: center; gap: 10px;
-}
+.sidebar-logo { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; }
 .sidebar-logo-leaf { width: 30px; height: 30px; background: var(--gold); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .sidebar-logo-leaf i { transform: rotate(45deg); color: var(--forest); font-size: 14px; }
 .sidebar-logo-text { font-family: 'Playfair Display', serif; font-size: 1rem; }
 .sidebar-admin-badge { font-size: 0.65rem; background: rgba(249,168,37,0.2); color: var(--gold); padding: 1px 6px; border-radius: 8px; margin-left: auto; }
-
 .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
 .nav-section-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.35); padding: 0.75rem 1rem 0.25rem; }
-.nav-link {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.75);
-  cursor: pointer; transition: all 0.12s; position: relative;
-  border: none; background: none; width: 100%; text-align: left; font-family: 'Inter', sans-serif;
-}
+.nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.75); cursor: pointer; border: none; background: none; width: 100%; text-align: left; font-family: 'Inter', sans-serif; position: relative; transition: all 0.12s; }
 .nav-link:hover { color: var(--white); background: rgba(255,255,255,0.07); }
 .nav-link.active { color: var(--white); background: rgba(255,255,255,0.12); }
 .nav-link.active::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px; background: var(--gold); border-radius: 0 3px 3px 0; }
 .nav-link i { font-size: 18px; flex-shrink: 0; }
 .nav-badge { margin-left: auto; background: var(--gold); color: var(--forest); font-size: 0.65rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
 .nav-badge.red { background: #EF5350; color: #fff; }
-
 .sidebar-footer { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); }
 .admin-info { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
-.btn-sidebar-logout { width: 100%; padding: 7px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.75); font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.12s; }
+.btn-sidebar-logout { width: 100%; padding: 7px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.75); font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-sidebar-logout:hover { background: rgba(255,255,255,0.15); }
 
-/* MAIN */
 .main-area { flex: 1; margin-left: 0; display: flex; flex-direction: column; min-height: 100svh; }
 @media (min-width: 768px) { .main-area { margin-left: var(--sidebar-w); } }
-
-.topbar {
-  background: var(--white); border-bottom: 1px solid var(--border-2);
-  padding: 0 1.25rem; height: 56px;
-  display: flex; align-items: center; gap: 12px;
-  position: sticky; top: 0; z-index: 30;
-}
+.topbar { background: var(--white); border-bottom: 1px solid var(--border-2); padding: 0 1.25rem; height: 56px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 30; }
 .topbar-menu-btn { width: 36px; height: 36px; border-radius: 8px; background: none; border: 1px solid var(--border-2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text-2); }
 @media (min-width: 768px) { .topbar-menu-btn { display: none; } }
 .topbar-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; flex: 1; }
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-.topbar-alert {
-  display: flex; align-items: center; gap: 6px; padding: 5px 10px;
-  background: var(--warning-bg); border-radius: 8px; font-size: 0.75rem; color: var(--warning);
-  cursor: pointer; border: 1px solid #FFB74D;
-}
-
+.topbar-alert { display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: var(--warning-bg); border-radius: 8px; font-size: 0.75rem; color: var(--warning); cursor: pointer; border: 1px solid #FFB74D; }
 .content { flex: 1; padding: 1.25rem; max-width: 1100px; }
-
-/* ============ PANELS ============ */
 .panel { display: none; }
 .panel.active { display: block; }
 
-/* Stats */
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
 @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 .stat-card { background: var(--white); border-radius: var(--radius); padding: 1rem; border: 1px solid var(--border-2); box-shadow: var(--shadow); }
@@ -134,102 +95,105 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 .stat-icon.red { background: var(--danger-bg); color: var(--danger); }
 .stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; line-height: 1; }
 .stat-label { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
-.stat-trend { font-size: 0.7rem; margin-top: 4px; }
-.stat-trend.up { color: var(--forest); }
 
-/* Cards */
 .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border-2); box-shadow: var(--shadow); margin-bottom: 1rem; overflow: hidden; }
-.card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-2); display: flex; align-items: center; justify-content: space-between; }
+.card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-2); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .card-header h3 { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 7px; }
-.card-body { padding: 0; }
+.card-header-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
-/* Tables */
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th { padding: 9px 14px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-3); font-weight: 600; text-align: left; background: var(--surface); border-bottom: 1px solid var(--border-2); white-space: nowrap; }
 .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-2); font-size: 0.825rem; vertical-align: middle; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: var(--forest-pale2); }
-.data-table .overflow-scroll { overflow-x: auto; }
 
-/* Badges */
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
 .badge-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid #FFB74D; }
 .badge-active { background: var(--success-bg); color: var(--success); border: 1px solid #A5D6A7; }
 .badge-trial { background: var(--info-bg); color: var(--info); border: 1px solid #90CAF9; }
 .badge-expired { background: #F5F5F5; color: #9E9E9E; border: 1px solid #E0E0E0; }
-.badge-confirmed { background: var(--success-bg); color: var(--success); }
-.badge-rejected { background: var(--danger-bg); color: var(--danger); }
-.badge-starter { background: #E3F2FD; color: #1565C0; }
-.badge-pro { background: var(--gold-light); color: var(--gold-dark); }
-.badge-etablissement { background: #F3E5F5; color: #6A1B9A; }
+.badge-cancelled { background: #F5F5F5; color: #9E9E9E; border: 1px solid #E0E0E0; }
+.badge-confirmed { background: var(--success-bg); color: var(--success); border: 1px solid #A5D6A7; }
+.badge-rejected { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+.badge-starter { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.badge-pro { background: var(--gold-light); color: var(--gold-dark); border: 1px solid #FFD54F; }
+.badge-etablissement { background: #F3E5F5; color: #6A1B9A; border: 1px solid #CE93D8; }
 
-/* Action buttons */
-.btn-action { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 4px; transition: all 0.12s; }
+.btn-action { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; cursor: pointer; border: none; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 4px; transition: all 0.12s; white-space: nowrap; }
 .btn-confirm { background: var(--success-bg); color: var(--success); border: 1px solid #A5D6A7; }
 .btn-confirm:hover { background: #C8E6C9; }
 .btn-reject { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
 .btn-reject:hover { background: #FFCDD2; }
 .btn-view { background: var(--surface); color: var(--text-2); border: 1px solid var(--border-2); }
 .btn-view:hover { background: var(--border-2); }
+.btn-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid #FFB74D; }
+.btn-warning:hover { background: #FFE0B2; }
 .btn-toggle-active { background: var(--success-bg); color: var(--success); border: 1px solid #A5D6A7; }
 .btn-toggle-inactive { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
 
-/* Filters */
 .filters { display: flex; gap: 8px; flex-wrap: wrap; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-2); background: var(--surface); }
 .filter-select { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.8rem; font-family: 'Inter', sans-serif; background: var(--white); }
 .search-input { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.8rem; font-family: 'Inter', sans-serif; flex: 1; min-width: 160px; }
 .search-input:focus, .filter-select:focus { outline: none; border-color: var(--forest-light); }
-.btn-refresh { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--white); font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 5px; transition: background 0.12s; }
+.btn-refresh { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--white); font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 5px; }
 .btn-refresh:hover { background: var(--forest-pale); }
+.btn-primary { padding: 5px 12px; border-radius: 8px; border: none; background: var(--forest); color: var(--white); font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 5px; }
+.btn-primary:hover { background: var(--forest-mid); }
 
-/* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
 .modal-overlay.show { display: flex; }
-.modal { background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 480px; max-height: 90svh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal { background: var(--white); border-radius: var(--radius-lg); width: 100%; max-width: 500px; max-height: 92svh; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .modal-header { padding: 1.25rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border-2); display: flex; align-items: center; justify-content: space-between; }
 .modal-title { font-size: 1rem; font-weight: 600; }
 .modal-close { width: 30px; height: 30px; border-radius: 6px; background: none; border: 1px solid var(--border-2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 .modal-body { padding: 1.25rem; }
 .modal-field { margin-bottom: 1rem; }
 .modal-field label { display: block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 4px; }
-.modal-field .value { font-size: 0.875rem; color: var(--text); font-weight: 500; }
+.modal-field select, .modal-field input[type=number], .modal-field input[type=text] { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.875rem; font-family: 'Inter', sans-serif; }
+.modal-field select:focus, .modal-field input:focus { outline: none; border-color: var(--forest-light); }
 .modal-field textarea { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-2); font-size: 0.875rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 70px; }
 .modal-field textarea:focus { outline: none; border-color: var(--forest-light); }
-.modal-actions { display: flex; gap: 8px; padding: 1rem 1.25rem; border-top: 1px solid var(--border-2); }
-.btn-modal { flex: 1; padding: 10px; border-radius: var(--radius); font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.12s; }
+.modal-actions { display: flex; gap: 8px; padding: 1rem 1.25rem; border-top: 1px solid var(--border-2); flex-wrap: wrap; }
+.btn-modal { flex: 1; min-width: 100px; padding: 10px; border-radius: var(--radius); font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-modal-confirm { background: var(--forest); color: var(--white); }
 .btn-modal-confirm:hover { background: var(--forest-mid); }
 .btn-modal-reject { background: var(--danger); color: var(--white); }
 .btn-modal-reject:hover { background: #B71C1C; }
+.btn-modal-warning { background: var(--warning); color: var(--white); }
+.btn-modal-warning:hover { background: #BF360C; }
 .btn-modal-cancel { background: var(--surface); color: var(--text-2); border: 1px solid var(--border-2); }
 
-/* User detail */
-.user-detail-row { display: flex; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-2); }
-.user-detail-row:last-child { border-bottom: none; }
-.user-detail-label { font-size: 0.75rem; color: var(--text-3); width: 120px; flex-shrink: 0; }
-.user-detail-value { font-size: 0.85rem; font-weight: 500; }
+.detail-row { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border-2); }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-size: 0.75rem; color: var(--text-3); width: 130px; flex-shrink: 0; padding-top: 2px; }
+.detail-value { font-size: 0.85rem; font-weight: 500; flex: 1; }
 
-/* Chart placeholder */
+.section-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); margin: 1.25rem 0 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border-2); }
+
 .chart-bar-container { padding: 1.25rem; }
 .chart-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.chart-bar-label { font-size: 0.75rem; color: var(--text-3); width: 80px; flex-shrink: 0; text-align: right; }
+.chart-bar-label { font-size: 0.75rem; color: var(--text-3); width: 90px; flex-shrink: 0; text-align: right; }
 .chart-bar-track { flex: 1; height: 20px; background: var(--surface); border-radius: 4px; overflow: hidden; }
 .chart-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 0.7rem; font-weight: 600; color: var(--white); transition: width 0.6s ease; }
 .chart-bar-fill.green { background: var(--forest-light); }
 .chart-bar-fill.gold { background: var(--gold-dark); }
 .chart-bar-fill.blue { background: #1976D2; }
+.chart-bar-fill.purple { background: #6A1B9A; }
 
-/* Empty state */
-.empty { text-align: center; padding: 3rem 1rem; color: var(--text-3); }
+.empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-3); }
 .empty i { font-size: 36px; opacity: 0.2; display: block; margin-bottom: 8px; }
 
-/* Toast */
-.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; background: var(--forest); color: var(--white); padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; box-shadow: var(--shadow-lg); transform: translateY(10px); opacity: 0; transition: all 0.2s; }
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; background: var(--forest); color: var(--white); padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; box-shadow: var(--shadow-lg); transform: translateY(10px); opacity: 0; transition: all 0.2s; max-width: 320px; }
 .toast.show { transform: none; opacity: 1; }
+.toast.error { background: var(--danger); }
 
-/* Sidebar overlay mobile */
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 39; }
 .sidebar-overlay.show { display: block; }
+
+.quota-bar { height: 6px; background: var(--border-2); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.quota-bar-fill { height: 100%; background: var(--forest-light); border-radius: 3px; }
+.quota-bar-fill.warn { background: var(--gold-dark); }
+.quota-bar-fill.full { background: var(--danger); }
 </style>
 </head>
 <body>
@@ -261,24 +225,19 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 
 <!-- ADMIN LAYOUT -->
 <div id="admin-layout" class="admin-layout">
-
-  <!-- SIDEBAR OVERLAY MOBILE -->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-leaf"><i class="ti ti-leaf"></i></div>
       <span class="sidebar-logo-text">EduPrep CI</span>
       <span class="sidebar-admin-badge">ADMIN</span>
     </div>
-
     <nav class="sidebar-nav">
       <p class="nav-section-label">Tableau de bord</p>
       <button class="nav-link active" onclick="gotoPanel('dashboard',this)">
         <i class="ti ti-layout-dashboard"></i> Vue d'ensemble
       </button>
-
       <p class="nav-section-label">Gestion</p>
       <button class="nav-link" onclick="gotoPanel('payments',this)" id="nav-payments">
         <i class="ti ti-credit-card"></i> Paiements
@@ -290,13 +249,11 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
       <button class="nav-link" onclick="gotoPanel('subscriptions',this)">
         <i class="ti ti-certificate"></i> Abonnements
       </button>
-
       <p class="nav-section-label">Analytique</p>
       <button class="nav-link" onclick="gotoPanel('stats',this)">
-        <i class="ti ti-chart-bar"></i> Statistiques IA
+        <i class="ti ti-chart-bar"></i> Statistiques
       </button>
     </nav>
-
     <div class="sidebar-footer">
       <p class="admin-info" id="admin-name-display">Admin</p>
       <button class="btn-sidebar-logout" onclick="doLogout()">
@@ -305,13 +262,12 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main-area">
     <header class="topbar">
       <button class="topbar-menu-btn" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
       <span class="topbar-title" id="topbar-title">Vue d'ensemble</span>
-      <div class="topbar-right">
-        <div class="topbar-alert" id="topbar-alert" onclick="gotoPanel('payments', document.querySelector('.nav-link[onclick*=payments]'))" style="display:none">
+      <div>
+        <div class="topbar-alert" id="topbar-alert" onclick="gotoPanel('payments', document.querySelectorAll('.nav-link')[1])" style="display:none">
           <i class="ti ti-bell"></i>
           <span id="alert-text">0 paiement en attente</span>
         </div>
@@ -322,31 +278,25 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 
       <!-- DASHBOARD -->
       <div id="panel-dashboard" class="panel active">
-        <div class="stats-grid" id="stats-grid">
+        <div class="stats-grid">
           <div class="stat-card"><div class="stat-icon green"><i class="ti ti-users"></i></div><div class="stat-num" id="s-users">—</div><div class="stat-label">Enseignants inscrits</div></div>
           <div class="stat-card"><div class="stat-icon gold"><i class="ti ti-credit-card"></i></div><div class="stat-num" id="s-revenue">—</div><div class="stat-label">Revenus ce mois (FCFA)</div></div>
           <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-certificate"></i></div><div class="stat-num" id="s-subs">—</div><div class="stat-label">Abonnements actifs</div></div>
           <div class="stat-card"><div class="stat-icon red"><i class="ti ti-clock"></i></div><div class="stat-num" id="s-pending">—</div><div class="stat-label">Paiements en attente</div></div>
         </div>
-
-        <div style="display:grid;grid-template-columns:1fr;gap:1rem">
+        <div style="display:grid;gap:1rem">
           <div class="card">
             <div class="card-header">
-              <h3><i class="ti ti-credit-card" style="color:var(--gold-dark)"></i> Paiements récents en attente</h3>
+              <h3><i class="ti ti-credit-card" style="color:var(--gold-dark)"></i> Paiements en attente</h3>
               <button class="btn-refresh" onclick="gotoPanel('payments', document.querySelectorAll('.nav-link')[1])"><i class="ti ti-arrow-right"></i> Tout voir</button>
             </div>
-            <div class="card-body" id="dash-pending-list">
-              <div class="empty"><i class="ti ti-check"></i><p>Aucun paiement en attente</p></div>
-            </div>
+            <div id="dash-pending-list"><div class="empty"><i class="ti ti-check"></i><p>Aucun paiement en attente</p></div></div>
           </div>
-
           <div class="card">
             <div class="card-header">
               <h3><i class="ti ti-users" style="color:var(--forest)"></i> Dernières inscriptions</h3>
             </div>
-            <div class="card-body" id="dash-users-list">
-              <div class="empty"><i class="ti ti-user-plus"></i><p>Aucune inscription récente</p></div>
-            </div>
+            <div id="dash-users-list"><div class="empty"><i class="ti ti-user-plus"></i><p>Aucune inscription récente</p></div></div>
           </div>
         </div>
       </div>
@@ -360,30 +310,17 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
           </div>
           <div class="filters">
             <select class="filter-select" id="pay-filter-status" onchange="loadPayments()">
-              <option value="">Tous les statuts</option>
               <option value="pending" selected>En attente</option>
               <option value="confirmed">Confirmés</option>
               <option value="rejected">Rejetés</option>
+              <option value="">Tous</option>
             </select>
-            <input class="search-input" id="pay-search" placeholder="Rechercher un nom, email, référence..." oninput="filterPaymentsTable()">
+            <input class="search-input" id="pay-search" placeholder="Nom, email, référence..." oninput="filterPaymentsTable()">
           </div>
           <div style="overflow-x:auto">
-            <table class="data-table" id="pay-table">
-              <thead>
-                <tr>
-                  <th>Enseignant</th>
-                  <th>Plan</th>
-                  <th>Montant</th>
-                  <th>Méthode</th>
-                  <th>Référence MM</th>
-                  <th>Date</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="pay-tbody">
-                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>
-              </tbody>
+            <table class="data-table">
+              <thead><tr><th>Enseignant</th><th>Plan</th><th>Montant</th><th>Méthode</th><th>Référence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody id="pay-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -394,7 +331,9 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
         <div class="card">
           <div class="card-header">
             <h3><i class="ti ti-users" style="color:var(--forest)"></i> Gestion des utilisateurs</h3>
-            <button class="btn-refresh" onclick="loadUsers()"><i class="ti ti-refresh"></i> Actualiser</button>
+            <div class="card-header-actions">
+              <button class="btn-refresh" onclick="loadUsers()"><i class="ti ti-refresh"></i> Actualiser</button>
+            </div>
           </div>
           <div class="filters">
             <select class="filter-select" id="user-filter-role" onchange="loadUsers()">
@@ -405,22 +344,9 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
             <input class="search-input" id="user-search" placeholder="Nom, email..." oninput="filterUsersTable()">
           </div>
           <div style="overflow-x:auto">
-            <table class="data-table" id="user-table">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>Plan</th>
-                  <th>Statut sub.</th>
-                  <th>Inscription</th>
-                  <th>Dernière connexion</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="user-tbody">
-                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>
-              </tbody>
+            <table class="data-table">
+              <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Plan</th><th>Statut</th><th>Expiration</th><th>Inscription</th><th>Actions</th></tr></thead>
+              <tbody id="user-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -430,10 +356,20 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
       <div id="panel-subscriptions" class="panel">
         <div class="card">
           <div class="card-header">
-            <h3><i class="ti ti-certificate" style="color:var(--forest)"></i> Abonnements actifs</h3>
-            <button class="btn-refresh" onclick="loadSubscriptions()"><i class="ti ti-refresh"></i> Actualiser</button>
+            <h3><i class="ti ti-certificate" style="color:var(--forest)"></i> Gestion des abonnements</h3>
+            <div class="card-header-actions">
+              <button class="btn-primary" onclick="openCreateSubModal()"><i class="ti ti-plus"></i> Nouvel abonnement</button>
+              <button class="btn-refresh" onclick="loadSubscriptions()"><i class="ti ti-refresh"></i></button>
+            </div>
           </div>
           <div class="filters">
+            <select class="filter-select" id="sub-filter-status" onchange="loadSubscriptions()">
+              <option value="active">Actifs</option>
+              <option value="trial">Essai</option>
+              <option value="expired">Expirés</option>
+              <option value="cancelled">Résiliés</option>
+              <option value="">Tous</option>
+            </select>
             <select class="filter-select" id="sub-filter-plan" onchange="loadSubscriptions()">
               <option value="">Tous les plans</option>
               <option value="trial">Trial</option>
@@ -441,52 +377,33 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
               <option value="pro">Pro</option>
               <option value="etablissement">Établissement</option>
             </select>
-            <select class="filter-select" id="sub-filter-status" onchange="loadSubscriptions()">
-              <option value="active">Actifs</option>
-              <option value="trial">Essai</option>
-              <option value="expired">Expirés</option>
-              <option value="">Tous</option>
-            </select>
           </div>
           <div style="overflow-x:auto">
-            <table class="data-table" id="sub-table">
-              <thead>
-                <tr>
-                  <th>Enseignant</th>
-                  <th>Plan</th>
-                  <th>Statut</th>
-                  <th>Début</th>
-                  <th>Fin</th>
-                  <th>Fiches utilisées</th>
-                  <th>Devoirs utilisés</th>
-                </tr>
-              </thead>
-              <tbody id="sub-tbody">
-                <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>
-              </tbody>
+            <table class="data-table">
+              <thead><tr><th>Enseignant</th><th>Plan</th><th>Statut</th><th>Début</th><th>Expiration</th><th>Fiches</th><th>Devoirs</th><th>Actions</th></tr></thead>
+              <tbody id="sub-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- STATS IA -->
+      <!-- STATS -->
       <div id="panel-stats" class="panel">
-        <div class="stats-grid" id="ai-stats-grid">
+        <div class="stats-grid">
           <div class="stat-card"><div class="stat-icon green"><i class="ti ti-clipboard-list"></i></div><div class="stat-num" id="s-fiches">—</div><div class="stat-label">Fiches générées</div></div>
           <div class="stat-card"><div class="stat-icon gold"><i class="ti ti-pencil"></i></div><div class="stat-num" id="s-devoirs">—</div><div class="stat-label">Devoirs générés</div></div>
           <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-robot"></i></div><div class="stat-num" id="s-gen-today">—</div><div class="stat-label">Générations aujourd'hui</div></div>
           <div class="stat-card"><div class="stat-icon red"><i class="ti ti-currency-dollar"></i></div><div class="stat-num" id="s-revenue2">—</div><div class="stat-label">Revenus ce mois</div></div>
         </div>
-
         <div class="card">
-          <div class="card-header"><h3><i class="ti ti-chart-bar"></i> Répartition des plans actifs</h3></div>
-          <div class="chart-bar-container" id="plan-chart"></div>
+          <div class="card-header"><h3><i class="ti ti-chart-pie"></i> Répartition des plans actifs</h3></div>
+          <div class="chart-bar-container" id="plan-chart"><div class="empty"><i class="ti ti-chart-bar"></i><p>Aucune donnée</p></div></div>
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main-area -->
-</div><!-- /admin-layout -->
+    </div>
+  </div>
+</div>
 
 <!-- MODAL PAIEMENT -->
 <div class="modal-overlay" id="modal-payment">
@@ -512,6 +429,67 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
   </div>
 </div>
 
+<!-- MODAL ABONNEMENT (créer/renouveler) -->
+<div class="modal-overlay" id="modal-sub">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-sub-title">Nouvel abonnement</span>
+      <button class="modal-close" onclick="closeModal('modal-sub')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field" id="modal-sub-user-field">
+        <label>Utilisateur (email)</label>
+        <input type="text" id="sub-user-email" placeholder="email@exemple.com" oninput="searchUserByEmail()">
+        <div id="sub-user-found" style="margin-top:6px;font-size:0.8rem;color:var(--forest)"></div>
+      </div>
+      <div class="modal-field">
+        <label>Plan</label>
+        <select id="sub-plan">
+          <option value="starter">Starter — 2 000 FCFA/mois</option>
+          <option value="pro">Pro — 5 000 FCFA/mois</option>
+          <option value="etablissement">Établissement — 30 000 FCFA/mois</option>
+          <option value="trial">Trial gratuit</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Durée (mois)</label>
+        <input type="number" id="sub-duree" value="1" min="1" max="24">
+      </div>
+      <div class="modal-field">
+        <label>Note (optionnel)</label>
+        <textarea id="sub-note" placeholder="Raison, référence paiement..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-sub')">Annuler</button>
+      <button class="btn-modal btn-modal-confirm" id="btn-sub-submit" onclick="submitSubModal()">
+        <i class="ti ti-check"></i> <span id="sub-submit-label">Créer l'abonnement</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RÉSILIATION ABONNEMENT -->
+<div class="modal-overlay" id="modal-resilier">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Résilier l'abonnement</span>
+      <button class="modal-close" onclick="closeModal('modal-resilier')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:1rem;color:var(--text-2);font-size:0.875rem">Cette action annule immédiatement l'abonnement. L'utilisateur n'aura plus accès aux fonctionnalités payantes.</p>
+      <div class="modal-field">
+        <label>Raison de résiliation</label>
+        <textarea id="resilier-note" placeholder="Remboursement demandé, fraude, non-paiement..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-resilier')">Annuler</button>
+      <button class="btn-modal btn-modal-reject" onclick="submitResilier()"><i class="ti ti-ban"></i> Résilier</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -519,16 +497,16 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 const API = 'https://eduprep-backend-km19.onrender.com/api';
 let adminToken = localStorage.getItem('edp_admin_token');
 let adminUser  = JSON.parse(localStorage.getItem('edp_admin_user') || 'null');
-let allPayments = [], allUsers = [];
+let allPayments = [], allUsers = [], allSubs = [];
+let currentSubModal = { mode: 'create', subId: null, userId: null };
+let currentResilierId = null;
+let userEmailMap = {}; // email -> user
 
 // ============================================================
 // AUTH
 // ============================================================
 window.addEventListener('DOMContentLoaded', () => {
-  if (adminToken && adminUser?.role === 'admin') {
-    showAdmin();
-    loadDashboard();
-  }
+  if (adminToken && adminUser?.role === 'admin') { showAdmin(); loadDashboard(); }
 });
 
 async function doAdminLogin() {
@@ -538,137 +516,90 @@ async function doAdminLogin() {
   const btn = document.getElementById('btn-admin-login');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Connexion...';
   try {
-    const r = await fetch(`${API}/auth/login`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email, password: pwd})
-    });
+    const r = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password:pwd}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error || 'Erreur de connexion.'); return; }
+    if (!r.ok) { showAuthError(d.error || 'Erreur.'); return; }
     if (d.user?.role !== 'admin') { showAuthError('Accès refusé — compte non administrateur.'); return; }
-    adminToken = d.accessToken;
-    adminUser  = d.user;
+    adminToken = d.accessToken; adminUser = d.user;
     localStorage.setItem('edp_admin_token', adminToken);
     localStorage.setItem('edp_admin_user', JSON.stringify(adminUser));
-    showAdmin();
-    loadDashboard();
-  } catch(e) {
-    showAuthError('Erreur réseau. Vérifiez votre connexion.');
-  }
+    showAdmin(); loadDashboard();
+  } catch(e) { showAuthError('Erreur réseau.'); }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock"></i> Accéder au panneau admin';
 }
-
-function showAuthError(msg) {
-  const el = document.getElementById('a-error');
-  el.textContent = msg; el.classList.add('show');
-}
-
+function showAuthError(msg) { const el=document.getElementById('a-error'); el.textContent=msg; el.classList.add('show'); }
 function showAdmin() {
-  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('auth-overlay').style.display='none';
   document.getElementById('admin-layout').classList.add('show');
   document.getElementById('admin-name-display').textContent = adminUser?.nom || 'Admin';
 }
-
-function doLogout() {
-  localStorage.removeItem('edp_admin_token');
-  localStorage.removeItem('edp_admin_user');
-  adminToken = null; adminUser = null;
-  location.reload();
-}
+function doLogout() { localStorage.removeItem('edp_admin_token'); localStorage.removeItem('edp_admin_user'); location.reload(); }
 
 // ============================================================
 // NAVIGATION
 // ============================================================
-const PANEL_TITLES = {
-  dashboard: 'Vue d\'ensemble', payments: 'Gestion des paiements',
-  users: 'Utilisateurs', subscriptions: 'Abonnements', stats: 'Statistiques IA'
-};
-
+const PANEL_TITLES = { dashboard:'Vue d\'ensemble', payments:'Paiements', users:'Utilisateurs', subscriptions:'Abonnements', stats:'Statistiques' };
 function gotoPanel(name, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
   if (btn) btn.classList.add('active');
-  document.getElementById('topbar-title').textContent = PANEL_TITLES[name] || name;
+  document.getElementById('topbar-title').textContent = PANEL_TITLES[name]||name;
   closeSidebar();
-  if (name === 'payments') loadPayments();
-  else if (name === 'users') loadUsers();
-  else if (name === 'subscriptions') loadSubscriptions();
-  else if (name === 'stats') loadStats();
+  if (name==='payments') loadPayments();
+  else if (name==='users') loadUsers();
+  else if (name==='subscriptions') loadSubscriptions();
+  else if (name==='stats') loadStats();
 }
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebar-overlay').classList.toggle('show');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('show');
-}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebar-overlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('show'); }
 
 // ============================================================
 // DASHBOARD
 // ============================================================
 async function loadDashboard() {
   try {
-    const r = await fetch(`${API}/admin/stats`, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(`${API}/admin/stats`, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-
-    document.getElementById('s-users').textContent    = d.users || 0;
-    document.getElementById('s-revenue').textContent  = (d.revenue_month || 0).toLocaleString('fr-FR');
-    document.getElementById('s-subs').textContent     = d.active_subscriptions || 0;
-    document.getElementById('s-pending').textContent  = d.pending_payments || 0;
-
-    // Badge paiements en attente
-    const pending = d.pending_payments || 0;
+    document.getElementById('s-users').textContent   = d.users||0;
+    document.getElementById('s-revenue').textContent = (d.revenue_month||0).toLocaleString('fr-FR');
+    document.getElementById('s-subs').textContent    = d.active_subscriptions||0;
+    document.getElementById('s-pending').textContent = d.pending_payments||0;
+    const pending = d.pending_payments||0;
     document.getElementById('badge-pending').textContent = pending;
-    if (pending > 0) {
-      document.getElementById('topbar-alert').style.display = 'flex';
-      document.getElementById('alert-text').textContent = `${pending} paiement${pending>1?'s':''} en attente`;
-    }
+    if (pending>0) { document.getElementById('topbar-alert').style.display='flex'; document.getElementById('alert-text').textContent=`${pending} paiement${pending>1?'s':''} en attente`; }
   } catch(e) {}
 
-  // Paiements en attente récents
   try {
-    const r = await fetch(`${API}/subscriptions/admin/pending`, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(`${API}/admin/payments?status=pending&limit=5`, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    const list = (d.payments || []).slice(0, 5);
-    if (list.length) {
-      document.getElementById('dash-pending-list').innerHTML = `
-        <table class="data-table">
-          <thead><tr><th>Enseignant</th><th>Plan</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Action</th></tr></thead>
-          <tbody>${list.map(p => `
-            <tr>
-              <td><strong>${p.nom} ${p.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span></td>
-              <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
-              <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
-              <td>${formatMethod(p.methode)}</td>
-              <td>${formatDate(p.created_at)}</td>
-              <td><button class="btn-action btn-confirm" onclick="openPaymentModal('${p.id}')"><i class="ti ti-eye"></i> Traiter</button></td>
-            </tr>`).join('')}
-          </tbody>
-        </table>`;
-    }
+    const list = (d.payments||[]).slice(0,5);
+    document.getElementById('dash-pending-list').innerHTML = list.length
+      ? `<table class="data-table"><thead><tr><th>Enseignant</th><th>Plan</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Action</th></tr></thead><tbody>${
+          list.map(p=>`<tr>
+            <td><strong>${p.nom} ${p.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span></td>
+            <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
+            <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
+            <td>${formatMethod(p.methode)}</td>
+            <td>${formatDate(p.created_at)}</td>
+            <td><button class="btn-action btn-confirm" onclick="openPaymentModal('${p.id}')"><i class="ti ti-eye"></i> Traiter</button></td>
+          </tr>`).join('')}</tbody></table>`
+      : '<div class="empty"><i class="ti ti-check"></i><p>Aucun paiement en attente</p></div>';
   } catch(e) {}
 
-  // Dernières inscriptions
   try {
-    const r = await fetch(`${API}/admin/users?limit=5`, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(`${API}/admin/users?limit=5`, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    const users = (d.users || []).slice(0, 5);
-    if (users.length) {
-      document.getElementById('dash-users-list').innerHTML = `
-        <table class="data-table">
-          <thead><tr><th>Nom</th><th>Email</th><th>Plan</th><th>Inscription</th></tr></thead>
-          <tbody>${users.map(u => `
-            <tr>
-              <td><strong>${u.nom} ${u.prenoms||''}</strong></td>
-              <td>${u.email}</td>
-              <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'trial'}</span></td>
-              <td>${formatDate(u.created_at)}</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>`;
-    }
+    const users = (d.users||[]).slice(0,5);
+    document.getElementById('dash-users-list').innerHTML = users.length
+      ? `<table class="data-table"><thead><tr><th>Nom</th><th>Email</th><th>Plan</th><th>Inscription</th></tr></thead><tbody>${
+          users.map(u=>`<tr>
+            <td><strong>${u.nom} ${u.prenoms||''}</strong></td>
+            <td>${u.email}</td>
+            <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'trial'}</span></td>
+            <td>${formatDate(u.created_at)}</td>
+          </tr>`).join('')}</tbody></table>`
+      : '<div class="empty"><i class="ti ti-user-plus"></i><p>Aucune inscription récente</p></div>';
   } catch(e) {}
 }
 
@@ -677,13 +608,12 @@ async function loadDashboard() {
 // ============================================================
 async function loadPayments() {
   const status = document.getElementById('pay-filter-status').value;
-  const url = status
-    ? `${API}/admin/payments?status=${status}`
-    : `${API}/admin/payments`;
+  const url = status ? `${API}/admin/payments?status=${status}` : `${API}/admin/payments`;
+  document.getElementById('pay-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>';
   try {
-    const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(url, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    allPayments = d.payments || [];
+    allPayments = d.payments||[];
     renderPaymentsTable(allPayments);
   } catch(e) {
     document.getElementById('pay-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--danger)">Erreur de chargement.</td></tr>';
@@ -692,103 +622,81 @@ async function loadPayments() {
 
 function renderPaymentsTable(payments) {
   const tbody = document.getElementById('pay-tbody');
-  if (!payments.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><i class="ti ti-credit-card"></i><p>Aucun paiement trouvé.</p></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = payments.map(p => `
-    <tr>
-      <td>
-        <strong>${p.nom} ${p.prenoms||''}</strong><br>
-        <span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span>
-      </td>
-      <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
-      <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
-      <td>${formatMethod(p.methode)}</td>
-      <td style="font-family:monospace;font-size:0.8rem">${p.reference_mm||'—'}</td>
-      <td>${formatDate(p.created_at)}</td>
-      <td>${badgeStatus(p.status)}</td>
-      <td>
-        <button class="btn-action btn-view" onclick="openPaymentModal('${p.id}')"><i class="ti ti-eye"></i> Voir</button>
-        ${p.status === 'pending' ? `
-          <button class="btn-action btn-confirm" onclick="confirmPayment('${p.id}')"><i class="ti ti-check"></i> Valider</button>
-          <button class="btn-action btn-reject" onclick="rejectPayment('${p.id}')"><i class="ti ti-x"></i> Rejeter</button>` : ''}
-      </td>
-    </tr>`).join('');
+  if (!payments.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-credit-card"></i><p>Aucun paiement.</p></div></td></tr>'; return; }
+  tbody.innerHTML = payments.map(p=>`<tr>
+    <td><strong>${p.nom} ${p.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span></td>
+    <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
+    <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
+    <td>${formatMethod(p.methode)}</td>
+    <td style="font-family:monospace;font-size:0.8rem">${p.reference_mm||'—'}</td>
+    <td>${formatDate(p.created_at)}</td>
+    <td>${badgeStatus(p.status)}</td>
+    <td style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn-action btn-view" onclick="openPaymentModal('${p.id}')"><i class="ti ti-eye"></i></button>
+      ${p.status==='pending'?`
+        <button class="btn-action btn-confirm" onclick="confirmPayment('${p.id}')"><i class="ti ti-check"></i> Valider</button>
+        <button class="btn-action btn-reject" onclick="rejectPayment('${p.id}')"><i class="ti ti-x"></i> Rejeter</button>`:''
+      }
+    </td>
+  </tr>`).join('');
 }
 
 function filterPaymentsTable() {
   const q = document.getElementById('pay-search').value.toLowerCase();
-  const filtered = allPayments.filter(p =>
-    `${p.nom} ${p.prenoms} ${p.email} ${p.reference_mm}`.toLowerCase().includes(q)
-  );
-  renderPaymentsTable(filtered);
+  renderPaymentsTable(allPayments.filter(p=>`${p.nom} ${p.prenoms} ${p.email} ${p.reference_mm||''}`.toLowerCase().includes(q)));
 }
 
 function openPaymentModal(id) {
-  const p = allPayments.find(x => x.id === id);
-  if (!p) return;
+  const p = allPayments.find(x=>x.id===id); if (!p) return;
   document.getElementById('modal-pay-title').textContent = `Paiement — ${p.nom} ${p.prenoms||''}`;
   document.getElementById('modal-pay-body').innerHTML = `
-    <div class="user-detail-row"><span class="user-detail-label">Enseignant</span><span class="user-detail-value">${p.nom} ${p.prenoms||''}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Email</span><span class="user-detail-value">${p.email}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Téléphone</span><span class="user-detail-value">${p.telephone||'—'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Plan demandé</span><span class="user-detail-value"><span class="badge badge-${p.plan}">${p.plan}</span></span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Montant</span><span class="user-detail-value"><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Méthode</span><span class="user-detail-value">${formatMethod(p.methode)}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Référence MM</span><span class="user-detail-value" style="font-family:monospace">${p.reference_mm||'—'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">N° Mobile Money</span><span class="user-detail-value">${p.telephone_mm||'—'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Soumis le</span><span class="user-detail-value">${formatDate(p.created_at)}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Statut</span><span class="user-detail-value">${badgeStatus(p.status)}</span></div>
-    ${p.status === 'pending' ? `
-      <div style="margin-top:1rem">
-        <label style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);display:block;margin-bottom:4px">Note admin (optionnel)</label>
-        <textarea id="modal-pay-note" placeholder="Raison de confirmation ou de rejet..."></textarea>
-      </div>` : p.note_admin ? `<div class="user-detail-row"><span class="user-detail-label">Note admin</span><span class="user-detail-value">${p.note_admin}</span></div>` : ''}
+    <div class="detail-row"><span class="detail-label">Enseignant</span><span class="detail-value">${p.nom} ${p.prenoms||''}</span></div>
+    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${p.email}</span></div>
+    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${p.telephone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Plan demandé</span><span class="detail-value"><span class="badge badge-${p.plan}">${p.plan}</span></span></div>
+    <div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value"><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></span></div>
+    <div class="detail-row"><span class="detail-label">Méthode</span><span class="detail-value">${formatMethod(p.methode)}</span></div>
+    <div class="detail-row"><span class="detail-label">Référence MM</span><span class="detail-value" style="font-family:monospace">${p.reference_mm||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">N° Mobile Money</span><span class="detail-value">${p.telephone_mm||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Soumis le</span><span class="detail-value">${formatDate(p.created_at)}</span></div>
+    <div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">${badgeStatus(p.status)}</span></div>
+    ${p.note_admin?`<div class="detail-row"><span class="detail-label">Note admin</span><span class="detail-value">${p.note_admin}</span></div>`:''}
+    ${p.status==='pending'?`<div class="modal-field" style="margin-top:1rem"><label>Note admin (optionnel)</label><textarea id="modal-pay-note" placeholder="Raison..."></textarea></div>`:''}
   `;
-  document.getElementById('modal-pay-actions').innerHTML = p.status === 'pending' ? `
+  document.getElementById('modal-pay-actions').innerHTML = p.status==='pending'?`
     <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-payment')">Annuler</button>
-    <button class="btn-modal btn-modal-reject" onclick="rejectPayment('${p.id}', true)"><i class="ti ti-x"></i> Rejeter</button>
-    <button class="btn-modal btn-modal-confirm" onclick="confirmPayment('${p.id}', true)"><i class="ti ti-check"></i> Valider</button>
-  ` : `<button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-payment')">Fermer</button>`;
+    <button class="btn-modal btn-modal-reject" onclick="rejectPayment('${p.id}',true)"><i class="ti ti-x"></i> Rejeter</button>
+    <button class="btn-modal btn-modal-confirm" onclick="confirmPayment('${p.id}',true)"><i class="ti ti-check"></i> Valider</button>
+  `:`<button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-payment')">Fermer</button>`;
   document.getElementById('modal-payment').classList.add('show');
 }
 
-async function confirmPayment(id, fromModal = false) {
-  const note = fromModal ? (document.getElementById('modal-pay-note')?.value || '') : '';
+async function confirmPayment(id, fromModal=false) {
+  const note = fromModal ? (document.getElementById('modal-pay-note')?.value||'') : '';
   if (!confirm('Confirmer ce paiement et activer l\'abonnement ?')) return;
   try {
-    const r = await fetch(`${API}/subscriptions/admin/confirm/${id}`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
+    const r = await fetch(`${API}/admin/payments/${id}/confirm`, {
+      method:'PATCH', headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
       body: JSON.stringify({note})
     });
     const d = await r.json();
-    if (r.ok) {
-      showToast('✓ Paiement confirmé — abonnement activé');
-      closeModal('modal-payment');
-      loadPayments(); loadDashboard();
-    } else { alert(d.error); }
-  } catch(e) { alert('Erreur réseau.'); }
+    if (r.ok) { showToast('✓ Paiement confirmé — abonnement activé'); closeModal('modal-payment'); loadPayments(); loadDashboard(); }
+    else showToast(d.error||'Erreur', true);
+  } catch(e) { showToast('Erreur réseau', true); }
 }
 
-async function rejectPayment(id, fromModal = false) {
-  const raison = fromModal
-    ? (document.getElementById('modal-pay-note')?.value || prompt('Raison du rejet :') || 'Référence non vérifiable')
-    : (prompt('Raison du rejet :') || 'Référence non vérifiable');
+async function rejectPayment(id, fromModal=false) {
+  const note = fromModal ? (document.getElementById('modal-pay-note')?.value || '') : '';
+  if (!confirm('Rejeter ce paiement ?')) return;
   try {
-    const r = await fetch(`${API}/subscriptions/admin/reject/${id}`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
-      body: JSON.stringify({raison})
+    const r = await fetch(`${API}/admin/payments/${id}/reject`, {
+      method:'PATCH', headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
+      body: JSON.stringify({note})
     });
     const d = await r.json();
-    if (r.ok) {
-      showToast('Paiement rejeté — utilisateur notifié');
-      closeModal('modal-payment');
-      loadPayments(); loadDashboard();
-    } else { alert(d.error); }
-  } catch(e) { alert('Erreur réseau.'); }
+    if (r.ok) { showToast('Paiement rejeté'); closeModal('modal-payment'); loadPayments(); loadDashboard(); }
+    else showToast(d.error||'Erreur', true);
+  } catch(e) { showToast('Erreur réseau', true); }
 }
 
 // ============================================================
@@ -796,144 +704,293 @@ async function rejectPayment(id, fromModal = false) {
 // ============================================================
 async function loadUsers() {
   const role = document.getElementById('user-filter-role').value;
-  const url = role ? `${API}/admin/users?role=${role}` : `${API}/admin/users`;
+  document.getElementById('user-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>';
   try {
-    const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(`${API}/admin/users${role?'?role='+role:''}`, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    allUsers = d.users || [];
+    allUsers = d.users||[];
+    allUsers.forEach(u => { userEmailMap[u.email] = u; });
     renderUsersTable(allUsers);
   } catch(e) {}
 }
 
 function renderUsersTable(users) {
   const tbody = document.getElementById('user-tbody');
-  if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><i class="ti ti-users"></i><p>Aucun utilisateur.</p></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = users.map(u => `
-    <tr>
-      <td>
-        <strong>${u.nom} ${u.prenoms||''}</strong>
-        ${!u.is_active ? '<span class="badge badge-expired" style="margin-left:4px">désactivé</span>' : ''}
-      </td>
-      <td>${u.email}</td>
-      <td>${u.telephone||'—'}</td>
-      <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></td>
-      <td>${badgeStatus(u.sub_status||'')}</td>
-      <td>${formatDate(u.created_at)}</td>
-      <td>${u.last_login ? formatDate(u.last_login) : '<span style="color:var(--text-3)">Jamais</span>'}</td>
-      <td>
-        <button class="btn-action btn-view" onclick="openUserModal('${u.id}')"><i class="ti ti-eye"></i> Voir</button>
-        <button class="btn-action ${u.is_active ? 'btn-toggle-active' : 'btn-toggle-inactive'}" onclick="toggleUser('${u.id}', ${u.is_active})">
-          <i class="ti ti-${u.is_active ? 'user-off' : 'user-check'}"></i> ${u.is_active ? 'Désactiver' : 'Activer'}
-        </button>
-      </td>
-    </tr>`).join('');
+  if (!users.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-users"></i><p>Aucun utilisateur.</p></div></td></tr>'; return; }
+  tbody.innerHTML = users.map(u=>`<tr>
+    <td>
+      <strong>${u.nom} ${u.prenoms||''}</strong>
+      ${!u.is_active?'<span class="badge badge-expired" style="margin-left:4px">désactivé</span>':''}
+    </td>
+    <td style="font-size:0.8rem">${u.email}</td>
+    <td>${u.telephone||'—'}</td>
+    <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></td>
+    <td>${badgeStatus(u.sub_status||'')}</td>
+    <td>${u.date_fin?formatDate(u.date_fin):'—'}</td>
+    <td>${formatDate(u.created_at)}</td>
+    <td style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn-action btn-view" onclick="openUserModal('${u.id}')"><i class="ti ti-eye"></i></button>
+      <button class="btn-action ${u.is_active?'btn-toggle-active':'btn-toggle-inactive'}" onclick="toggleUser('${u.id}',${u.is_active})">
+        <i class="ti ti-${u.is_active?'user-off':'user-check'}"></i>
+      </button>
+    </td>
+  </tr>`).join('');
 }
 
 function filterUsersTable() {
   const q = document.getElementById('user-search').value.toLowerCase();
-  renderUsersTable(allUsers.filter(u => `${u.nom} ${u.prenoms} ${u.email}`.toLowerCase().includes(q)));
+  renderUsersTable(allUsers.filter(u=>`${u.nom} ${u.prenoms||''} ${u.email}`.toLowerCase().includes(q)));
 }
 
-function openUserModal(id) {
-  const u = allUsers.find(x => x.id === id);
-  if (!u) return;
+async function openUserModal(id) {
+  const u = allUsers.find(x=>x.id===id); if (!u) return;
   document.getElementById('modal-user-title').textContent = `${u.nom} ${u.prenoms||''}`;
+
+  // Charger le détail complet (subs + payments)
+  let subsHtml = '<p style="color:var(--text-3);font-size:0.8rem">Chargement...</p>';
   document.getElementById('modal-user-body').innerHTML = `
-    <div class="user-detail-row"><span class="user-detail-label">Nom complet</span><span class="user-detail-value">${u.nom} ${u.prenoms||''}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Email</span><span class="user-detail-value">${u.email}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Téléphone</span><span class="user-detail-value">${u.telephone||'—'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Plan actuel</span><span class="user-detail-value"><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Abonnement</span><span class="user-detail-value">${badgeStatus(u.sub_status||'')} ${u.date_fin ? '· expire '+formatDate(u.date_fin) : ''}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Matières</span><span class="user-detail-value">${(u.matieres||[]).join(', ')||'—'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Compte</span><span class="user-detail-value">${u.is_active ? '<span style="color:var(--forest)">Actif</span>' : '<span style="color:var(--danger)">Désactivé</span>'}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Inscription</span><span class="user-detail-value">${formatDate(u.created_at)}</span></div>
-    <div class="user-detail-row"><span class="user-detail-label">Dernière connexion</span><span class="user-detail-value">${u.last_login ? formatDate(u.last_login) : 'Jamais'}</span></div>
+    <div class="detail-row"><span class="detail-label">Nom complet</span><span class="detail-value">${u.nom} ${u.prenoms||''}</span></div>
+    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${u.email}</span></div>
+    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${u.telephone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Plan actuel</span><span class="detail-value"><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></span></div>
+    <div class="detail-row"><span class="detail-label">Abonnement</span><span class="detail-value">${badgeStatus(u.sub_status||'')}${u.date_fin?' · expire '+formatDate(u.date_fin):''}</span></div>
+    <div class="detail-row"><span class="detail-label">Compte</span><span class="detail-value">${u.is_active?'<span style="color:var(--forest)">Actif</span>':'<span style="color:var(--danger)">Désactivé</span>'}</span></div>
+    <div class="detail-row"><span class="detail-label">Inscription</span><span class="detail-value">${formatDate(u.created_at)}</span></div>
+    <div class="detail-row"><span class="detail-label">Dernière connexion</span><span class="detail-value">${u.last_login?formatDate(u.last_login):'Jamais'}</span></div>
+    <p class="section-title">Abonnements</p>
+    <div id="modal-user-subs">${subsHtml}</div>
   `;
   document.getElementById('modal-user-actions').innerHTML = `
     <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-user')">Fermer</button>
-    <button class="btn-modal ${u.is_active ? 'btn-modal-reject' : 'btn-modal-confirm'}" onclick="toggleUser('${u.id}', ${u.is_active}); closeModal('modal-user')">
-      <i class="ti ti-${u.is_active ? 'user-off' : 'user-check'}"></i> ${u.is_active ? 'Désactiver le compte' : 'Activer le compte'}
+    <button class="btn-modal btn-modal-warning" onclick="openRenewForUser('${u.id}','${u.email}')">
+      <i class="ti ti-refresh"></i> Réabonner
+    </button>
+    <button class="btn-modal ${u.is_active?'btn-modal-reject':'btn-modal-confirm'}" onclick="toggleUser('${u.id}',${u.is_active});closeModal('modal-user')">
+      <i class="ti ti-${u.is_active?'user-off':'user-check'}"></i> ${u.is_active?'Désactiver':'Activer'}
+    </button>
+    <button class="btn-modal btn-modal-reject" style="background:#B71C1C" onclick="deleteUser('${u.id}','${u.nom} ${u.prenoms||''}')">
+      <i class="ti ti-trash"></i> Supprimer
     </button>
   `;
   document.getElementById('modal-user').classList.add('show');
+
+  // Charger subs
+  try {
+    const r = await fetch(`${API}/admin/users/${id}`, { headers:{'Authorization':'Bearer '+adminToken} });
+    const d = await r.json();
+    const subs = d.subscriptions||[];
+    document.getElementById('modal-user-subs').innerHTML = subs.length
+      ? subs.map(s=>`<div style="background:var(--surface);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:0.8rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span><span class="badge badge-${s.plan}">${s.plan}</span> ${badgeStatus(s.status)}</span>
+            ${s.status==='active'?`<button class="btn-action btn-reject" style="font-size:0.7rem;padding:3px 7px" onclick="openResilierModal('${s.id}')"><i class="ti ti-ban"></i> Résilier</button>`:''}
+          </div>
+          <span style="color:var(--text-3)">${formatDate(s.date_debut)} → ${s.date_fin?formatDate(s.date_fin):'∞'}</span>
+          ${s.fiches_limite>0?`<div style="margin-top:4px">Fiches : ${s.fiches_utilisees}/${s.fiches_limite}</div>`:''}
+        </div>`).join('')
+      : '<p style="color:var(--text-3);font-size:0.8rem">Aucun abonnement.</p>';
+  } catch(e) {}
 }
 
 async function toggleUser(id, isActive) {
-  if (!confirm(`${isActive ? 'Désactiver' : 'Activer'} ce compte ?`)) return;
+  if (!confirm(`${isActive?'Désactiver':'Activer'} ce compte ?`)) return;
   try {
-    const r = await fetch(`${API}/admin/users/${id}/toggle`, {
-      method:'PATCH', headers:{'Authorization':'Bearer '+adminToken}
-    });
+    const r = await fetch(`${API}/admin/users/${id}/toggle`, { method:'PATCH', headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
     if (r.ok) { showToast(d.message); loadUsers(); }
-    else { alert(d.error); }
-  } catch(e) { alert('Erreur réseau.'); }
+    else showToast(d.error||'Erreur', true);
+  } catch(e) { showToast('Erreur réseau', true); }
+}
+
+async function deleteUser(id, nom) {
+  if (!confirm(`Supprimer définitivement le compte de ${nom} ? Cette action est irréversible.`)) return;
+  if (!confirm('Confirmation finale : toutes les données (fiches, devoirs, abonnements) seront supprimées.')) return;
+  try {
+    const r = await fetch(`${API}/admin/users/${id}`, { method:'DELETE', headers:{'Authorization':'Bearer '+adminToken} });
+    const d = await r.json();
+    if (r.ok) { showToast(d.message); closeModal('modal-user'); loadUsers(); }
+    else showToast(d.error||'Erreur', true);
+  } catch(e) { showToast('Erreur réseau', true); }
 }
 
 // ============================================================
 // ABONNEMENTS
 // ============================================================
 async function loadSubscriptions() {
-  const plan   = document.getElementById('sub-filter-plan').value;
   const status = document.getElementById('sub-filter-status').value;
+  const plan   = document.getElementById('sub-filter-plan').value;
+  let url = `${API}/admin/subscriptions?`;
+  if (status) url += `status=${status}&`;
+  if (plan)   url += `plan=${plan}`;
+  document.getElementById('sub-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-3)">Chargement...</td></tr>';
   try {
-    const r = await fetch(`${API}/admin/users?limit=100`, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(url, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    let users = d.users || [];
-    if (plan)   users = users.filter(u => u.plan === plan);
-    if (status) users = users.filter(u => u.sub_status === status);
-    renderSubscriptionsTable(users);
-  } catch(e) {}
+    allSubs = d.subscriptions||[];
+    renderSubscriptionsTable(allSubs);
+  } catch(e) {
+    document.getElementById('sub-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--danger)">Erreur de chargement.</td></tr>';
+  }
 }
 
-function renderSubscriptionsTable(users) {
+function renderSubscriptionsTable(subs) {
   const tbody = document.getElementById('sub-tbody');
-  if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><i class="ti ti-certificate"></i><p>Aucun abonnement trouvé.</p></div></td></tr>';
-    return;
+  if (!subs.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-certificate"></i><p>Aucun abonnement.</p></div></td></tr>'; return; }
+  tbody.innerHTML = subs.map(s=>{
+    const fichesPct = s.fiches_limite>0 ? Math.round(s.fiches_utilisees/s.fiches_limite*100) : 0;
+    const devoirsPct = s.devoirs_limite>0 ? Math.round(s.devoirs_utilises/s.devoirs_limite*100) : 0;
+    return `<tr>
+      <td><strong>${s.nom} ${s.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${s.email}</span></td>
+      <td><span class="badge badge-${s.plan}">${s.plan}</span></td>
+      <td>${badgeStatus(s.status)}</td>
+      <td>${formatDate(s.date_debut)}</td>
+      <td>${s.date_fin?formatDate(s.date_fin):'—'}</td>
+      <td>
+        ${s.fiches_limite===-1?'<span style="color:var(--forest)">∞</span>':`${s.fiches_utilisees}/${s.fiches_limite}`}
+        ${s.fiches_limite>0?`<div class="quota-bar"><div class="quota-bar-fill ${fichesPct>=90?'full':fichesPct>=70?'warn':''}" style="width:${fichesPct}%"></div></div>`:''}
+      </td>
+      <td>
+        ${s.devoirs_limite===-1?'<span style="color:var(--forest)">∞</span>':`${s.devoirs_utilises}/${s.devoirs_limite}`}
+        ${s.devoirs_limite>0?`<div class="quota-bar"><div class="quota-bar-fill ${devoirsPct>=90?'full':devoirsPct>=70?'warn':''}" style="width:${devoirsPct}%"></div></div>`:''}
+      </td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap">
+        ${s.status==='active'||s.status==='trial'?`<button class="btn-action btn-reject" onclick="openResilierModal('${s.id}')"><i class="ti ti-ban"></i> Résilier</button>`:''}
+        <button class="btn-action btn-warning" onclick="openRenewModal('${s.id}','${s.plan}')"><i class="ti ti-refresh"></i> Renouveler</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// Créer abonnement
+function openCreateSubModal() {
+  currentSubModal = { mode:'create', subId:null, userId:null };
+  document.getElementById('modal-sub-title').textContent = 'Nouvel abonnement';
+  document.getElementById('sub-submit-label').textContent = 'Créer l\'abonnement';
+  document.getElementById('modal-sub-user-field').style.display = '';
+  document.getElementById('sub-user-email').value = '';
+  document.getElementById('sub-user-found').textContent = '';
+  document.getElementById('sub-plan').value = 'starter';
+  document.getElementById('sub-duree').value = '1';
+  document.getElementById('sub-note').value = '';
+  document.getElementById('modal-sub').classList.add('show');
+}
+
+// Renouveler depuis table abonnements
+function openRenewModal(subId, currentPlan) {
+  currentSubModal = { mode:'renew', subId, userId:null };
+  document.getElementById('modal-sub-title').textContent = 'Renouveler l\'abonnement';
+  document.getElementById('sub-submit-label').textContent = 'Renouveler';
+  document.getElementById('modal-sub-user-field').style.display = 'none';
+  document.getElementById('sub-plan').value = currentPlan||'starter';
+  document.getElementById('sub-duree').value = '1';
+  document.getElementById('sub-note').value = '';
+  document.getElementById('modal-sub').classList.add('show');
+}
+
+// Réabonner depuis modal user
+function openRenewForUser(userId, email) {
+  closeModal('modal-user');
+  currentSubModal = { mode:'create', subId:null, userId };
+  document.getElementById('modal-sub-title').textContent = 'Réabonner l\'utilisateur';
+  document.getElementById('sub-submit-label').textContent = 'Créer l\'abonnement';
+  document.getElementById('modal-sub-user-field').style.display = 'none';
+  document.getElementById('sub-plan').value = 'starter';
+  document.getElementById('sub-duree').value = '1';
+  document.getElementById('sub-note').value = '';
+  document.getElementById('modal-sub').classList.add('show');
+}
+
+let searchTimeout;
+function searchUserByEmail() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    const email = document.getElementById('sub-user-email').value.trim();
+    const el = document.getElementById('sub-user-found');
+    if (!email.includes('@')) { el.textContent=''; return; }
+    // Chercher dans cache local d'abord
+    const found = allUsers.find(u=>u.email.toLowerCase()===email.toLowerCase());
+    if (found) {
+      currentSubModal.userId = found.id;
+      el.innerHTML = `<i class="ti ti-check" style="color:var(--forest)"></i> ${found.nom} ${found.prenoms||''} — <span class="badge badge-${found.plan||'trial'}">${found.plan||'trial'}</span>`;
+    } else {
+      currentSubModal.userId = null;
+      el.innerHTML = email.length>5 ? '<span style="color:var(--text-3)">Utilisateur non trouvé dans la liste chargée.</span>' : '';
+    }
+  }, 400);
+}
+
+async function submitSubModal() {
+  const plan   = document.getElementById('sub-plan').value;
+  const duree  = parseInt(document.getElementById('sub-duree').value)||1;
+  const note   = document.getElementById('sub-note').value;
+
+  if (currentSubModal.mode==='renew') {
+    // Renouveler un sub existant
+    try {
+      const r = await fetch(`${API}/admin/subscriptions/${currentSubModal.subId}/renouveler`, {
+        method:'PATCH', headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
+        body: JSON.stringify({plan, duree_mois:duree, note})
+      });
+      const d = await r.json();
+      if (r.ok) { showToast(d.message); closeModal('modal-sub'); loadSubscriptions(); }
+      else showToast(d.error||'Erreur', true);
+    } catch(e) { showToast('Erreur réseau', true); }
+  } else {
+    // Créer un nouvel abonnement
+    const userId = currentSubModal.userId;
+    if (!userId) { showToast('Utilisateur introuvable. Chargez d\'abord la liste utilisateurs.', true); return; }
+    try {
+      const r = await fetch(`${API}/admin/subscriptions`, {
+        method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
+        body: JSON.stringify({user_id:userId, plan, duree_mois:duree, note})
+      });
+      const d = await r.json();
+      if (r.ok) { showToast(d.message); closeModal('modal-sub'); loadSubscriptions(); }
+      else showToast(d.error||'Erreur', true);
+    } catch(e) { showToast('Erreur réseau', true); }
   }
-  tbody.innerHTML = users.map(u => `
-    <tr>
-      <td><strong>${u.nom} ${u.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${u.email}</span></td>
-      <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></td>
-      <td>${badgeStatus(u.sub_status||'')}</td>
-      <td>—</td>
-      <td>${u.date_fin ? formatDate(u.date_fin) : '—'}</td>
-      <td>—</td>
-      <td>—</td>
-    </tr>`).join('');
+}
+
+// Résilier
+function openResilierModal(subId) {
+  currentResilierId = subId;
+  document.getElementById('resilier-note').value = '';
+  document.getElementById('modal-resilier').classList.add('show');
+}
+
+async function submitResilier() {
+  const note = document.getElementById('resilier-note').value;
+  try {
+    const r = await fetch(`${API}/admin/subscriptions/${currentResilierId}/resilier`, {
+      method:'PATCH', headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},
+      body: JSON.stringify({note})
+    });
+    const d = await r.json();
+    if (r.ok) { showToast('Abonnement résilié.'); closeModal('modal-resilier'); closeModal('modal-user'); loadSubscriptions(); }
+    else showToast(d.error||'Erreur', true);
+  } catch(e) { showToast('Erreur réseau', true); }
 }
 
 // ============================================================
-// STATS IA
+// STATS
 // ============================================================
 async function loadStats() {
   try {
-    const r = await fetch(`${API}/admin/stats`, { headers: { 'Authorization': 'Bearer ' + adminToken } });
+    const r = await fetch(`${API}/admin/stats`, { headers:{'Authorization':'Bearer '+adminToken} });
     const d = await r.json();
-    document.getElementById('s-fiches').textContent    = d.fiches || 0;
-    document.getElementById('s-devoirs').textContent   = d.devoirs || 0;
-    document.getElementById('s-gen-today').textContent = d.generations_today || 0;
-    document.getElementById('s-revenue2').textContent  = (d.revenue_month || 0).toLocaleString('fr-FR') + ' F';
-
-    // Graphique répartition plans
-    const dist = d.plan_distribution || [];
-    const maxNb = Math.max(...dist.map(p => parseInt(p.nb)), 1);
-    const colors = { trial: 'blue', starter: 'green', pro: 'gold', etablissement: 'green' };
+    document.getElementById('s-fiches').textContent    = d.fiches||0;
+    document.getElementById('s-devoirs').textContent   = d.devoirs||0;
+    document.getElementById('s-gen-today').textContent = d.generations_today||0;
+    document.getElementById('s-revenue2').textContent  = (d.revenue_month||0).toLocaleString('fr-FR')+' F';
+    const dist = d.plan_distribution||[];
+    const maxNb = Math.max(...dist.map(p=>parseInt(p.nb)),1);
+    const colors = {trial:'blue',starter:'green',pro:'gold',etablissement:'purple'};
     document.getElementById('plan-chart').innerHTML = dist.length
-      ? dist.map(p => `
-          <div class="chart-bar-row">
-            <span class="chart-bar-label">${p.plan}</span>
-            <div class="chart-bar-track">
-              <div class="chart-bar-fill ${colors[p.plan]||'green'}" style="width:${Math.round(parseInt(p.nb)/maxNb*100)}%">
-                ${p.nb}
-              </div>
-            </div>
-          </div>`).join('')
-      : '<p style="color:var(--text-3);font-size:0.875rem;text-align:center;padding:1rem">Aucune donnée disponible.</p>';
+      ? dist.map(p=>`<div class="chart-bar-row">
+          <span class="chart-bar-label">${p.plan}</span>
+          <div class="chart-bar-track"><div class="chart-bar-fill ${colors[p.plan]||'green'}" style="width:${Math.round(parseInt(p.nb)/maxNb*100)}%">${p.nb}</div></div>
+        </div>`).join('')
+      : '<div class="empty"><i class="ti ti-chart-bar"></i><p>Aucune donnée</p></div>';
   } catch(e) {}
 }
 
@@ -942,41 +999,32 @@ async function loadStats() {
 // ============================================================
 function badgeStatus(s) {
   const map = {
-    pending:   ['badge-pending', '<i class="ti ti-clock" style="font-size:10px"></i> En attente'],
-    active:    ['badge-active',  '<i class="ti ti-check" style="font-size:10px"></i> Actif'],
-    trial:     ['badge-trial',   '<i class="ti ti-gift" style="font-size:10px"></i> Essai'],
-    expired:   ['badge-expired', 'Expiré'],
+    pending:   ['badge-pending',  '<i class="ti ti-clock" style="font-size:10px"></i> En attente'],
+    active:    ['badge-active',   '<i class="ti ti-check" style="font-size:10px"></i> Actif'],
+    trial:     ['badge-trial',    '<i class="ti ti-gift" style="font-size:10px"></i> Essai'],
+    expired:   ['badge-expired',  'Expiré'],
     confirmed: ['badge-confirmed','<i class="ti ti-check" style="font-size:10px"></i> Confirmé'],
-    rejected:  ['badge-rejected','<i class="ti ti-x" style="font-size:10px"></i> Rejeté'],
-    cancelled: ['badge-expired', 'Annulé'],
+    rejected:  ['badge-rejected', '<i class="ti ti-x" style="font-size:10px"></i> Rejeté'],
+    cancelled: ['badge-cancelled','Résilié'],
   };
-  const [cls, label] = map[s] || ['badge-expired', s||'—'];
+  const [cls,label] = map[s]||['badge-expired',s||'—'];
   return `<span class="badge ${cls}">${label}</span>`;
 }
-
 function formatMethod(m) {
-  const map = { wave:'Wave CI', orange_money:'Orange Money', mtn_money:'MTN Money', manual:'Manuel' };
-  return map[m] || m || '—';
+  return {wave:'Wave CI',orange_money:'Orange Money',mtn_money:'MTN Money',manual:'Manuel'}[m]||m||'—';
 }
-
 function formatDate(d) {
   if (!d) return '—';
-  return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('show');
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function showToast(msg, isError=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(isError?' error':'');
+  setTimeout(()=>t.className='toast',3500);
 }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// Fermer modals en cliquant dehors
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('show'); });
 });
 </script>
 </body>

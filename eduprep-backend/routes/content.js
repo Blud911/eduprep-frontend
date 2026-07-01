@@ -42,7 +42,7 @@ router.get('/fiches', requireAuth, async (req, res) => {
     );
 
     const countResult = await pool.query(
-      `SELECT COUNT(*) FROM fiches WHERE ${conditions.join(' AND ')}`,
+      `SELECT COUNT(*) FROM fiches f WHERE ${conditions.join(' AND ')}`,
       values.slice(0, -2)
     );
 

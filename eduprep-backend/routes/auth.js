@@ -9,7 +9,6 @@ const emailService = require('../services/email');
 
 const router = express.Router();
 
-// Génère les tokens JWT
 const generateTokens = (userId) => {
   const accessToken = jwt.sign(
     { userId },
@@ -38,6 +37,20 @@ router.post('/register', async (req, res) => {
   }
   if (password.length < 8) {
     return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères.' });
+  }
+
+  // FIX H2 : validation longueurs maximales
+  if (nom.trim().length > 100) {
+    return res.status(400).json({ error: 'Nom trop long (100 caractères max).' });
+  }
+  if (prenoms && prenoms.trim().length > 150) {
+    return res.status(400).json({ error: 'Prénoms trop longs (150 caractères max).' });
+  }
+  if (telephone && telephone.trim().length > 25) {
+    return res.status(400).json({ error: 'Numéro de téléphone invalide.' });
+  }
+  if (password.length > 128) {
+    return res.status(400).json({ error: 'Mot de passe trop long (128 caractères max).' });
   }
 
   const client = await pool.connect();
@@ -69,7 +82,6 @@ router.post('/register', async (req, res) => {
 
     const user = result.rows[0];
 
-    // Créer un abonnement d'essai de 7 jours
     const trialEnd = new Date();
     trialEnd.setDate(trialEnd.getDate() + 7);
 
@@ -81,12 +93,10 @@ router.post('/register', async (req, res) => {
 
     await client.query('COMMIT');
 
-    // Email de bienvenue (non bloquant)
     emailService.sendBienvenue({ email: email.toLowerCase(), nom: nom.trim(), prenoms: prenoms?.trim() }).catch(() => {});
 
     const { accessToken, refreshToken } = generateTokens(user.id);
 
-    // Sauvegarder le refresh token
     const refreshHash = await bcrypt.hash(refreshToken, 8);
     await pool.query(
       `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
@@ -103,7 +113,7 @@ router.post('/register', async (req, res) => {
     });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error('[Register]', err.message);
+    if (process.env.NODE_ENV !== 'production') console.error('[Register]', err.message);
     res.status(500).json({ error: 'Erreur lors de l\'inscription.' });
   } finally {
     client.release();
@@ -118,6 +128,11 @@ router.post('/login', async (req, res) => {
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email et mot de passe requis.' });
+  }
+
+  // FIX H2 : rejeter les inputs manifestement aberrants
+  if (email.length > 255 || password.length > 128) {
+    return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
   }
 
   try {
@@ -149,19 +164,16 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Email ou mot de passe incorrect.' });
     }
 
-    // Mise à jour last_login
     await pool.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
 
     const { accessToken, refreshToken } = generateTokens(user.id);
 
-    // Sauvegarder le refresh token (max 5 par utilisateur)
     const refreshHash = await bcrypt.hash(refreshToken, 8);
     await pool.query(
       `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
        VALUES ($1, $2, NOW() + INTERVAL '30 days')`,
       [user.id, refreshHash]
     );
-    // Nettoyer les anciens
     await pool.query(
       `DELETE FROM refresh_tokens WHERE user_id = $1
        AND id NOT IN (SELECT id FROM refresh_tokens WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5)`,
@@ -169,27 +181,17 @@ router.post('/login', async (req, res) => {
     );
 
     res.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        nom: user.nom,
-        prenoms: user.prenoms,
-        role: user.role,
-      },
+      user: { id: user.id, email: user.email, nom: user.nom, prenoms: user.prenoms, role: user.role },
       subscription: user.plan ? {
-        plan: user.plan,
-        status: user.sub_status,
-        date_fin: user.date_fin,
-        fiches_limite: user.fiches_limite,
-        devoirs_limite: user.devoirs_limite,
-        fiches_utilisees: user.fiches_utilisees,
-        devoirs_utilises: user.devoirs_utilises,
+        plan: user.plan, status: user.sub_status, date_fin: user.date_fin,
+        fiches_limite: user.fiches_limite, devoirs_limite: user.devoirs_limite,
+        fiches_utilisees: user.fiches_utilisees, devoirs_utilises: user.devoirs_utilises,
       } : null,
       accessToken,
       refreshToken,
     });
   } catch (err) {
-    console.error('[Login]', err.message);
+    if (process.env.NODE_ENV !== 'production') console.error('[Login]', err.message);
     res.status(500).json({ error: 'Erreur lors de la connexion.' });
   }
 });
@@ -206,7 +208,6 @@ router.post('/refresh', async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
-    // Vérifier que le token existe en base
     const tokens = await pool.query(
       `SELECT * FROM refresh_tokens WHERE user_id = $1 AND expires_at > NOW()`,
       [decoded.userId]
@@ -226,7 +227,6 @@ router.post('/refresh', async (req, res) => {
 
     const { accessToken, refreshToken: newRefreshToken } = generateTokens(decoded.userId);
 
-    // Rotation du refresh token
     const newHash = await bcrypt.hash(newRefreshToken, 8);
     await pool.query(
       `INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
@@ -281,16 +281,22 @@ router.get('/me', requireAuth, async (req, res) => {
       } : null,
     });
   } catch (err) {
-    console.error('[Me]', err.message);
+    if (process.env.NODE_ENV !== 'production') console.error('[Me]', err.message);
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
 
 // ============================================================
-// PUT /api/auth/profile — Modifier son profil
+// PUT /api/auth/profile
 // ============================================================
 router.put('/profile', requireAuth, async (req, res) => {
   const { nom, prenoms, telephone, matieres, niveaux, password, new_password } = req.body;
+
+  // FIX H2 : validation longueurs
+  if (nom && nom.trim().length > 100) return res.status(400).json({ error: 'Nom trop long (100 caractères max).' });
+  if (prenoms && prenoms.trim().length > 150) return res.status(400).json({ error: 'Prénoms trop longs (150 caractères max).' });
+  if (telephone && telephone.trim().length > 25) return res.status(400).json({ error: 'Numéro de téléphone invalide.' });
+  if (new_password && new_password.length > 128) return res.status(400).json({ error: 'Nouveau mot de passe trop long.' });
 
   try {
     const updates = [];
@@ -303,7 +309,6 @@ router.put('/profile', requireAuth, async (req, res) => {
     if (matieres) { updates.push(`matieres = $${idx++}`); values.push(matieres); }
     if (niveaux) { updates.push(`niveaux = $${idx++}`); values.push(niveaux); }
 
-    // Changement de mot de passe
     if (new_password) {
       if (!password) return res.status(400).json({ error: 'Mot de passe actuel requis.' });
       if (new_password.length < 8) return res.status(400).json({ error: 'Nouveau mot de passe trop court (8 caractères min).' });
@@ -315,6 +320,9 @@ router.put('/profile', requireAuth, async (req, res) => {
       const newHash = await bcrypt.hash(new_password, 12);
       updates.push(`password_hash = $${idx++}`);
       values.push(newHash);
+
+      // FIX H1 : révoquer TOUS les refresh tokens existants après changement de MDP
+      await pool.query('DELETE FROM refresh_tokens WHERE user_id = $1', [req.user.id]);
     }
 
     if (!updates.length) {
@@ -327,9 +335,13 @@ router.put('/profile', requireAuth, async (req, res) => {
       values
     );
 
-    res.json({ message: 'Profil mis à jour avec succès.' });
+    res.json({
+      message: 'Profil mis à jour avec succès.',
+      // Informer le client que les sessions ont été révoquées si MDP changé
+      sessions_revoked: !!new_password,
+    });
   } catch (err) {
-    console.error('[Profile Update]', err.message);
+    if (process.env.NODE_ENV !== 'production') console.error('[Profile Update]', err.message);
     res.status(500).json({ error: 'Erreur lors de la mise à jour.' });
   }
 });

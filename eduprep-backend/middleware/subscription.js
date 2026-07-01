@@ -3,7 +3,6 @@ const pool = require('../db/pool');
 // Vérifie que l'utilisateur a un abonnement actif
 const requireSubscription = async (req, res, next) => {
   try {
-    // Les admins passent toujours
     if (req.user.role === 'admin') return next();
 
     const result = await pool.query(
@@ -32,7 +31,7 @@ const requireSubscription = async (req, res, next) => {
   }
 };
 
-// Vérifie et décrémente le quota de fiches
+// Vérifie le quota de fiches
 const checkFicheQuota = async (req, res, next) => {
   try {
     if (req.user.role === 'admin') return next();
@@ -40,7 +39,6 @@ const checkFicheQuota = async (req, res, next) => {
     const sub = req.subscription;
     if (!sub) return res.status(403).json({ error: 'Abonnement requis.' });
 
-    // -1 = illimité (plan Pro / Établissement)
     if (sub.fiches_limite === -1) return next();
 
     if (sub.fiches_utilisees >= sub.fiches_limite) {
@@ -60,7 +58,7 @@ const checkFicheQuota = async (req, res, next) => {
   }
 };
 
-// Vérifie et décrémente le quota de devoirs
+// Vérifie le quota de devoirs
 const checkDevoirQuota = async (req, res, next) => {
   try {
     if (req.user.role === 'admin') return next();
@@ -87,12 +85,13 @@ const checkDevoirQuota = async (req, res, next) => {
   }
 };
 
-// Incrémente le compteur après génération réussie
+// FIX M4 : inclure 'trial' dans le filtre status pour que les quotas trial soient bien décrémentés
 const incrementFicheUsage = async (userId) => {
   await pool.query(
     `UPDATE subscriptions
      SET fiches_utilisees = fiches_utilisees + 1
-     WHERE user_id = $1 AND status = 'active'
+     WHERE user_id = $1
+       AND status IN ('active', 'trial')
        AND (date_fin IS NULL OR date_fin >= CURRENT_DATE)`,
     [userId]
   );
@@ -102,7 +101,8 @@ const incrementDevoirUsage = async (userId) => {
   await pool.query(
     `UPDATE subscriptions
      SET devoirs_utilises = devoirs_utilises + 1
-     WHERE user_id = $1 AND status = 'active'
+     WHERE user_id = $1
+       AND status IN ('active', 'trial')
        AND (date_fin IS NULL OR date_fin >= CURRENT_DATE)`,
     [userId]
   );

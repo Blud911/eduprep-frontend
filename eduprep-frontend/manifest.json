@@ -2,15 +2,16 @@
   "name": "EduPrep CI",
   "short_name": "EduPrep",
   "description": "Préparation de cours IA pour enseignants ivoiriens — Programme MENA officiel",
-  "start_url": "/app.html",
+  "start_url": "/app.html?pwa=1",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#1B5E20",
   "theme_color": "#1B5E20",
   "orientation": "portrait-primary",
   "lang": "fr",
   "dir": "ltr",
+  "id": "/app.html",
   "icons": [
     { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
@@ -22,14 +23,12 @@
     {
       "name": "Nouvelle fiche",
       "short_name": "Fiche",
-      "description": "Créer une fiche de préparation",
       "url": "/app.html",
       "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Composer un devoir",
       "short_name": "Devoir",
-      "description": "Créer une évaluation",
       "url": "/app.html",
       "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }]
     }

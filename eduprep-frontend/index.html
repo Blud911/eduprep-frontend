@@ -18,452 +18,210 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-/* ============================================================
-   TOKENS
-============================================================ */
 :root {
-  --forest: #1B5E20;
-  --forest-mid: #2E7D32;
-  --forest-light: #388E3C;
-  --forest-pale: #E8F5E9;
-  --gold: #F9A825;
-  --gold-dark: #F57F17;
-  --gold-light: #FFF8E1;
-  --text: #1A1A1A;
-  --text-2: #4A4A4A;
-  --text-3: #757575;
-  --white: #FFFFFF;
-  --surface: #F9FBF9;
-  --border: #C8E6C9;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --shadow: 0 2px 12px rgba(27,94,32,0.08);
-  --shadow-lg: 0 8px 32px rgba(27,94,32,0.14);
+  --forest: #1B5E20; --forest-mid: #2E7D32; --forest-light: #388E3C;
+  --forest-pale: #E8F5E9; --gold: #F9A825; --gold-dark: #F57F17; --gold-light: #FFF8E1;
+  --text: #1A1A1A; --text-2: #4A4A4A; --text-3: #757575;
+  --white: #FFFFFF; --surface: #F9FBF9; --border: #C8E6C9;
+  --radius: 12px; --radius-lg: 20px;
+  --shadow: 0 2px 12px rgba(27,94,32,0.08); --shadow-lg: 0 8px 32px rgba(27,94,32,0.14);
 }
-
-/* ============================================================
-   RESET & BASE
-============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--text);
-  background: var(--white);
-  overflow-x: hidden;
-}
+body { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.6; color: var(--text); background: var(--white); overflow-x: hidden; }
 h1, h2, h3 { font-family: 'Playfair Display', serif; line-height: 1.2; }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
 
-/* ============================================================
-   NAVBAR
-============================================================ */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(27,94,32,0.97);
-  backdrop-filter: blur(8px);
-  padding: 0 1.25rem;
-  height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.nav-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; font-weight: 700;
-  color: var(--white);
-}
-.nav-logo-leaf {
-  width: 32px; height: 32px;
-  background: var(--gold);
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.nav-logo-leaf i {
-  transform: rotate(45deg);
-  color: var(--forest); font-size: 16px;
-}
+/* NAVBAR */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(27,94,32,0.97); backdrop-filter: blur(8px); padding: 0 1.25rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--white); }
+.nav-logo-leaf { width: 32px; height: 32px; background: var(--gold); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.nav-logo-leaf i { transform: rotate(45deg); color: var(--forest); font-size: 16px; }
 .nav-actions { display: flex; gap: 8px; align-items: center; }
-.btn-nav {
-  padding: 7px 16px; border-radius: 8px; font-size: 0.875rem;
-  font-weight: 500; cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-  transition: all 0.15s;
-}
-.btn-nav-ghost {
-  background: transparent; color: rgba(255,255,255,0.85);
-  border: 1px solid rgba(255,255,255,0.25);
-}
+.btn-nav { padding: 7px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+.btn-nav-ghost { background: transparent; color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.25); }
 .btn-nav-ghost:hover { background: rgba(255,255,255,0.1); color: var(--white); }
-.btn-nav-gold {
-  background: var(--gold); color: var(--forest);
-}
+.btn-nav-gold { background: var(--gold); color: var(--forest); }
 .btn-nav-gold:hover { background: #FFB300; }
+.btn-nav-install { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid rgba(255,255,255,0.3); display: none; align-items: center; gap: 6px; }
+.btn-nav-install:hover { background: rgba(255,255,255,0.2); }
+.btn-nav-install.show { display: flex; }
 
-/* ============================================================
-   HERO
-============================================================ */
-.hero {
-  min-height: 100svh;
-  background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 55%, #33691E 100%);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 80px 1.25rem 3rem;
-  position: relative; overflow: hidden;
-  text-align: center;
-}
-
-/* Feuilles décoratives animées */
-.leaf-bg {
-  position: absolute; pointer-events: none;
-  opacity: 0.06;
-}
+/* HERO */
+.hero { min-height: 100svh; background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 55%, #33691E 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 1.25rem 3rem; position: relative; overflow: hidden; text-align: center; }
+.leaf-bg { position: absolute; pointer-events: none; opacity: 0.06; }
 .leaf-bg svg { fill: #fff; }
 .leaf-1 { top: 10%; right: -5%; width: 200px; animation: floatLeaf 8s ease-in-out infinite; }
 .leaf-2 { bottom: 15%; left: -3%; width: 160px; animation: floatLeaf 10s ease-in-out infinite 2s; }
-.leaf-3 { top: 40%; right: 5%; width: 100px; animation: floatLeaf 6s ease-in-out infinite 1s; }
+@keyframes floatLeaf { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+@media (prefers-reduced-motion: reduce) { .leaf-bg { animation: none; } }
 
-@keyframes floatLeaf {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .leaf-bg { animation: none; }
-}
-
-.hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(249,168,37,0.15);
-  border: 1px solid rgba(249,168,37,0.35);
-  color: var(--gold);
-  padding: 5px 14px; border-radius: 20px;
-  font-size: 0.8rem; font-weight: 500;
-  margin-bottom: 1.25rem;
-  letter-spacing: 0.5px;
-}
-.hero h1 {
-  font-size: clamp(2rem, 7vw, 3.5rem);
-  color: var(--white);
-  max-width: 700px;
-  margin-bottom: 1.25rem;
-}
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: rgba(249,168,37,0.15); border: 1px solid rgba(249,168,37,0.35); color: var(--gold); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; margin-bottom: 1.25rem; letter-spacing: 0.5px; }
+.hero h1 { font-size: clamp(2rem, 7vw, 3.5rem); color: var(--white); max-width: 700px; margin-bottom: 1.25rem; }
 .hero h1 span { color: var(--gold); }
-.hero-sub {
-  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
-  color: rgba(255,255,255,0.8);
-  max-width: 520px;
-  margin-bottom: 2rem;
-  line-height: 1.7;
-}
-.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 3rem; }
-.btn-primary {
-  padding: 14px 28px; border-radius: var(--radius); font-size: 1rem;
-  font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-  background: var(--gold); color: var(--forest);
-  display: inline-flex; align-items: center; gap: 8px;
-  transition: all 0.2s; box-shadow: 0 4px 16px rgba(249,168,37,0.35);
-}
-.btn-primary:hover { background: #FFB300; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,168,37,0.45); }
-.btn-outline {
-  padding: 14px 28px; border-radius: var(--radius); font-size: 1rem;
-  font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;
-  background: transparent; color: var(--white);
-  border: 1.5px solid rgba(255,255,255,0.4);
-  display: inline-flex; align-items: center; gap: 8px;
-  transition: all 0.2s;
-}
-.btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.7); }
+.hero-sub { font-size: clamp(0.95rem, 2.5vw, 1.1rem); color: rgba(255,255,255,0.8); max-width: 520px; margin-bottom: 2rem; line-height: 1.7; }
 
-.hero-stats {
-  display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;
+/* Badge essai gratuit */
+.trial-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+  color: var(--white); padding: 6px 14px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 500; margin-bottom: 1.25rem;
 }
+.trial-pill i { color: var(--gold); }
+
+.hero-cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 1.5rem; }
+.btn-primary { padding: 14px 28px; border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; background: var(--gold); color: var(--forest); display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 16px rgba(249,168,37,0.35); }
+.btn-primary:hover { background: #FFB300; transform: translateY(-1px); }
+.btn-outline { padding: 14px 28px; border-radius: var(--radius); font-size: 1rem; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,0.4); display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.7); }
+.btn-download-app { padding: 14px 28px; border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; background: rgba(255,255,255,0.15); color: var(--white); border: 1.5px solid rgba(255,255,255,0.35); display: none; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-download-app:hover { background: rgba(255,255,255,0.22); }
+.btn-download-app.show { display: inline-flex; }
+
+/* Note essai gratuit sous les CTA */
+.hero-trial-note { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.hero-trial-note i { color: var(--gold); font-size: 14px; }
+
+/* Bandeau iOS install dans le hero */
+.ios-hero-hint { display: none; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 16px; font-size: 0.8rem; color: rgba(255,255,255,0.8); margin-bottom: 1.5rem; max-width: 360px; line-height: 1.5; }
+.ios-hero-hint.show { display: block; }
+.ios-hero-hint span { color: var(--gold); font-weight: 600; }
+
+.hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; }
 .hero-stat { text-align: center; }
-.hero-stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem; font-weight: 700;
-  color: var(--gold);
-  display: block;
-}
+.hero-stat-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--gold); display: block; }
 .hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.65); }
 
-/* ============================================================
-   SECTION BASE
-============================================================ */
+/* SECTIONS */
 section { padding: 4rem 1.25rem; }
 .container { max-width: 720px; margin: 0 auto; }
-.section-label {
-  font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--forest-light);
-  margin-bottom: 0.5rem;
-}
-.section-title {
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  color: var(--text); margin-bottom: 0.75rem;
-}
+.section-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--forest-light); margin-bottom: 0.5rem; }
+.section-title { font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--text); margin-bottom: 0.75rem; }
 .section-title span { color: var(--forest); }
 .section-sub { font-size: 1rem; color: var(--text-2); line-height: 1.7; max-width: 560px; }
 
-/* ============================================================
-   DÉMO IA — Section centrale
-============================================================ */
-.demo-section {
-  background: var(--forest-pale);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
+/* DEMO */
+.demo-section { background: var(--forest-pale); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .demo-header { text-align: center; margin-bottom: 2rem; }
-.demo-card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  border: 1px solid var(--border);
-}
-.demo-card-header {
-  background: var(--forest);
-  padding: 1rem 1.25rem;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.demo-card-header h3 {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem; font-weight: 600;
-  color: var(--white);
-}
-.demo-badge {
-  background: var(--gold); color: var(--forest);
-  font-size: 0.7rem; font-weight: 700;
-  padding: 3px 10px; border-radius: 20px;
-}
+.demo-card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--border); }
+.demo-card-header { background: var(--forest); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+.demo-card-header h3 { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--white); }
+.demo-badge { background: var(--gold); color: var(--forest); font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
 .demo-body { padding: 1.25rem; }
-
-.demo-tabs {
-  display: flex; border-bottom: 1px solid var(--border);
-  margin-bottom: 1.25rem;
-}
-.demo-tab {
-  flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 500;
-  background: none; border: none; cursor: pointer;
-  color: var(--text-3); border-bottom: 2px solid transparent;
-  margin-bottom: -1px; transition: all 0.15s; font-family: 'Inter', sans-serif;
-}
+.demo-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+.demo-tab { flex: 1; padding: 8px; font-size: 0.85rem; font-weight: 500; background: none; border: none; cursor: pointer; color: var(--text-3); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; font-family: 'Inter', sans-serif; }
 .demo-tab.active { color: var(--forest); border-bottom-color: var(--forest); }
-
 .demo-form { display: flex; flex-direction: column; gap: 10px; }
 .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.form-group label {
-  display: block; font-size: 0.75rem; font-weight: 500;
-  color: var(--text-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
-}
-.form-group select, .form-group input {
-  width: 100%; padding: 9px 12px; border-radius: 8px;
-  border: 1px solid var(--border); font-size: 0.9rem;
-  font-family: 'Inter', sans-serif; color: var(--text);
-  background: var(--surface); transition: border-color 0.15s;
-}
-.form-group select:focus, .form-group input:focus {
-  outline: none; border-color: var(--forest-light);
-  box-shadow: 0 0 0 3px rgba(27,94,32,0.08);
-}
-.btn-demo {
-  width: 100%; padding: 12px; border-radius: var(--radius);
-  background: var(--forest); color: var(--white);
-  border: none; font-size: 0.95rem; font-weight: 600;
-  font-family: 'Inter', sans-serif; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all 0.2s; margin-top: 4px;
-}
+.form-group label { display: block; font-size: 0.75rem; font-weight: 500; color: var(--text-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group select, .form-group input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
+.form-group select:focus, .form-group input:focus { outline: none; border-color: var(--forest-light); box-shadow: 0 0 0 3px rgba(27,94,32,0.08); }
+.btn-demo { width: 100%; padding: 12px; border-radius: var(--radius); background: var(--forest); color: var(--white); border: none; font-size: 0.95rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 4px; }
 .btn-demo:hover { background: var(--forest-mid); }
 .btn-demo:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.demo-result {
-  display: none; margin-top: 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden;
-}
+.demo-result { display: none; margin-top: 1rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .demo-result.show { display: block; }
-.demo-result-header {
-  background: var(--forest-pale);
-  padding: 10px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-}
+.demo-result-header { background: var(--forest-pale); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
 .demo-result-header span { font-size: 0.8rem; font-weight: 600; color: var(--forest); }
 .demo-result-body { padding: 14px; font-size: 0.875rem; line-height: 1.7; color: var(--text-2); }
 .demo-result-body strong { color: var(--text); display: block; margin-bottom: 4px; margin-top: 10px; }
 .demo-result-body strong:first-child { margin-top: 0; }
 .demo-result-body ul { padding-left: 1.2rem; }
 .demo-result-body li { margin-bottom: 3px; }
-.demo-result-body pre {
-  white-space: pre-wrap; font-size: 0.82rem;
-  font-family: 'Inter', sans-serif; line-height: 1.6;
-}
-
-.demo-loading {
-  display: none; padding: 2rem;
-  text-align: center; color: var(--text-3); font-size: 0.875rem;
-}
+.demo-loading { display: none; padding: 2rem; text-align: center; color: var(--text-3); font-size: 0.875rem; }
 .demo-loading.show { display: block; }
 .dots { display: inline-flex; gap: 5px; }
-.dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--forest-light);
-  animation: dotPulse 1.2s ease-in-out infinite;
-}
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--forest-light); animation: dotPulse 1.2s ease-in-out infinite; }
+.dot:nth-child(2){animation-delay:0.2s} .dot:nth-child(3){animation-delay:0.4s}
 @keyframes dotPulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
-
-.demo-cta-note {
-  text-align: center; margin-top: 1rem;
-  font-size: 0.8rem; color: var(--text-3);
-}
+.demo-cta-note { text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-3); }
 .demo-cta-note a { color: var(--forest); font-weight: 500; text-decoration: underline; }
 
-/* ============================================================
-   FEATURES
-============================================================ */
-.features-grid {
-  display: grid; grid-template-columns: 1fr;
-  gap: 1rem; margin-top: 2rem;
-}
-.feature-card {
-  background: var(--white); border-radius: var(--radius);
-  padding: 1.25rem; border: 1px solid var(--border);
-  display: flex; gap: 1rem; align-items: flex-start;
-  transition: box-shadow 0.2s, transform 0.2s;
-}
+/* FEATURES */
+.features-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+.feature-card { background: var(--white); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); display: flex; gap: 1rem; align-items: flex-start; transition: box-shadow 0.2s, transform 0.2s; }
 .feature-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-.feature-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  background: var(--forest-pale); color: var(--forest);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-size: 20px;
-}
+.feature-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--forest-pale); color: var(--forest); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
 .feature-icon.gold { background: var(--gold-light); color: var(--gold-dark); }
 .feature-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
 .feature-desc { font-size: 0.875rem; color: var(--text-2); line-height: 1.6; }
 
-/* ============================================================
-   PRICING
-============================================================ */
+/* PRICING */
 .pricing-section { background: var(--forest-pale); }
-.pricing-grid {
-  display: grid; grid-template-columns: 1fr;
-  gap: 1rem; margin-top: 2rem;
-}
-.pricing-card {
-  background: var(--white); border-radius: var(--radius-lg);
-  padding: 1.5rem; border: 1.5px solid var(--border);
-  position: relative; overflow: hidden;
-}
-.pricing-card.featured {
-  border-color: var(--forest);
-  box-shadow: var(--shadow-lg);
-}
-.pricing-badge {
-  position: absolute; top: 16px; right: 16px;
-  background: var(--gold); color: var(--forest);
-  font-size: 0.7rem; font-weight: 700;
-  padding: 3px 10px; border-radius: 20px;
-}
+.pricing-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+.pricing-card { background: var(--white); border-radius: var(--radius-lg); padding: 1.5rem; border: 1.5px solid var(--border); position: relative; overflow: hidden; }
+.pricing-card.featured { border-color: var(--forest); box-shadow: var(--shadow-lg); }
+
+/* Badge essai gratuit sur la card trial */
+.pricing-card.trial-card { border-color: var(--gold); background: var(--gold-light); }
+.pricing-badge { position: absolute; top: 16px; right: 16px; background: var(--gold); color: var(--forest); font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.pricing-badge.green { background: var(--forest); color: var(--white); }
 .pricing-plan { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--forest-light); margin-bottom: 4px; }
-.pricing-price {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem; font-weight: 700; color: var(--text);
-  margin-bottom: 4px;
-}
+.pricing-price { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
 .pricing-price span { font-size: 0.9rem; font-weight: 400; color: var(--text-3); font-family: 'Inter', sans-serif; }
 .pricing-desc { font-size: 0.875rem; color: var(--text-2); margin-bottom: 1rem; }
 .pricing-features { list-style: none; margin-bottom: 1.5rem; }
-.pricing-features li {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 0.875rem; color: var(--text-2);
-  padding: 5px 0; border-bottom: 1px solid var(--border);
-}
+.pricing-features li { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--text-2); padding: 5px 0; border-bottom: 1px solid var(--border); }
 .pricing-features li:last-child { border-bottom: none; }
 .pricing-features li i { color: var(--forest-light); font-size: 16px; flex-shrink: 0; }
-.btn-plan {
-  width: 100%; padding: 11px; border-radius: var(--radius);
-  font-size: 0.9rem; font-weight: 600; cursor: pointer;
-  border: 1.5px solid var(--forest); font-family: 'Inter', sans-serif;
-  transition: all 0.15s;
-}
+.btn-plan { width: 100%; padding: 11px; border-radius: var(--radius); font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--forest); font-family: 'Inter', sans-serif; transition: all 0.15s; }
 .btn-plan-outline { background: transparent; color: var(--forest); }
 .btn-plan-outline:hover { background: var(--forest-pale); }
 .btn-plan-filled { background: var(--forest); color: var(--white); }
 .btn-plan-filled:hover { background: var(--forest-mid); }
+.btn-plan-gold { background: var(--gold); color: var(--forest); border-color: var(--gold); }
+.btn-plan-gold:hover { background: #FFB300; }
 
-/* ============================================================
-   TESTIMONIALS
-============================================================ */
-.testimonials-grid {
-  display: grid; grid-template-columns: 1fr;
-  gap: 1rem; margin-top: 2rem;
-}
-.testimonial-card {
-  background: var(--white); border-radius: var(--radius);
-  padding: 1.25rem; border: 1px solid var(--border);
-}
-.testimonial-quote {
-  font-size: 0.9rem; color: var(--text-2); line-height: 1.7;
-  margin-bottom: 1rem;
-  font-style: italic;
-}
+/* TESTIMONIALS */
+.testimonials-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+.testimonial-card { background: var(--white); border-radius: var(--radius); padding: 1.25rem; border: 1px solid var(--border); }
+.testimonial-quote { font-size: 0.9rem; color: var(--text-2); line-height: 1.7; margin-bottom: 1rem; font-style: italic; }
 .testimonial-quote::before { content: '"'; color: var(--gold); font-size: 1.5rem; font-family: 'Playfair Display', serif; }
 .testimonial-author { display: flex; align-items: center; gap: 10px; }
-.testimonial-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--forest-pale);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--forest); font-weight: 700; font-size: 0.9rem;
-  flex-shrink: 0;
-}
+.testimonial-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--forest-pale); display: flex; align-items: center; justify-content: center; color: var(--forest); font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
 .testimonial-name { font-size: 0.875rem; font-weight: 600; }
 .testimonial-role { font-size: 0.775rem; color: var(--text-3); }
 
-/* ============================================================
-   CTA FINAL
-============================================================ */
-.cta-section {
-  background: linear-gradient(135deg, var(--forest) 0%, #33691E 100%);
-  text-align: center; padding: 4rem 1.25rem;
-}
+/* CTA FINAL */
+.cta-section { background: linear-gradient(135deg, var(--forest) 0%, #33691E 100%); text-align: center; padding: 4rem 1.25rem; }
 .cta-section h2 { color: var(--white); margin-bottom: 0.75rem; }
 .cta-section p { color: rgba(255,255,255,0.75); margin-bottom: 2rem; font-size: 1rem; }
 .cta-trial-note { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 1rem; }
 
-/* ============================================================
-   FOOTER
-============================================================ */
-footer {
-  background: #0A2E0C; color: rgba(255,255,255,0.6);
-  padding: 2rem 1.25rem; text-align: center;
-  font-size: 0.825rem; line-height: 1.8;
-}
+/* Section téléchargement app */
+.download-section { background: var(--forest); padding: 3rem 1.25rem; text-align: center; }
+.download-section h2 { color: var(--white); margin-bottom: 0.5rem; }
+.download-section p { color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.download-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+.btn-store { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: var(--radius); border: 1.5px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); color: var(--white); font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+.btn-store:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.5); }
+.btn-store i { font-size: 24px; color: var(--gold); }
+.btn-store-text { text-align: left; }
+.btn-store-sub { font-size: 0.7rem; color: rgba(255,255,255,0.6); display: block; }
+.btn-store-name { font-size: 0.95rem; font-weight: 600; display: block; }
+.btn-install-pwa { background: var(--gold); color: var(--forest); border-color: var(--gold); display: none; }
+.btn-install-pwa:hover { background: #FFB300; }
+.btn-install-pwa.show { display: inline-flex; }
+.ios-install-note { display: none; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 12px 16px; font-size: 0.8rem; color: rgba(255,255,255,0.8); max-width: 380px; margin: 0 auto; line-height: 1.6; }
+.ios-install-note.show { display: block; }
+.ios-install-note span { color: var(--gold); font-weight: 600; }
+
+/* FOOTER */
+footer { background: #0A2E0C; color: rgba(255,255,255,0.6); padding: 2rem 1.25rem; text-align: center; font-size: 0.825rem; line-height: 1.8; }
 footer strong { color: rgba(255,255,255,0.85); }
 .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
 .footer-links a { color: rgba(255,255,255,0.5); transition: color 0.15s; }
 .footer-links a:hover { color: var(--gold); }
 
-/* ============================================================
-   RESPONSIVE ≥ 640px
-============================================================ */
 @media (min-width: 640px) {
   .features-grid { grid-template-columns: 1fr 1fr; }
-  .pricing-grid { grid-template-columns: 1fr 1fr; }
+  .pricing-grid { grid-template-columns: repeat(3, 1fr); }
   .testimonials-grid { grid-template-columns: 1fr 1fr; }
   .demo-row { grid-template-columns: 1fr 1fr 1fr; }
 }
-
-/* ============================================================
-   SCROLL REVEAL
-============================================================ */
-.reveal {
-  opacity: 0; transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .reveal.visible { opacity: 1; transform: none; }
 </style>
 </head>
@@ -476,6 +234,9 @@ footer strong { color: rgba(255,255,255,0.85); }
     EduPrep CI
   </div>
   <div class="nav-actions">
+    <button class="btn-nav btn-nav-install" id="nav-install-btn" onclick="installApp()">
+      <i class="ti ti-download"></i> Installer
+    </button>
     <button class="btn-nav btn-nav-ghost" onclick="location.href='app.html'">Connexion</button>
     <button class="btn-nav btn-nav-gold" onclick="location.href='app.html#register'">Essai gratuit</button>
   </div>
@@ -483,17 +244,14 @@ footer strong { color: rgba(255,255,255,0.85); }
 
 <!-- HERO -->
 <section class="hero">
-  <!-- Feuilles décoratives -->
   <div class="leaf-bg leaf-1">
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <path d="M100,10 C150,10 190,50 190,100 C190,150 150,190 100,190 C50,190 10,150 10,100 C10,50 50,10 100,10 Z M100,30 C60,30 30,60 30,100 C30,140 60,170 100,170 C140,170 170,140 170,100 C170,60 140,30 100,30 Z"/>
-      <path d="M100,10 L100,190 M30,100 L170,100" stroke-width="4"/>
+      <path d="M100,10 C150,10 190,50 190,100 C190,150 150,190 100,190 C50,190 10,150 10,100 C10,50 50,10 100,10 Z"/>
     </svg>
   </div>
   <div class="leaf-bg leaf-2">
     <svg viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
       <path d="M80,0 C120,20 160,60 140,120 C120,180 60,200 20,160 C-20,120 0,40 80,0 Z"/>
-      <path d="M80,0 L60,160" stroke-width="3" stroke="rgba(255,255,255,0.5)" fill="none"/>
     </svg>
   </div>
 
@@ -501,8 +259,16 @@ footer strong { color: rgba(255,255,255,0.85); }
     <i class="ti ti-sparkles"></i>
     Propulsé par l'intelligence artificielle · Programme MENA officiel
   </div>
+
+  <!-- Badge essai gratuit -->
+  <div class="trial-pill">
+    <i class="ti ti-gift"></i>
+    Essai gratuit — 5 fiches générées, sans carte bancaire
+  </div>
+
   <h1>Préparez vos cours en <span>5 minutes</span>, pas en 5 heures</h1>
   <p class="hero-sub">EduPrep CI génère vos fiches pédagogiques, devoirs et corrigés en accord avec le programme officiel ivoirien. Conçu pour les enseignants du primaire au lycée.</p>
+
   <div class="hero-cta">
     <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
       <i class="ti ti-player-play"></i> Voir la démo gratuite
@@ -510,32 +276,37 @@ footer strong { color: rgba(255,255,255,0.85); }
     <button class="btn-outline" onclick="location.href='app.html#register'">
       <i class="ti ti-user-plus"></i> Commencer — 7 jours gratuits
     </button>
+    <button class="btn-download-app" id="hero-install-btn" onclick="installApp()">
+      <i class="ti ti-download"></i> Télécharger l'application
+    </button>
   </div>
+
+  <!-- Note iOS -->
+  <div class="ios-hero-hint" id="ios-hero-hint">
+    <i class="ti ti-info-circle"></i>
+    Pour installer sur iPhone/iPad : appuyez sur <span>⎙ Partager</span> puis <span>Sur l'écran d'accueil</span>
+  </div>
+
+  <p class="hero-trial-note">
+    <i class="ti ti-shield-check"></i>
+    5 fiches gratuites · Sans engagement · Paiement Wave / Orange Money / MTN
+  </p>
+
   <div class="hero-stats">
-    <div class="hero-stat">
-      <span class="hero-stat-num">2 min</span>
-      <span class="hero-stat-label">Pour une fiche complète</span>
-    </div>
-    <div class="hero-stat">
-      <span class="hero-stat-num">12+</span>
-      <span class="hero-stat-label">Matières couvertes</span>
-    </div>
-    <div class="hero-stat">
-      <span class="hero-stat-num">CI</span>
-      <span class="hero-stat-label">Programme MENA/DREN</span>
-    </div>
+    <div class="hero-stat"><span class="hero-stat-num">2 min</span><span class="hero-stat-label">Pour une fiche complète</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">325+</span><span class="hero-stat-label">Chapitres MENA couverts</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">CI</span><span class="hero-stat-label">Programme MENA/DREN</span></div>
   </div>
 </section>
 
-<!-- DÉMO IA INTERACTIVE -->
+<!-- DÉMO IA -->
 <section class="demo-section" id="demo">
   <div class="container">
     <div class="demo-header reveal">
       <p class="section-label">Essayez maintenant — sans inscription</p>
       <h2 class="section-title">Générez une fiche <span>en direct</span></h2>
-      <p class="section-sub" style="margin:0 auto;text-align:center;">Remplissez les champs ci-dessous et voyez l'IA construire votre préparation de cours en temps réel.</p>
+      <p class="section-sub" style="margin:0 auto;text-align:center;">Remplissez les champs ci-dessous et voyez l'IA construire votre préparation en temps réel.</p>
     </div>
-
     <div class="demo-card reveal">
       <div class="demo-card-header">
         <h3><i class="ti ti-robot" style="margin-right:6px"></i> Générateur IA — Démo</h3>
@@ -555,6 +326,9 @@ footer strong { color: rgba(255,255,255,0.85); }
               <select id="d-matiere">
                 <option value="Mathématiques">Mathématiques</option>
                 <option value="Français">Français</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
                 <option value="SVT">SVT</option>
                 <option value="Physique-Chimie">Physique-Chimie</option>
                 <option value="Histoire-Géographie">Histoire-Géo</option>
@@ -572,8 +346,14 @@ footer strong { color: rgba(255,255,255,0.85); }
                 <optgroup label="Collège">
                   <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
                 </optgroup>
-                <optgroup label="Lycée">
-                  <option>2nde</option><option>1ère</option><option>Terminale</option>
+                <optgroup label="Lycée — 2nde">
+                  <option>2nde A</option><option>2nde C</option>
+                </optgroup>
+                <optgroup label="Lycée — 1ère">
+                  <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+                </optgroup>
+                <optgroup label="Lycée — Terminale">
+                  <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
                 </optgroup>
               </select>
             </div>
@@ -602,6 +382,7 @@ footer strong { color: rgba(255,255,255,0.85); }
               <select id="dv-matiere">
                 <option value="Mathématiques">Mathématiques</option>
                 <option value="Français">Français</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
                 <option value="SVT">SVT</option>
                 <option value="Physique-Chimie">Physique-Chimie</option>
                 <option value="Histoire-Géographie">Histoire-Géo</option>
@@ -617,17 +398,21 @@ footer strong { color: rgba(255,255,255,0.85); }
                 <optgroup label="Collège">
                   <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
                 </optgroup>
-                <optgroup label="Lycée">
-                  <option>2nde</option><option>1ère</option><option>Terminale</option>
+                <optgroup label="Lycée — 2nde">
+                  <option>2nde A</option><option>2nde C</option>
+                </optgroup>
+                <optgroup label="Lycée — 1ère">
+                  <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+                </optgroup>
+                <optgroup label="Lycée — Terminale">
+                  <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
                 </optgroup>
               </select>
             </div>
             <div class="form-group">
               <label>Type</label>
               <select id="dv-type">
-                <option>Interrogation</option>
-                <option>Devoir surveillé</option>
-                <option>Composition</option>
+                <option>Interrogation</option><option>Devoir surveillé</option><option>Composition</option>
               </select>
             </div>
           </div>
@@ -640,27 +425,19 @@ footer strong { color: rgba(255,255,255,0.85); }
           </button>
         </div>
 
-        <!-- Loading -->
         <div class="demo-loading" id="demo-loading">
-          <div class="dots">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          </div>
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
           <p style="margin-top:10px" id="loading-msg">L'IA prépare votre fiche...</p>
         </div>
-
-        <!-- Résultat -->
         <div class="demo-result" id="demo-result">
           <div class="demo-result-header">
             <span><i class="ti ti-check" style="margin-right:4px"></i> Fiche générée</span>
-            <button onclick="copyResult()" style="background:none;border:none;cursor:pointer;color:var(--forest);font-size:13px;font-family:Inter,sans-serif;">
-              <i class="ti ti-copy"></i> Copier
-            </button>
+            <button onclick="copyResult()" style="background:none;border:none;cursor:pointer;color:var(--forest);font-size:13px;font-family:Inter,sans-serif;"><i class="ti ti-copy"></i> Copier</button>
           </div>
           <div class="demo-result-body" id="demo-result-body"></div>
         </div>
-
         <p class="demo-cta-note" id="demo-note" style="display:none">
-          Résultat limité en démo. <a href="app.html#register">Créez un compte gratuit</a> pour la fiche complète avec export PDF.
+          Résultat limité en démo. <a href="app.html#register">Créez un compte gratuit</a> pour la fiche complète (5 fiches offertes).
         </p>
       </div>
     </div>
@@ -675,45 +452,27 @@ footer strong { color: rgba(255,255,255,0.85); }
     <div class="features-grid">
       <div class="feature-card reveal">
         <div class="feature-icon"><i class="ti ti-clipboard-list"></i></div>
-        <div>
-          <div class="feature-title">Fiches pédagogiques complètes</div>
-          <div class="feature-desc">Objectifs, déroulement en phases, méthodes, compétences — tout généré selon le programme MENA officiel.</div>
-        </div>
+        <div><div class="feature-title">Fiches pédagogiques complètes</div><div class="feature-desc">Objectifs, déroulement en phases, méthodes, compétences — tout généré selon le programme MENA officiel.</div></div>
       </div>
       <div class="feature-card reveal">
         <div class="feature-icon gold"><i class="ti ti-pencil"></i></div>
-        <div>
-          <div class="feature-title">Devoirs & corrigés automatiques</div>
-          <div class="feature-desc">Questions progressives (QCM, ouvertes, exercices) avec barème et corrigé détaillé générés simultanément.</div>
-        </div>
+        <div><div class="feature-title">Devoirs & corrigés automatiques</div><div class="feature-desc">Questions progressives avec barème et corrigé détaillé générés simultanément.</div></div>
       </div>
       <div class="feature-card reveal">
         <div class="feature-icon"><i class="ti ti-users"></i></div>
-        <div>
-          <div class="feature-title">Différenciation pédagogique</div>
-          <div class="feature-desc">Trois variantes du même devoir — niveau faible, standard et avancé — pour adapter à chaque élève.</div>
-        </div>
+        <div><div class="feature-title">Différenciation pédagogique</div><div class="feature-desc">Trois variantes du même devoir — niveau faible, standard et avancé — pour adapter à chaque élève.</div></div>
       </div>
       <div class="feature-card reveal">
         <div class="feature-icon gold"><i class="ti ti-file-export"></i></div>
-        <div>
-          <div class="feature-title">Export PDF format DREN</div>
-          <div class="feature-desc">Imprimez vos fiches au format officiel de l'inspection, prêtes à soumettre sans mise en page manuelle.</div>
-        </div>
+        <div><div class="feature-title">Export PDF format DREN</div><div class="feature-desc">Imprimez vos fiches au format officiel de l'inspection, prêtes à soumettre sans mise en page manuelle.</div></div>
       </div>
       <div class="feature-card reveal">
         <div class="feature-icon"><i class="ti ti-database"></i></div>
-        <div>
-          <div class="feature-title">Banque de questions</div>
-          <div class="feature-desc">Réutilisez vos meilleures questions d'un devoir à l'autre. Filtrez par matière, classe et niveau taxonomique.</div>
-        </div>
+        <div><div class="feature-title">325+ chapitres MENA couverts</div><div class="feature-desc">Du CP1 à la Terminale, toutes séries (A, C, D), toutes matières dont Orthographe, Grammaire, Conjugaison.</div></div>
       </div>
       <div class="feature-card reveal">
-        <div class="feature-icon gold"><i class="ti ti-wifi-off"></i></div>
-        <div>
-          <div class="feature-title">Mode hors ligne (PWA)</div>
-          <div class="feature-desc">Accédez à vos fiches sauvegardées même sans connexion. Idéal dans les zones à réseau instable.</div>
-        </div>
+        <div class="feature-icon gold"><i class="ti ti-device-mobile"></i></div>
+        <div><div class="feature-title">Application mobile (PWA)</div><div class="feature-desc">Installez EduPrep CI sur Android et iPhone comme une vraie application. Fonctionne hors ligne.</div></div>
       </div>
     </div>
   </div>
@@ -726,6 +485,26 @@ footer strong { color: rgba(255,255,255,0.85); }
     <h2 class="section-title reveal" style="text-align:center">Simple, <span>abordable</span>, efficace</h2>
     <p class="section-sub reveal" style="text-align:center;margin:0 auto 0.5rem">Paiement par Wave CI, Orange Money ou MTN Money. Activation sous 24h.</p>
     <div class="pricing-grid" style="margin-top:2rem">
+
+      <!-- ESSAI GRATUIT -->
+      <div class="pricing-card trial-card reveal">
+        <div class="pricing-badge green">GRATUIT</div>
+        <div class="pricing-plan">Essai gratuit</div>
+        <div class="pricing-price">0 <span>FCFA</span></div>
+        <div class="pricing-desc">Pour découvrir EduPrep CI</div>
+        <ul class="pricing-features">
+          <li><i class="ti ti-check"></i> <strong>5 fiches</strong> offertes</li>
+          <li><i class="ti ti-check"></i> <strong>3 devoirs</strong> offerts</li>
+          <li><i class="ti ti-check"></i> Toutes les matières</li>
+          <li><i class="ti ti-check"></i> Sans carte bancaire</li>
+          <li><i class="ti ti-x" style="color:var(--text-3)"></i> Export PDF</li>
+        </ul>
+        <button class="btn-plan btn-plan-gold" onclick="location.href='app.html#register'">
+          <i class="ti ti-gift"></i> Commencer gratuitement
+        </button>
+      </div>
+
+      <!-- STARTER -->
       <div class="pricing-card reveal">
         <div class="pricing-plan">Starter</div>
         <div class="pricing-price">2 000 <span>FCFA/mois</span></div>
@@ -740,6 +519,8 @@ footer strong { color: rgba(255,255,255,0.85); }
         </ul>
         <button class="btn-plan btn-plan-outline" onclick="location.href='app.html#register'">Commencer</button>
       </div>
+
+      <!-- PRO -->
       <div class="pricing-card featured reveal">
         <div class="pricing-badge">POPULAIRE</div>
         <div class="pricing-plan">Pro</div>
@@ -757,8 +538,47 @@ footer strong { color: rgba(255,255,255,0.85); }
       </div>
     </div>
     <p style="text-align:center;font-size:0.8rem;color:var(--text-3);margin-top:1rem">
-      7 jours d'essai gratuit · Établissement à partir de 30 000 FCFA/mois (20 enseignants)
+      Établissement à partir de 30 000 FCFA/mois (20 enseignants)
     </p>
+  </div>
+</section>
+
+<!-- SECTION TÉLÉCHARGEMENT APP -->
+<section class="download-section" id="telecharger">
+  <div class="container">
+    <h2 class="reveal" style="color:var(--white);margin-bottom:0.5rem">Téléchargez l'application</h2>
+    <p class="reveal">Installez EduPrep CI sur votre téléphone et préparez vos cours partout, même sans connexion.</p>
+    <div class="download-buttons reveal">
+      <!-- Bouton Android (PWA install) -->
+      <button class="btn-store btn-install-pwa" id="pwa-install-btn" onclick="installApp()">
+        <i class="ti ti-brand-android"></i>
+        <div class="btn-store-text">
+          <span class="btn-store-sub">Installer sur</span>
+          <span class="btn-store-name">Android</span>
+        </div>
+      </button>
+      <!-- Bouton iOS (instructions) -->
+      <button class="btn-store" onclick="toggleIOSInstructions()">
+        <i class="ti ti-brand-apple"></i>
+        <div class="btn-store-text">
+          <span class="btn-store-sub">Installer sur</span>
+          <span class="btn-store-name">iPhone / iPad</span>
+        </div>
+      </button>
+      <!-- Bouton accès direct web -->
+      <button class="btn-store" onclick="location.href='app.html'">
+        <i class="ti ti-world"></i>
+        <div class="btn-store-text">
+          <span class="btn-store-sub">Accéder via</span>
+          <span class="btn-store-name">Navigateur web</span>
+        </div>
+      </button>
+    </div>
+    <!-- Instructions iOS -->
+    <div class="ios-install-note" id="ios-install-note" style="margin-top:1rem">
+      <i class="ti ti-info-circle"></i>
+      Sur iPhone/iPad avec Safari : appuyez sur <span>⎙ Partager</span> en bas de l'écran, puis sélectionnez <span>« Sur l'écran d'accueil »</span>. EduPrep CI s'installera comme une vraie application.
+    </div>
   </div>
 </section>
 
@@ -772,20 +592,14 @@ footer strong { color: rgba(255,255,255,0.85); }
         <p class="testimonial-quote">Je préparais mes cours le dimanche soir pendant 3 heures. Maintenant je génère une fiche complète en 5 minutes, conforme à l'inspection.</p>
         <div class="testimonial-author">
           <div class="testimonial-avatar">AK</div>
-          <div>
-            <div class="testimonial-name">Adama Koné</div>
-            <div class="testimonial-role">Prof de SVT · Lycée Technique d'Abidjan</div>
-          </div>
+          <div><div class="testimonial-name">Adama Koné</div><div class="testimonial-role">Prof de SVT · Lycée Technique d'Abidjan</div></div>
         </div>
       </div>
       <div class="testimonial-card reveal">
         <p class="testimonial-quote">Les variantes de devoirs pour différents niveaux m'ont changé la vie. Mes élèves en difficulté progressent enfin sans se décourager.</p>
         <div class="testimonial-author">
           <div class="testimonial-avatar">MB</div>
-          <div>
-            <div class="testimonial-name">Marie-Claire Bah</div>
-            <div class="testimonial-role">Professeure de Mathématiques · Collège de Yopougon</div>
-          </div>
+          <div><div class="testimonial-name">Marie-Claire Bah</div><div class="testimonial-role">Professeure de Mathématiques · Collège de Yopougon</div></div>
         </div>
       </div>
     </div>
@@ -796,9 +610,9 @@ footer strong { color: rgba(255,255,255,0.85); }
 <section class="cta-section">
   <div class="container">
     <h2 class="reveal">Commencez à enseigner mieux, dès aujourd'hui</h2>
-    <p class="reveal">7 jours gratuits, sans carte bancaire. Annulable à tout moment.</p>
+    <p class="reveal">5 fiches gratuites, sans carte bancaire. Annulable à tout moment.</p>
     <button class="btn-primary reveal" onclick="location.href='app.html#register'" style="margin:0 auto;display:inline-flex">
-      <i class="ti ti-user-plus"></i> Créer mon compte gratuit
+      <i class="ti ti-gift"></i> Essayer gratuitement — 5 fiches offertes
     </button>
     <p class="cta-trial-note">Paiement par Wave CI · Orange Money · MTN Money</p>
   </div>
@@ -809,6 +623,7 @@ footer strong { color: rgba(255,255,255,0.85); }
   <div class="footer-links">
     <a href="#fonctionnalites">Fonctionnalités</a>
     <a href="#tarifs">Tarifs</a>
+    <a href="#telecharger">Télécharger</a>
     <a href="app.html">Application</a>
     <a href="admin.html">Admin</a>
   </div>
@@ -824,6 +639,57 @@ const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============================================================
+// PWA INSTALL
+// ============================================================
+let deferredPrompt = null;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Affiche les boutons install Android
+  document.getElementById('nav-install-btn').classList.add('show');
+  document.getElementById('hero-install-btn').classList.add('show');
+  document.getElementById('pwa-install-btn').classList.add('show');
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  document.getElementById('nav-install-btn').classList.remove('show');
+  document.getElementById('hero-install-btn').classList.remove('show');
+  document.getElementById('pwa-install-btn').classList.remove('show');
+});
+
+async function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      deferredPrompt = null;
+    }
+  } else {
+    // Fallback : rediriger vers app
+    location.href = 'app.html';
+  }
+}
+
+function toggleIOSInstructions() {
+  const el = document.getElementById('ios-install-note');
+  el.classList.toggle('show');
+}
+
+// Affiche les instructions iOS sur iPhone non-installé
+window.addEventListener('DOMContentLoaded', () => {
+  if (isIOS && !isStandalone) {
+    document.getElementById('ios-hero-hint').classList.add('show');
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+});
 
 // ============================================================
 // DEMO TABS
@@ -843,244 +709,97 @@ function resetDemo() {
   document.getElementById('demo-note').style.display = 'none';
 }
 
-// ============================================================
-// BACKEND URL
-// ============================================================
 const BACKEND = 'https://eduprep-backend-km19.onrender.com/api';
 
-// ============================================================
-// RENDER FICHE — parse la réponse et injecte le HTML
-// ============================================================
 function renderFicheDemo(data, lecon, matiere, classe) {
   document.getElementById('demo-loading').classList.remove('show');
-
   let html = '';
-
   if (data && typeof data === 'object') {
-    // Objectifs
-    if (data.objectifs) {
-      html += '<strong>🎯 Objectifs</strong><ul>';
-      const items = Array.isArray(data.objectifs) ? data.objectifs : [data.objectifs];
-      items.forEach(o => { html += '<li>' + o + '</li>'; });
-      html += '</ul>';
-    }
-    // Matériel
-    if (data.materiel) {
-      const mat = Array.isArray(data.materiel) ? data.materiel.join(', ') : data.materiel;
-      html += '<strong>📦 Matériel</strong><p>' + mat + '</p>';
-    }
-    // Introduction / mise en situation
-    if (data.introduction || data.mise_en_situation) {
-      html += '<strong>🔰 Introduction</strong><p>' + (data.introduction || data.mise_en_situation) + '</p>';
-    }
-    // Déroulement
-    if (data.deroulement) {
-      html += '<strong>📋 Déroulement</strong>';
-      const phases = Array.isArray(data.deroulement) ? data.deroulement : [data.deroulement];
-      phases.forEach(function(phase) {
-        if (typeof phase === 'object' && phase !== null) {
-          var titre = phase.phase || phase.titre || phase.etape || '';
-          var contenu = phase.contenu || phase.description || phase.activites || '';
-          if (typeof contenu === 'object') contenu = JSON.stringify(contenu);
-          html += '<p><strong style="font-size:0.8rem;color:var(--forest);display:inline">' + titre + '</strong>';
-          if (contenu) html += ' — ' + contenu;
-          html += '</p>';
-        } else {
-          html += '<p>' + phase + '</p>';
-        }
-      });
-    }
-    // Évaluation
-    if (data.evaluation) {
-      var evalStr = typeof data.evaluation === 'object' ? JSON.stringify(data.evaluation) : data.evaluation;
-      html += '<strong>✅ Évaluation</strong><p>' + evalStr + '</p>';
-    }
-    // Conclusion
-    if (data.conclusion) {
-      html += '<strong>🏁 Conclusion</strong><p>' + data.conclusion + '</p>';
-    }
-    // Compétences
-    if (data.competences) {
-      html += '<strong>📚 Compétences visées</strong><p>' + (Array.isArray(data.competences) ? data.competences.join(' · ') : data.competences) + '</p>';
-    }
-    // Fallback si objet non reconnu
-    if (!html) {
-      html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-    }
+    if (data.objectifs) { html += '<strong>🎯 Objectifs</strong><ul>'; (Array.isArray(data.objectifs) ? data.objectifs : [data.objectifs]).forEach(o => { html += '<li>' + o + '</li>'; }); html += '</ul>'; }
+    if (data.materiel) { html += '<strong>📦 Matériel</strong><p>' + (Array.isArray(data.materiel) ? data.materiel.join(', ') : data.materiel) + '</p>'; }
+    if (data.introduction || data.mise_en_situation) { html += '<strong>🔰 Introduction</strong><p>' + (data.introduction || data.mise_en_situation) + '</p>'; }
+    if (data.deroulement) { html += '<strong>📋 Déroulement</strong>'; (Array.isArray(data.deroulement) ? data.deroulement : [data.deroulement]).forEach(p => { if (typeof p === 'object' && p !== null) { html += '<p><strong style="font-size:0.8rem;color:var(--forest);display:inline">' + (p.phase||p.titre||p.etape||'') + '</strong>'; var c = p.contenu||p.description||p.activites||''; if (typeof c === 'object') c = JSON.stringify(c); if (c) html += ' — ' + c; html += '</p>'; } else { html += '<p>' + p + '</p>'; } }); }
+    if (data.evaluation) { html += '<strong>✅ Évaluation</strong><p>' + (typeof data.evaluation === 'object' ? JSON.stringify(data.evaluation) : data.evaluation) + '</p>'; }
+    if (data.competences) { html += '<strong>📚 Compétences</strong><p>' + (Array.isArray(data.competences) ? data.competences.join(' · ') : data.competences) + '</p>'; }
+    if (!html) html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
   } else if (typeof data === 'string') {
-    // Réponse texte brut — convertit markdown basique en HTML
-    html = data
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-    html = '<p>' + html + '</p>';
-  } else {
-    html = '<p style="color:#c62828">Format de réponse inattendu.</p>';
-  }
-
+    html = '<p>' + data.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+  } else { html = '<p style="color:#c62828">Format inattendu.</p>'; }
+  document.querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Fiche générée';
   document.getElementById('demo-result-body').innerHTML = html;
   document.getElementById('demo-result').classList.add('show');
   document.getElementById('demo-note').style.display = 'block';
   document.getElementById('demo-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ============================================================
-// RENDER DEVOIR — parse la réponse et injecte le HTML
-// ============================================================
 function renderDevoirDemo(data, matiere, classe, type_eval) {
   document.getElementById('demo-loading').classList.remove('show');
-
   let html = '';
-
   if (data && typeof data === 'object') {
-    // Consignes
-    if (data.consignes) {
-      html += '<strong>📌 Consignes</strong><p>' + data.consignes + '</p>';
-    }
-    // Durée
-    if (data.duree) {
-      html += '<strong>⏱ Durée</strong><p>' + data.duree + '</p>';
-    }
-    // Questions
-    if (data.questions) {
-      html += '<strong>📝 Questions</strong><ul>';
-      const qs = Array.isArray(data.questions) ? data.questions : [data.questions];
-      qs.forEach(function(q, i) {
-        if (typeof q === 'object' && q !== null) {
-          var pts = q.points || q.note || '';
-          var enonce = q.question || q.enonce || q.texte || JSON.stringify(q);
-          html += '<li><strong style="display:inline;color:var(--forest)">Q' + (i+1) + (pts ? ' (' + pts + ' pts)' : '') + '</strong> — ' + enonce + '</li>';
-        } else {
-          html += '<li>' + q + '</li>';
-        }
-      });
-      html += '</ul>';
-    }
-    // Barème
-    if (data.bareme || data.total) {
-      var bStr = data.bareme
-        ? (typeof data.bareme === 'object' ? JSON.stringify(data.bareme) : data.bareme)
-        : 'Total : ' + data.total + ' pts';
-      html += '<strong>📊 Barème</strong><p>' + bStr + '</p>';
-    }
-    // Corrigé partiel
-    if (data.corriges || data.corriges_partiels) {
-      var corr = data.corriges || data.corriges_partiels;
-      html += '<strong>✅ Éléments de corrigé</strong><p>' + (typeof corr === 'object' ? JSON.stringify(corr) : corr) + '</p>';
-    }
-    // Fallback
-    if (!html) {
-      html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-    }
+    if (data.consignes) { html += '<strong>📌 Consignes</strong><p>' + data.consignes + '</p>'; }
+    if (data.questions) { html += '<strong>📝 Questions</strong><ul>'; (Array.isArray(data.questions) ? data.questions : [data.questions]).forEach((q, i) => { if (typeof q === 'object' && q !== null) { html += '<li><strong style="display:inline;color:var(--forest)">Q' + (i+1) + (q.points ? ' (' + q.points + ' pts)' : '') + '</strong> — ' + (q.question||q.enonce||q.texte||JSON.stringify(q)) + '</li>'; } else { html += '<li>' + q + '</li>'; } }); html += '</ul>'; }
+    if (data.bareme || data.total) { html += '<strong>📊 Barème</strong><p>' + (data.bareme ? (typeof data.bareme === 'object' ? JSON.stringify(data.bareme) : data.bareme) : 'Total : ' + data.total + ' pts') + '</p>'; }
+    if (!html) html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
   } else if (typeof data === 'string') {
-    html = data
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-    html = '<p>' + html + '</p>';
-  } else {
-    html = '<p style="color:#c62828">Format de réponse inattendu.</p>';
-  }
-
-  // Mise à jour du header "Fiche générée" → "Devoir généré"
-  document.querySelector('.demo-result-header span').innerHTML =
-    '<i class="ti ti-check" style="margin-right:4px"></i> Devoir généré';
-
+    html = '<p>' + data.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+  } else { html = '<p style="color:#c62828">Format inattendu.</p>'; }
+  document.querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Devoir généré';
   document.getElementById('demo-result-body').innerHTML = html;
   document.getElementById('demo-result').classList.add('show');
   document.getElementById('demo-note').style.display = 'block';
   document.getElementById('demo-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ============================================================
-// DEMO GÉNÉRATION FICHE
-// ============================================================
 async function demoGenererFiche() {
   const matiere = document.getElementById('d-matiere').value;
   const classe = document.getElementById('d-classe').value;
   const lecon = document.getElementById('d-lecon').value.trim();
   const duree = document.getElementById('d-duree').value;
   if (!lecon) { alert('Entrez le titre de la leçon.'); return; }
-
   const btn = document.getElementById('btn-gen-fiche');
-  btn.disabled = true;
-  resetDemo();
+  btn.disabled = true; resetDemo();
   document.getElementById('demo-loading').classList.add('show');
   document.getElementById('loading-msg').textContent = "L'IA prépare votre fiche...";
-
-  // Remettre le header à l'état fiche
-  document.querySelector('.demo-result-header span').innerHTML =
-    '<i class="ti ti-check" style="margin-right:4px"></i> Fiche générée';
-
   try {
-    const resp = await fetch(BACKEND + '/ai/demo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'fiche', matiere, classe, titre: lecon, duree })
-    });
+    const resp = await fetch(BACKEND + '/ai/demo', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({type:'fiche', matiere, classe, titre:lecon, duree}) });
     const d = await resp.json();
-    if (!resp.ok) throw new Error(d.error || 'Erreur serveur (' + resp.status + ')');
+    if (!resp.ok) throw new Error(d.error || 'Erreur serveur');
     renderFicheDemo(d.data, lecon, matiere, classe);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML =
-      '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez dans quelques secondes.') + '</p>';
+    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
 }
 
-// ============================================================
-// DEMO GÉNÉRATION DEVOIR
-// ============================================================
 async function demoGenererDevoir() {
   const matiere = document.getElementById('dv-matiere').value;
   const classe = document.getElementById('dv-classe').value;
   const lecon = document.getElementById('dv-lecon').value.trim();
   const type_eval = document.getElementById('dv-type').value;
   if (!lecon) { alert('Entrez le thème évalué.'); return; }
-
   const btn = document.getElementById('btn-gen-devoir');
-  btn.disabled = true;
-  resetDemo();
+  btn.disabled = true; resetDemo();
   document.getElementById('demo-loading').classList.add('show');
   document.getElementById('loading-msg').textContent = "L'IA compose votre devoir...";
-
   try {
-    const resp = await fetch(BACKEND + '/ai/demo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'devoir', matiere, classe, titre: lecon, type_eval })
-    });
+    const resp = await fetch(BACKEND + '/ai/demo', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({type:'devoir', matiere, classe, titre:lecon, type_eval}) });
     const d = await resp.json();
-    if (!resp.ok) throw new Error(d.error || 'Erreur serveur (' + resp.status + ')');
+    if (!resp.ok) throw new Error(d.error || 'Erreur serveur');
     renderDevoirDemo(d.data, matiere, classe, type_eval);
   } catch(e) {
     document.getElementById('demo-loading').classList.remove('show');
-    document.getElementById('demo-result-body').innerHTML =
-      '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez dans quelques secondes.') + '</p>';
+    document.getElementById('demo-result-body').innerHTML = '<p style="color:#c62828"><i class="ti ti-alert-circle"></i> ' + (e.message || 'Erreur. Réessayez.') + '</p>';
     document.getElementById('demo-result').classList.add('show');
   }
   btn.disabled = false;
 }
 
-// ============================================================
-// COPIER RÉSULTAT
-// ============================================================
 function copyResult() {
-  const text = document.getElementById('demo-result-body').innerText;
-  navigator.clipboard.writeText(text).then(function() {
-    alert('Copié dans le presse-papiers !');
-  }).catch(function() {
-    alert('Copie non supportée sur ce navigateur.');
-  });
-}
-
-// ============================================================
-// PWA SERVICE WORKER
-// ============================================================
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(function() {});
+  navigator.clipboard.writeText(document.getElementById('demo-result-body').innerText)
+    .then(() => alert('Copié !'))
+    .catch(() => alert('Copie non supportée sur ce navigateur.'));
 }
 </script>
 </body>

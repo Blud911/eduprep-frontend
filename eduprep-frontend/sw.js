@@ -1,44 +1,69 @@
-const CACHE = 'eduprep-ci-v2';
-const OFFLINE_PAGE = '/app.html';
+// ============================================================
+// EduPrep CI — Service Worker v3
+// Strategie : Network First pour HTML, Cache First pour assets
+// Mise a jour automatique + bandeau iOS
+// ============================================================
 
-const PRECACHE = [
-  '/index.html',
+const CACHE_VERSION = 'eduprep-ci-v3';
+const OFFLINE_PAGE  = '/app.html';
+
+const PRECACHE_ASSETS = [
   '/app.html',
+  '/index.html',
   '/manifest.json',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
   '/assets/apple-touch-icon.png',
 ];
 
-// Installation
+// ============================================================
+// INSTALL — precache des assets essentiels
+// ============================================================
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(PRECACHE))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_VERSION)
+      .then(cache => cache.addAll(PRECACHE_ASSETS))
+      .then(() => self.skipWaiting()) // Active immediatement la nouvelle version
       .catch(() => self.skipWaiting())
   );
 });
 
-// Activation — nettoyage anciens caches
+// ============================================================
+// ACTIVATE — supprime les anciens caches + prend le controle
+// ============================================================
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
+      .then(keys => Promise.all(
+        keys
+          .filter(k => k !== CACHE_VERSION)
+          .map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim()) // Prend le controle de tous les onglets ouverts
+      .then(() => {
+        // Notifie les clients qu'une mise a jour est disponible
+        return self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' }));
+        });
+      })
   );
 });
 
-// Fetch
+// ============================================================
+// FETCH — strategies differentes selon le type de ressource
+// ============================================================
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // API calls — Network only, fallback JSON si hors ligne
+  // 1. API backend — Network Only avec fallback JSON offline
   if (url.hostname.includes('onrender.com') || url.hostname.includes('anthropic.com')) {
     e.respondWith(
       fetch(e.request).catch(() =>
         new Response(
-          JSON.stringify({ error: 'Hors ligne — reconnectez-vous pour utiliser l\'IA.', code: 'OFFLINE' }),
+          JSON.stringify({
+            error: 'Hors ligne — reconnectez-vous pour utiliser l\'IA.',
+            code: 'OFFLINE'
+          }),
           { status: 503, headers: { 'Content-Type': 'application/json' } }
         )
       )
@@ -46,26 +71,54 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Fonts & CDN — Stale While Revalidate
-  if (url.hostname.includes('googleapis') || url.hostname.includes('gstatic') || url.hostname.includes('jsdelivr')) {
+  // 2. Fonts & CDN externes — Stale While Revalidate
+  if (
+    url.hostname.includes('googleapis.com') ||
+    url.hostname.includes('gstatic.com') ||
+    url.hostname.includes('jsdelivr.net')
+  ) {
     e.respondWith(
-      caches.open(CACHE).then(cache =>
+      caches.open(CACHE_VERSION).then(cache =>
         cache.match(e.request).then(cached => {
-          const network = fetch(e.request).then(r => { cache.put(e.request, r.clone()); return r; }).catch(() => null);
-          return cached || network;
+          const networkFetch = fetch(e.request)
+            .then(response => {
+              cache.put(e.request, response.clone());
+              return response;
+            })
+            .catch(() => cached);
+          return cached || networkFetch;
         })
       )
     );
     return;
   }
 
-  // Assets locaux — Cache First, puis Network
+  // 3. Pages HTML — Network First (garantit les mises a jour)
+  if (e.request.destination === 'document' || e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then(response => {
+          // Met a jour le cache avec la nouvelle version
+          if (response.ok) {
+            caches.open(CACHE_VERSION).then(cache => cache.put(e.request, response.clone()));
+          }
+          return response;
+        })
+        .catch(() => {
+          // Offline : sert la page depuis le cache
+          return caches.match(e.request) || caches.match(OFFLINE_PAGE);
+        })
+    );
+    return;
+  }
+
+  // 4. Assets locaux (images, JSON) — Cache First puis Network
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
       return fetch(e.request).then(response => {
         if (response.ok && e.request.method === 'GET') {
-          caches.open(CACHE).then(c => c.put(e.request, response.clone()));
+          caches.open(CACHE_VERSION).then(c => c.put(e.request, response.clone()));
         }
         return response;
       }).catch(() => {
@@ -75,7 +128,21 @@ self.addEventListener('fetch', e => {
   );
 });
 
-// Push notifications (préparé pour usage futur)
+// ============================================================
+// MESSAGE — commandes depuis l'app
+// ============================================================
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (e.data?.type === 'GET_VERSION') {
+    e.ports[0]?.postMessage({ version: CACHE_VERSION });
+  }
+});
+
+// ============================================================
+// PUSH NOTIFICATIONS
+// ============================================================
 self.addEventListener('push', e => {
   const data = e.data?.json() || { title: 'EduPrep CI', body: 'Nouvelle notification' };
   e.waitUntil(
@@ -84,6 +151,7 @@ self.addEventListener('push', e => {
       icon: '/assets/icon-192.png',
       badge: '/assets/icon-192.png',
       tag: 'eduprep-notif',
+      requireInteraction: false,
     })
   );
 });

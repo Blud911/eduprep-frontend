@@ -26,7 +26,6 @@
 body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(--text); overflow-x: hidden; }
 h1,h2,h3 { font-family: 'Playfair Display', serif; }
 
-/* ============================================================ AUTH ============================================================ */
 .auth-screen {
   min-height: 100svh; display: flex; align-items: center; justify-content: center;
   background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 60%, #33691E 100%);
@@ -37,197 +36,69 @@ h1,h2,h3 { font-family: 'Playfair Display', serif; }
   padding: 2rem 1.5rem; width: 100%; max-width: 420px;
   box-shadow: var(--shadow-lg);
 }
-.auth-logo {
-  display: flex; align-items: center; gap: 10px; justify-content: center;
-  margin-bottom: 1.5rem;
-}
-.auth-logo-leaf {
-  width: 36px; height: 36px; background: var(--forest);
-  border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
-  display: flex; align-items: center; justify-content: center;
-}
+.auth-logo { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
+.auth-logo-leaf { width: 36px; height: 36px; background: var(--forest); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; }
 .auth-logo-leaf i { transform: rotate(45deg); color: var(--gold); font-size: 18px; }
 .auth-logo-text { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--forest); }
 .auth-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; text-align: center; margin-bottom: 0.25rem; }
 .auth-sub { font-size: 0.85rem; color: var(--text-3); text-align: center; margin-bottom: 1.5rem; }
 .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-.auth-tab {
-  flex: 1; padding: 10px; font-size: 0.875rem; font-weight: 500;
-  background: none; border: none; cursor: pointer; color: var(--text-3);
-  border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'Inter', sans-serif;
-  transition: all 0.15s;
-}
+.auth-tab { flex: 1; padding: 10px; font-size: 0.875rem; font-weight: 500; background: none; border: none; cursor: pointer; color: var(--text-3); border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'Inter', sans-serif; transition: all 0.15s; }
 .auth-tab.active { color: var(--forest); border-bottom-color: var(--forest); }
-
 .form-group { margin-bottom: 1rem; }
 .form-group label { display: block; font-size: 0.775rem; font-weight: 500; color: var(--text-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-group input, .form-group select {
-  width: 100%; padding: 10px 12px; border-radius: 8px;
-  border: 1px solid var(--border); font-size: 0.9rem;
-  font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface);
-  transition: border-color 0.15s;
-}
-.form-group input:focus, .form-group select:focus {
-  outline: none; border-color: var(--forest-light);
-  box-shadow: 0 0 0 3px rgba(27,94,32,0.08);
-}
-.btn-full {
-  width: 100%; padding: 12px; border-radius: var(--radius); font-size: 0.95rem;
-  font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-  background: var(--forest); color: var(--white);
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: background 0.15s; margin-top: 0.5rem;
-}
+.form-group input, .form-group select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--forest-light); box-shadow: 0 0 0 3px rgba(27,94,32,0.08); }
+.btn-full { width: 100%; padding: 12px; border-radius: var(--radius); font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; background: var(--forest); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; margin-top: 0.5rem; }
 .btn-full:hover { background: var(--forest-mid); }
 .btn-full:disabled { opacity: 0.6; cursor: not-allowed; }
 .auth-link { text-align: center; margin-top: 1rem; font-size: 0.825rem; color: var(--text-3); }
 .auth-link a { color: var(--forest); font-weight: 500; cursor: pointer; }
-.error-msg {
-  background: var(--danger-bg); border: 1px solid #EF9A9A; color: var(--danger);
-  padding: 8px 12px; border-radius: 8px; font-size: 0.825rem; margin-bottom: 1rem;
-  display: none;
-}
+.error-msg { background: var(--danger-bg); border: 1px solid #EF9A9A; color: var(--danger); padding: 8px 12px; border-radius: 8px; font-size: 0.825rem; margin-bottom: 1rem; display: none; }
 .error-msg.show { display: block; }
-.trial-badge {
-  background: var(--gold-light); border: 1px solid #FFD54F;
-  color: var(--gold-dark); padding: 8px 12px; border-radius: 8px;
-  font-size: 0.8rem; text-align: center; margin-bottom: 1rem;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-}
+.trial-badge { background: var(--gold-light); border: 1px solid #FFD54F; color: var(--gold-dark); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; text-align: center; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-/* ============================================================ APP LAYOUT ============================================================ */
 .app-layout { display: none; flex-direction: column; min-height: 100svh; }
 .app-layout.show { display: flex; }
-
-/* Top bar */
-.topbar {
-  background: var(--forest); color: var(--white);
-  padding: 0 1rem; height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 50;
-}
+.topbar { background: var(--forest); color: var(--white); padding: 0 1rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
 .topbar-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 .topbar-logo-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
 .topbar-right { display: flex; align-items: center; gap: 10px; }
 .topbar-user { font-size: 0.8rem; color: rgba(255,255,255,0.75); }
-.topbar-quota {
-  font-size: 0.75rem; background: rgba(249,168,37,0.2);
-  color: var(--gold); padding: 3px 8px; border-radius: 10px;
-}
-.btn-logout {
-  background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8);
-  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 16px;
-  transition: background 0.15s;
-}
+.topbar-quota { font-size: 0.75rem; background: rgba(249,168,37,0.2); color: var(--gold); padding: 3px 8px; border-radius: 10px; }
+.btn-logout { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s; }
 .btn-logout:hover { background: rgba(255,255,255,0.2); }
-
-/* Bottom nav */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-  background: var(--white); border-top: 1px solid var(--border);
-  display: flex; padding-bottom: env(safe-area-inset-bottom);
-}
-.nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  padding: 8px 4px; background: none; border: none; cursor: pointer;
-  color: var(--text-3); font-size: 0.65rem; font-family: 'Inter', sans-serif;
-  font-weight: 500; transition: color 0.15s; gap: 3px;
-}
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--white); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom); }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 0.65rem; font-family: 'Inter', sans-serif; font-weight: 500; transition: color 0.15s; gap: 3px; position: relative; }
 .nav-item i { font-size: 22px; }
 .nav-item.active { color: var(--forest); }
-.nav-item.active i { font-weight: 600; }
-
-/* Main content */
-.app-content {
-  flex: 1; padding: 1rem 1rem 80px;
-  max-width: 680px; margin: 0 auto; width: 100%;
-}
-
-/* Panels */
+.app-content { flex: 1; padding: 1rem 1rem 80px; max-width: 680px; margin: 0 auto; width: 100%; }
 .panel { display: none; }
 .panel.active { display: block; }
-
-/* Cards */
-.card {
-  background: var(--white); border-radius: var(--radius);
-  border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1rem;
-  box-shadow: var(--shadow);
-}
-.card-title {
-  font-family: 'Playfair Display', serif; font-size: 1rem;
-  margin-bottom: 1rem; color: var(--forest);
-  display: flex; align-items: center; gap: 8px;
-}
-.section-divider {
-  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--text-3); font-weight: 600; margin: 1.25rem 0 0.75rem;
-  display: flex; align-items: center; gap: 8px;
-}
+.card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+.card-title { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 1rem; color: var(--forest); display: flex; align-items: center; gap: 8px; }
+.section-divider { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); font-weight: 600; margin: 1.25rem 0 0.75rem; display: flex; align-items: center; gap: 8px; }
 .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-select, input, textarea {
-  width: 100%; padding: 9px 12px; border-radius: 8px;
-  border: 1px solid var(--border); font-size: 0.875rem;
-  font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface);
-  transition: border-color 0.15s;
-}
-select:focus, input:focus, textarea:focus {
-  outline: none; border-color: var(--forest-light);
-  box-shadow: 0 0 0 3px rgba(27,94,32,0.08);
-}
+select, input, textarea { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.875rem; font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--forest-light); box-shadow: 0 0 0 3px rgba(27,94,32,0.08); }
 textarea { resize: vertical; min-height: 80px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .form-group-app { margin-bottom: 10px; }
 .form-group-app label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--text-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* Chips */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.chip {
-  padding: 5px 12px; font-size: 0.8rem; border-radius: 20px;
-  border: 1px solid var(--border); cursor: pointer;
-  background: transparent; color: var(--text-2); font-family: 'Inter', sans-serif;
-  transition: all 0.12s;
-}
+.chip { padding: 5px 12px; font-size: 0.8rem; border-radius: 20px; border: 1px solid var(--border); cursor: pointer; background: transparent; color: var(--text-2); font-family: 'Inter', sans-serif; transition: all 0.12s; }
 .chip.active { background: var(--forest); color: var(--white); border-color: var(--forest); }
-
-/* Boutons */
-.btn-gen {
-  width: 100%; padding: 13px; border-radius: var(--radius);
-  background: var(--forest); color: var(--white); border: none;
-  font-size: 0.95rem; font-weight: 600; font-family: 'Inter', sans-serif;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: background 0.15s; margin-top: 4px;
-}
+.btn-gen { width: 100%; padding: 13px; border-radius: var(--radius); background: var(--forest); color: var(--white); border: none; font-size: 0.95rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; margin-top: 4px; }
 .btn-gen:hover { background: var(--forest-mid); }
 .btn-gen:disabled { opacity: 0.55; cursor: not-allowed; }
-.btn-sm {
-  padding: 6px 12px; border-radius: 8px; font-size: 0.8rem;
-  font-weight: 500; cursor: pointer; border: 1px solid var(--border);
-  background: transparent; color: var(--text-2); font-family: 'Inter', sans-serif;
-  display: inline-flex; align-items: center; gap: 5px; transition: background 0.12s;
-}
+.btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-2); font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: background 0.12s; }
 .btn-sm:hover { background: var(--forest-pale); }
-.btn-sm.gold { border-color: var(--gold); color: var(--gold-dark); background: var(--gold-light); }
-
-/* Résultat */
-.result-block {
-  display: none; border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; margin-top: 1rem;
-}
+.result-block { display: none; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 1rem; }
 .result-block.show { display: block; }
-.result-header {
-  background: var(--forest); padding: 10px 14px;
-  display: flex; align-items: center; justify-content: space-between;
-}
+.result-header { background: var(--forest); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
 .result-header-left { font-size: 0.85rem; font-weight: 600; color: var(--white); }
 .result-actions-row { display: flex; gap: 6px; }
-.btn-result-action {
-  width: 28px; height: 28px; border-radius: 6px;
-  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
-  color: var(--white); display: flex; align-items: center; justify-content: center;
-  font-size: 14px; transition: background 0.12px;
-}
+.btn-result-action { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.15); border: none; cursor: pointer; color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .btn-result-action:hover { background: rgba(255,255,255,0.25); }
 .result-body { padding: 1rem; font-size: 0.875rem; line-height: 1.7; color: var(--text-2); }
 .result-body strong { color: var(--text); display: block; margin: 10px 0 3px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -235,56 +106,26 @@ textarea { resize: vertical; min-height: 80px; }
 .result-body ul { padding-left: 1.2rem; }
 .result-body li { margin-bottom: 3px; }
 .result-body .phase-list { list-style: none; padding: 0; }
-.result-body .phase-item {
-  background: var(--forest-pale2); border-radius: 8px; padding: 8px 10px;
-  margin-bottom: 6px; font-size: 0.825rem;
-}
+.result-body .phase-item { background: var(--forest-pale2); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.825rem; }
 .result-body .phase-item strong { display: inline; text-transform: none; letter-spacing: 0; font-size: 0.825rem; color: var(--forest); }
-.result-body .q-item {
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 8px 10px; margin-bottom: 6px;
-}
+.result-body .q-item { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
 .result-body .q-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
 .result-body .q-type { font-size: 0.7rem; background: var(--forest-pale); color: var(--forest); padding: 2px 7px; border-radius: 10px; }
 .result-body .q-pts { font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); }
-
-/* Loading */
-.loading-block {
-  display: none; padding: 2rem; text-align: center; color: var(--text-3); font-size: 0.875rem;
-}
+.loading-block { display: none; padding: 2rem; text-align: center; color: var(--text-3); font-size: 0.875rem; }
 .loading-block.show { display: block; }
 .loading-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 8px; }
 .ldot { width: 7px; height: 7px; border-radius: 50%; background: var(--forest-light); animation: dp 1.2s ease-in-out infinite; }
 .ldot:nth-child(2){animation-delay:.2s} .ldot:nth-child(3){animation-delay:.4s}
 @keyframes dp{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
-
-/* Historique */
-.hist-item {
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer; transition: box-shadow 0.15s; margin-bottom: 8px;
-}
+.hist-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: box-shadow 0.15s; margin-bottom: 8px; }
 .hist-item:hover { box-shadow: var(--shadow-lg); }
-.hist-icon {
-  width: 38px; height: 38px; border-radius: 8px;
-  background: var(--forest-pale); color: var(--forest);
-  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
-}
+.hist-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--forest-pale); color: var(--forest); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .hist-info { flex: 1; min-width: 0; }
 .hist-title { font-size: 0.875rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hist-meta { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
-.hist-badge {
-  font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
-  border: 1px solid var(--border); color: var(--text-3); flex-shrink: 0;
-}
-
-/* Profil / abonnement */
-.sub-card {
-  background: linear-gradient(135deg, var(--forest) 0%, #33691E 100%);
-  border-radius: var(--radius-lg); padding: 1.25rem; color: var(--white);
-  margin-bottom: 1rem;
-}
+.hist-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); color: var(--text-3); flex-shrink: 0; }
+.sub-card { background: linear-gradient(135deg, var(--forest) 0%, #33691E 100%); border-radius: var(--radius-lg); padding: 1.25rem; color: var(--white); margin-bottom: 1rem; }
 .sub-plan { font-size: 0.75rem; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; }
 .sub-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin: 4px 0; }
 .sub-dates { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
@@ -292,61 +133,68 @@ textarea { resize: vertical; min-height: 80px; }
 .sub-quota-item { flex: 1; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; text-align: center; }
 .sub-quota-num { font-size: 1.2rem; font-weight: 700; color: var(--gold); display: block; }
 .sub-quota-label { font-size: 0.7rem; color: rgba(255,255,255,0.65); }
-
-/* Payment form */
-.payment-form {
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem;
-}
-.plan-option {
-  border: 1.5px solid var(--border); border-radius: 10px;
-  padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: border-color 0.15s;
-}
+.payment-form { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+.plan-option { border: 1.5px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.15s; }
 .plan-option.selected { border-color: var(--forest); background: var(--forest-pale); }
 .plan-option-name { font-weight: 600; font-size: 0.9rem; }
 .plan-option-price { font-size: 0.85rem; color: var(--forest); font-weight: 600; }
 .plan-option-desc { font-size: 0.75rem; color: var(--text-3); }
 .payment-methods { display: flex; gap: 8px; margin-bottom: 10px; }
-.pay-method {
-  flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border);
-  cursor: pointer; text-align: center; font-size: 0.75rem; font-weight: 600;
-  transition: all 0.12s;
-}
+.pay-method { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer; text-align: center; font-size: 0.75rem; font-weight: 600; transition: all 0.12s; }
 .pay-method.selected { border-color: var(--forest); background: var(--forest-pale); color: var(--forest); }
-
-/* Notifications dot */
-.notif-dot {
-  width: 7px; height: 7px; background: var(--gold);
-  border-radius: 50%; position: absolute; top: 6px; right: 6px;
-}
-.nav-item { position: relative; }
-
-/* Empty state */
+.notif-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; position: absolute; top: 6px; right: 6px; }
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-3); }
 .empty-state i { font-size: 40px; opacity: 0.25; display: block; margin-bottom: 12px; }
 .empty-state p { font-size: 0.9rem; }
+
+/* ===== BANDEAU IOS INSTALL ===== */
+.ios-install-banner {
+  display: none;
+  position: fixed; bottom: 72px; left: 12px; right: 12px; z-index: 200;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: slideUp 0.3s ease;
+}
+.ios-install-banner.show { display: flex; align-items: flex-start; gap: 12px; }
+.ios-banner-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--forest); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ios-banner-icon i { color: var(--gold); font-size: 22px; }
+.ios-banner-text { flex: 1; }
+.ios-banner-title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 3px; }
+.ios-banner-sub { font-size: 0.78rem; color: var(--text-3); line-height: 1.4; }
+.ios-banner-sub span { color: var(--forest); font-weight: 600; }
+.ios-banner-close { background: none; border: none; color: var(--text-3); font-size: 18px; cursor: pointer; padding: 0; flex-shrink: 0; line-height: 1; }
+.ios-banner-arrow { position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); width: 18px; height: 9px; overflow: hidden; }
+.ios-banner-arrow::after { content: ''; position: absolute; width: 14px; height: 14px; background: var(--white); border: 1px solid var(--border); transform: rotate(45deg); top: -8px; left: 2px; }
+
+/* ===== BANDEAU MISE A JOUR ===== */
+.update-banner {
+  display: none;
+  position: fixed; top: 56px; left: 0; right: 0; z-index: 100;
+  background: var(--forest-mid); color: var(--white);
+  padding: 10px 16px; font-size: 0.82rem;
+  align-items: center; gap: 10px; justify-content: center;
+}
+.update-banner.show { display: flex; }
+.btn-update { background: var(--gold); color: var(--forest); border: none; border-radius: 8px; padding: 5px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; flex-shrink: 0; }
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
 </head>
 <body>
 
-<!-- ============================================================ AUTH ============================================================ -->
+<!-- AUTH -->
 <div id="auth-screen" class="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-leaf"><i class="ti ti-leaf"></i></div>
       <span class="auth-logo-text">EduPrep CI</span>
     </div>
-
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('login',this)">Connexion</button>
       <button class="auth-tab" onclick="switchAuthTab('register',this)">Inscription</button>
     </div>
-
     <div id="auth-error" class="error-msg"></div>
-
-    <!-- LOGIN -->
     <div id="form-login">
       <div class="form-group">
         <label>Email</label>
@@ -361,58 +209,33 @@ textarea { resize: vertical; min-height: 80px; }
       </button>
       <p class="auth-link">Pas encore de compte ? <a onclick="switchAuthTab('register', document.querySelectorAll('.auth-tab')[1])">Inscription gratuite</a></p>
     </div>
-
-    <!-- REGISTER -->
     <div id="form-register" style="display:none">
       <div class="trial-badge"><i class="ti ti-gift"></i> 7 jours d'essai gratuit — sans carte bancaire</div>
-      <div class="form-group">
-        <label>Nom</label>
-        <input type="text" id="reg-nom" placeholder="Votre nom">
-      </div>
-      <div class="form-group">
-        <label>Prénom(s)</label>
-        <input type="text" id="reg-prenoms" placeholder="Vos prénoms">
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="reg-email" placeholder="votre@email.com" autocomplete="email">
-      </div>
-      <div class="form-group">
-        <label>Téléphone (Mobile Money)</label>
-        <input type="tel" id="reg-tel" placeholder="+225 0X XX XX XX XX">
-      </div>
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" id="reg-password" placeholder="8 caractères minimum" autocomplete="new-password">
-      </div>
-      <button class="btn-full" id="btn-register" onclick="doRegister()">
-        <i class="ti ti-user-plus"></i> Créer mon compte
-      </button>
+      <div class="form-group"><label>Nom</label><input type="text" id="reg-nom" placeholder="Votre nom"></div>
+      <div class="form-group"><label>Prénom(s)</label><input type="text" id="reg-prenoms" placeholder="Vos prénoms"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="votre@email.com" autocomplete="email"></div>
+      <div class="form-group"><label>Téléphone (Mobile Money)</label><input type="tel" id="reg-tel" placeholder="+225 0X XX XX XX XX"></div>
+      <div class="form-group"><label>Mot de passe</label><input type="password" id="reg-password" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+      <button class="btn-full" id="btn-register" onclick="doRegister()"><i class="ti ti-user-plus"></i> Créer mon compte</button>
       <p class="auth-link">Déjà inscrit ? <a onclick="switchAuthTab('login', document.querySelectorAll('.auth-tab')[0])">Se connecter</a></p>
     </div>
   </div>
 </div>
 
-<!-- ============================================================ APP ============================================================ -->
+<!-- APP -->
 <div id="app-layout" class="app-layout">
-
-  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar-logo">
-      <div class="topbar-logo-dot"></div>
-      EduPrep CI
-    </div>
+    <div class="topbar-logo"><div class="topbar-logo-dot"></div> EduPrep CI</div>
     <div class="topbar-right">
       <span class="topbar-quota" id="topbar-quota"></span>
       <span class="topbar-user" id="topbar-user"></span>
-      <button id="btn-install" onclick="installPWA()" title="Installer l'application" style="display:none;background:rgba(249,168,37,0.15);border:1px solid rgba(249,168,37,0.4);color:var(--gold);width:32px;height:32px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">
+      <button id="btn-install" onclick="installPWA()" title="Installer" style="display:none;background:rgba(249,168,37,0.15);border:1px solid rgba(249,168,37,0.4);color:var(--gold);width:32px;height:32px;border-radius:8px;cursor:pointer;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">
         <i class="ti ti-download"></i>
       </button>
       <button class="btn-logout" onclick="doLogout()" title="Déconnexion"><i class="ti ti-logout"></i></button>
     </div>
   </header>
 
-  <!-- CONTENU -->
   <main class="app-content">
 
     <!-- PANEL COURS -->
@@ -424,11 +247,24 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Matière</label>
             <select id="f-matiere">
-              <option>Mathématiques</option><option>Français</option>
-              <option>SVT</option><option>Physique-Chimie</option>
-              <option>Histoire-Géographie</option><option>Anglais</option>
-              <option>Philosophie</option><option>Économie/Gestion</option>
-              <option>Informatique</option><option>EPS</option>
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="Informatique">Informatique</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group-app">
@@ -441,8 +277,14 @@ textarea { resize: vertical; min-height: 80px; }
               <optgroup label="Collège">
                 <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
               </optgroup>
-              <optgroup label="Lycée">
-                <option>2nde</option><option>1ère</option><option>Terminale</option>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
               </optgroup>
             </select>
           </div>
@@ -508,10 +350,23 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Matière</label>
             <select id="dv-matiere">
-              <option>Mathématiques</option><option>Français</option>
-              <option>SVT</option><option>Physique-Chimie</option>
-              <option>Histoire-Géographie</option><option>Anglais</option>
-              <option>Philosophie</option>
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group-app">
@@ -524,8 +379,14 @@ textarea { resize: vertical; min-height: 80px; }
               <optgroup label="Collège">
                 <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
               </optgroup>
-              <optgroup label="Lycée">
-                <option>2nde</option><option>1ère</option><option>Terminale</option>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
               </optgroup>
             </select>
           </div>
@@ -607,20 +468,15 @@ textarea { resize: vertical; min-height: 80px; }
     <div id="panel-historique" class="panel">
       <h2 style="font-size:1.1rem;margin-bottom:1rem;color:var(--forest)">Mes préparations</h2>
       <div id="hist-list">
-        <div class="empty-state">
-          <i class="ti ti-folders"></i>
-          <p>Aucune préparation sauvegardée.<br>Générez votre premier cours !</p>
-        </div>
+        <div class="empty-state"><i class="ti ti-folders"></i><p>Aucune préparation sauvegardée.<br>Générez votre premier cours !</p></div>
       </div>
     </div>
 
     <!-- PANEL ABONNEMENT -->
     <div id="panel-abonnement" class="panel">
       <div id="sub-info"></div>
-
       <div class="payment-form" id="payment-section">
         <div class="card-title" style="margin-bottom:0.75rem"><i class="ti ti-credit-card"></i> Renouveler mon abonnement</div>
-
         <div class="section-divider">Choisir un plan</div>
         <div id="plan-options">
           <div class="plan-option selected" data-plan="starter" onclick="selectPlan(this)">
@@ -636,18 +492,15 @@ textarea { resize: vertical; min-height: 80px; }
             <div class="plan-option-price">30 000 FCFA/mois</div>
           </div>
         </div>
-
         <div class="section-divider">Méthode de paiement</div>
         <div class="payment-methods">
           <div class="pay-method selected" data-method="wave" onclick="selectMethod(this)">Wave CI</div>
           <div class="pay-method" data-method="orange_money" onclick="selectMethod(this)">Orange Money</div>
           <div class="pay-method" data-method="mtn_money" onclick="selectMethod(this)">MTN Money</div>
         </div>
-
         <div style="background:var(--gold-light);border:1px solid #FFD54F;border-radius:8px;padding:10px;font-size:0.8rem;color:var(--gold-dark);margin-bottom:1rem">
           <strong>Comment payer :</strong> Envoyez le montant au numéro fourni, puis entrez la référence de transaction ci-dessous.
         </div>
-
         <div class="form-group-app">
           <label>Référence de transaction</label>
           <input type="text" id="pay-reference" placeholder="Ex : TXN-WAVE-123456">
@@ -656,34 +509,42 @@ textarea { resize: vertical; min-height: 80px; }
           <label>Numéro Mobile Money utilisé</label>
           <input type="tel" id="pay-telephone" placeholder="+225 0X XX XX XX XX">
         </div>
-
         <button class="btn-gen" id="btn-pay" onclick="submitPayment()">
           <i class="ti ti-send"></i> Soumettre le paiement
         </button>
-        <p style="font-size:0.75rem;color:var(--text-3);text-align:center;margin-top:8px">
-          Activation sous 24h après vérification par notre équipe
-        </p>
+        <p style="font-size:0.75rem;color:var(--text-3);text-align:center;margin-top:8px">Activation sous 24h après vérification par notre équipe</p>
       </div>
     </div>
 
   </main>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
-    <button class="nav-item active" onclick="switchPanel('cours',this)">
-      <i class="ti ti-clipboard-list"></i> Cours
-    </button>
-    <button class="nav-item" onclick="switchPanel('devoir',this)">
-      <i class="ti ti-pencil"></i> Devoir
-    </button>
-    <button class="nav-item" onclick="switchPanel('historique',this)" id="nav-hist">
-      <i class="ti ti-history"></i> Historique
-    </button>
-    <button class="nav-item" onclick="switchPanel('abonnement',this)" id="nav-sub">
-      <i class="ti ti-credit-card"></i> Abonnement
-    </button>
+    <button class="nav-item active" onclick="switchPanel('cours',this)"><i class="ti ti-clipboard-list"></i> Cours</button>
+    <button class="nav-item" onclick="switchPanel('devoir',this)"><i class="ti ti-pencil"></i> Devoir</button>
+    <button class="nav-item" onclick="switchPanel('historique',this)" id="nav-hist"><i class="ti ti-history"></i> Historique</button>
+    <button class="nav-item" onclick="switchPanel('abonnement',this)" id="nav-sub"><i class="ti ti-credit-card"></i> Abonnement</button>
   </nav>
+</div>
 
+<!-- BANDEAU MISE A JOUR -->
+<div class="update-banner" id="update-banner">
+  <i class="ti ti-refresh"></i>
+  <span>Une nouvelle version d'EduPrep CI est disponible !</span>
+  <button class="btn-update" onclick="applyUpdate()">Mettre à jour</button>
+  <button onclick="document.getElementById('update-banner').classList.remove('show')" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:18px;margin-left:4px">×</button>
+</div>
+
+<!-- BANDEAU IOS INSTALL -->
+<div class="ios-install-banner" id="ios-banner">
+  <div class="ios-banner-icon"><i class="ti ti-leaf"></i></div>
+  <div class="ios-banner-text">
+    <div class="ios-banner-title">Installer EduPrep CI</div>
+    <div class="ios-banner-sub">
+      Appuyez sur <span>⎙ Partager</span> puis <span>« Sur l'écran d'accueil »</span> pour installer l'application.
+    </div>
+  </div>
+  <button class="ios-banner-close" onclick="closeIosBanner()"><i class="ti ti-x"></i></button>
+  <div class="ios-banner-arrow"></div>
 </div>
 
 <script>
@@ -693,56 +554,99 @@ let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
 let currentFiche = null, currentDevoir = null;
 let savedFicheId = null, savedDevoirId = null;
-
-// ============================================================
-// PWA INSTALL
-// ============================================================
 let deferredPrompt = null;
+let swRegistration = null;
+let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+let isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
+// Android — bouton install natif
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
   const btn = document.getElementById('btn-install');
-  if (btn) { btn.style.display = 'flex'; }
+  if (btn) btn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  showToast('EduPrep CI installé avec succès !');
+  const btn = document.getElementById('btn-install');
+  if (btn) btn.style.display = 'none';
+  deferredPrompt = null;
+  closeIosBanner();
 });
 
 async function installPWA() {
-  if (!deferredPrompt) {
-    showToast('Application déjà installée ou navigateur non compatible.');
-    return;
-  }
+  if (!deferredPrompt) { showToast('Application déjà installée ou navigateur non compatible.'); return; }
   deferredPrompt.prompt();
   const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') showToast('EduPrep CI installé avec succès !');
+  if (outcome === 'accepted') showToast('EduPrep CI installé !');
   deferredPrompt = null;
   document.getElementById('btn-install').style.display = 'none';
 }
 
-window.addEventListener('appinstalled', () => {
-  showToast('EduPrep CI installé !');
-  document.getElementById('btn-install').style.display = 'none';
-  deferredPrompt = null;
-});
+// iOS — bandeau manuel
+function showIosBannerIfNeeded() {
+  if (!isIOS || isInStandaloneMode) return;
+  const dismissed = localStorage.getItem('ios_banner_dismissed');
+  if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 3600 * 1000) return;
+  setTimeout(() => {
+    document.getElementById('ios-banner').classList.add('show');
+  }, 3000);
+}
 
-// ============================================================
-// INIT
-// ============================================================
+function closeIosBanner() {
+  document.getElementById('ios-banner').classList.remove('show');
+  localStorage.setItem('ios_banner_dismissed', Date.now().toString());
+}
+
+// Mise à jour SW
+function applyUpdate() {
+  if (swRegistration?.waiting) {
+    swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+  }
+  window.location.reload();
+}
+
+// Ecoute les messages du SW
+function listenSW() {
+  if (!navigator.serviceWorker) return;
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SW_UPDATED') {
+      document.getElementById('update-banner').classList.add('show');
+    }
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    document.getElementById('update-banner').classList.add('show');
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-  if (window.location.hash === '#register') {
-    switchAuthTab('register', document.querySelectorAll('.auth-tab')[1]);
+  if (window.location.hash === '#register') switchAuthTab('register', document.querySelectorAll('.auth-tab')[1]);
+  if (token && user) { showApp(); loadHistory(); refreshSubscription(); }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => {
+        swRegistration = reg;
+        // Vérifie si une mise à jour est en attente
+        if (reg.waiting) {
+          document.getElementById('update-banner').classList.add('show');
+        }
+        // Détecte une mise à jour future
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker?.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              document.getElementById('update-banner').classList.add('show');
+            }
+          });
+        });
+      })
+      .catch(() => {});
+    listenSW();
   }
-  if (token && user) {
-    showApp();
-    loadHistory();
-    // Rafraîchir les quotas au démarrage depuis le serveur
-    refreshSubscription();
-  }
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  showIosBannerIfNeeded();
 });
 
-// ============================================================
-// AUTH
-// ============================================================
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -758,19 +662,12 @@ async function doLogin() {
   const btn = document.getElementById('btn-login');
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Connexion...';
   try {
-    const r = await fetch(`${API}/auth/login`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({email, password})
-    });
+    const r = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error); btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> Se connecter'; return; }
-    storeSession(d);
-    showApp();
-    loadHistory();
-  } catch(e) {
-    showAuthError('Erreur de connexion. Vérifiez votre connexion internet.');
-  }
-  btn.disabled=false; btn.innerHTML='<i class="ti ti-login"></i> Se connecter';
+    if (!r.ok) { showAuthError(d.error); return; }
+    storeSession(d); showApp(); loadHistory();
+  } catch(e) { showAuthError('Erreur de connexion. Vérifiez votre connexion internet.'); }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Se connecter';
 }
 
 async function doRegister() {
@@ -782,165 +679,101 @@ async function doRegister() {
   if (!nom || !email || !password) return showAuthError('Nom, email et mot de passe requis.');
   if (password.length < 8) return showAuthError('Mot de passe : 8 caractères minimum.');
   const btn = document.getElementById('btn-register');
-  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Création...';
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Création...';
   try {
-    const r = await fetch(`${API}/auth/register`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({nom, prenoms, email, telephone, password})
-    });
+    const r = await fetch(`${API}/auth/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({nom, prenoms, email, telephone, password}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error); btn.disabled=false; btn.innerHTML='<i class="ti ti-user-plus"></i> Créer mon compte'; return; }
-    storeSession(d);
-    showApp();
-    loadHistory();
-  } catch(e) {
-    showAuthError('Erreur réseau. Réessayez.');
-  }
-  btn.disabled=false; btn.innerHTML='<i class="ti ti-user-plus"></i> Créer mon compte';
+    if (!r.ok) { showAuthError(d.error); return; }
+    storeSession(d); showApp(); loadHistory();
+  } catch(e) { showAuthError('Erreur réseau. Réessayez.'); }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-user-plus"></i> Créer mon compte';
 }
 
-// ============================================================
-// FIX : storeSession normalise les deux formats possibles
-// - /login et /me  renvoient { subscription: { plan, fiches_utilisees, ... } }
-// - /register      renvoie  { trial: { fin, fiches, devoirs } } sans subscription
-// ============================================================
 function storeSession(d) {
-  token = d.accessToken;
-  user = d.user;
-
+  token = d.accessToken; user = d.user;
   if (d.subscription) {
-    // Format login / /me : objet complet
     subscription = d.subscription;
   } else if (d.trial) {
-    // Format register : on construit un objet subscription normalisé
-    subscription = {
-      plan: 'trial',
-      status: 'trial',
-      date_fin: d.trial.fin,
-      fiches_limite: d.trial.fiches || 5,
-      devoirs_limite: d.trial.devoirs || 3,
-      fiches_utilisees: 0,
-      devoirs_utilises: 0,
-    };
-  } else {
-    subscription = null;
-  }
-
+    subscription = { plan:'trial', status:'trial', date_fin:d.trial.fin, fiches_limite:d.trial.fiches||5, devoirs_limite:d.trial.devoirs||3, fiches_utilisees:0, devoirs_utilises:0 };
+  } else { subscription = null; }
   localStorage.setItem('edp_token', token);
   localStorage.setItem('edp_user', JSON.stringify(user));
   localStorage.setItem('edp_sub', JSON.stringify(subscription));
 }
 
-function showAuthError(msg) {
-  const el = document.getElementById('auth-error');
-  el.textContent = msg; el.classList.add('show');
-}
+function showAuthError(msg) { const el=document.getElementById('auth-error'); el.textContent=msg; el.classList.add('show'); }
 
-// ============================================================
-// FIX : refreshSubscription — recharge depuis /auth/me et met
-// à jour topbar + panel abonnement
-// ============================================================
 async function refreshSubscription() {
   try {
-    const r = await fetch(`${API}/auth/me`, {
-      headers: {'Authorization': 'Bearer ' + token}
-    });
+    const r = await fetch(`${API}/auth/me`, { headers:{'Authorization':'Bearer '+token} });
     if (!r.ok) return;
     const d = await r.json();
-    // /auth/me renvoie toujours { user, subscription }
     subscription = d.subscription || subscription;
     localStorage.setItem('edp_sub', JSON.stringify(subscription));
-    updateQuotaDisplay();
-    updateSubPanel();
+    updateQuotaDisplay(); updateSubPanel();
   } catch(e) {}
 }
 
 function doLogout() {
-  localStorage.removeItem('edp_token');
-  localStorage.removeItem('edp_user');
-  localStorage.removeItem('edp_sub');
-  token = null; user = null; subscription = null;
-  document.getElementById('auth-screen').style.display = 'flex';
+  localStorage.removeItem('edp_token'); localStorage.removeItem('edp_user'); localStorage.removeItem('edp_sub');
+  token=null; user=null; subscription=null;
+  document.getElementById('auth-screen').style.display='flex';
   document.getElementById('app-layout').classList.remove('show');
 }
 
-// ============================================================
-// APP
-// ============================================================
 function showApp() {
-  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-layout').classList.add('show');
-  document.getElementById('topbar-user').textContent = user?.nom || '';
-  updateQuotaDisplay();
-  updateSubPanel();
+  document.getElementById('topbar-user').textContent = user?.nom||'';
+  updateQuotaDisplay(); updateSubPanel();
 }
 
-// ============================================================
-// FIX : updateQuotaDisplay lit les bons champs
-// ============================================================
 function updateQuotaDisplay() {
-  if (!subscription) {
-    document.getElementById('topbar-quota').textContent = '';
-    return;
-  }
-  const used  = subscription.fiches_utilisees ?? 0;
-  const limit = subscription.fiches_limite ?? 5;
-  const f = limit === -1 ? '∞' : `${used}/${limit}`;
-  document.getElementById('topbar-quota').textContent = `${f} fiches`;
+  if (!subscription) { document.getElementById('topbar-quota').textContent=''; return; }
+  const used=subscription.fiches_utilisees??0, limit=subscription.fiches_limite??5;
+  document.getElementById('topbar-quota').textContent = `${limit===-1?'∞':used+'/'+limit} fiches`;
 }
 
 function switchPanel(name, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
 }
 
-// ============================================================
-// GÉNÉRATION FICHE
-// ============================================================
 async function genererFiche() {
-  const matiere = document.getElementById('f-matiere').value;
-  const classe = document.getElementById('f-classe').value;
-  const lecon = document.getElementById('f-lecon').value.trim();
-  const duree = document.getElementById('f-duree').value;
-  const type_seance = document.getElementById('f-type').value;
-  const prerequis = document.getElementById('f-prerequis').value.trim();
+  const matiere=document.getElementById('f-matiere').value;
+  const classe=document.getElementById('f-classe').value;
+  const lecon=document.getElementById('f-lecon').value.trim();
+  const duree=document.getElementById('f-duree').value;
+  const type_seance=document.getElementById('f-type').value;
+  const prerequis=document.getElementById('f-prerequis').value.trim();
   if (!lecon) { alert('Entrez le titre de la leçon.'); return; }
-
-  const btn = document.getElementById('btn-gen-fiche');
+  const btn=document.getElementById('btn-gen-fiche');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Génération...';
   document.getElementById('res-fiche').classList.remove('show');
   document.getElementById('load-fiche').classList.add('show');
-
   try {
-    const r = await fetch(`${API}/ai/fiche`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({matiere, classe, titre_lecon: lecon, duree_minutes: parseInt(duree), type_seance, prerequis})
-    });
-    const d = await r.json();
-    if (!r.ok) { alert(d.error || 'Erreur de génération.'); return; }
-    currentFiche = { data: d.fiche, meta: {matiere, classe, lecon, duree} };
-    renderFiche(d.fiche, lecon, matiere, classe);
-    savedFicheId = null;
-    // Recharge les quotas depuis le serveur pour refléter la consommation réelle
+    const r=await fetch(`${API}/ai/fiche`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,duree_minutes:parseInt(duree),type_seance,prerequis})});
+    const d=await r.json();
+    if (!r.ok) { alert(d.error||'Erreur de génération.'); return; }
+    currentFiche={data:d.fiche,meta:{matiere,classe,lecon,duree}};
+    renderFiche(d.fiche,lecon,matiere,classe);
+    savedFicheId=null;
     await refreshSubscription();
-  } catch(e) {
-    alert('Erreur réseau.');
-  }
+  } catch(e) { alert('Erreur réseau.'); }
   document.getElementById('load-fiche').classList.remove('show');
   btn.disabled=false; btn.innerHTML='<i class="ti ti-sparkles"></i> Générer la fiche';
 }
 
-function renderFiche(f, lecon, matiere, classe) {
-  const phases = (f.phases||[]).map(p => `<li class="phase-item"><strong>${p.nom}</strong> · ${p.duree} — ${p.desc}</li>`).join('');
-  const objs = (f.objectifs_specifiques||[]).map(o=>`<li>${o}</li>`).join('');
-  const mat = (f.materiel||[]).join(', ');
-  const comp = (f.competences||[]).map(c=>`<li>${c}</li>`).join('');
-  const prol = (f.prolongements||[]).map(p=>`<li>${p}</li>`).join('');
-  document.getElementById('res-fiche-title').textContent = `${lecon} — ${matiere} ${classe}`;
-  document.getElementById('res-fiche-body').innerHTML = `
+function renderFiche(f,lecon,matiere,classe) {
+  const phases=(f.phases||[]).map(p=>`<li class="phase-item"><strong>${p.nom}</strong> · ${p.duree} — ${p.desc}</li>`).join('');
+  const objs=(f.objectifs_specifiques||[]).map(o=>`<li>${o}</li>`).join('');
+  const mat=(f.materiel||[]).join(', ');
+  const comp=(f.competences||[]).map(c=>`<li>${c}</li>`).join('');
+  const prol=(f.prolongements||[]).map(p=>`<li>${p}</li>`).join('');
+  document.getElementById('res-fiche-title').textContent=`${lecon} — ${matiere} ${classe}`;
+  document.getElementById('res-fiche-body').innerHTML=`
     <strong>Objectif général</strong>${f.objectif_general||''}
     <strong>Objectifs spécifiques</strong><ul>${objs}</ul>
     ${mat?`<strong>Matériel</strong>${mat}`:''}
@@ -952,59 +785,44 @@ function renderFiche(f, lecon, matiere, classe) {
   document.getElementById('res-fiche').classList.add('show');
 }
 
-// ============================================================
-// GÉNÉRATION DEVOIR
-// ============================================================
 async function genererDevoir() {
-  const matiere = document.getElementById('dv-matiere').value;
-  const classe = document.getElementById('dv-classe').value;
-  const lecon = document.getElementById('dv-lecon').value.trim();
-  const type_eval = document.getElementById('dv-type').value;
-  const duree = document.getElementById('dv-duree').value;
-  const points = document.getElementById('dv-points').value;
-  const diff = document.getElementById('dv-diff').value === '1';
-  const niveaux = [...document.querySelectorAll('#chips-niveaux .chip.active')].map(c=>c.textContent.toLowerCase());
+  const matiere=document.getElementById('dv-matiere').value;
+  const classe=document.getElementById('dv-classe').value;
+  const lecon=document.getElementById('dv-lecon').value.trim();
+  const type_eval=document.getElementById('dv-type').value;
+  const duree=document.getElementById('dv-duree').value;
+  const points=document.getElementById('dv-points').value;
+  const diff=document.getElementById('dv-diff').value==='1';
+  const niveaux=[...document.querySelectorAll('#chips-niveaux .chip.active')].map(c=>c.textContent.toLowerCase());
   if (!lecon) { alert('Entrez le thème évalué.'); return; }
-
-  const btn = document.getElementById('btn-gen-devoir');
+  const btn=document.getElementById('btn-gen-devoir');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Composition...';
   document.getElementById('res-devoir').classList.remove('show');
   document.getElementById('load-devoir').classList.add('show');
-
   try {
-    const r = await fetch(`${API}/ai/devoir`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({matiere, classe, titre_lecon: lecon, type_eval, duree_minutes: parseInt(duree), total_points: parseInt(points), niveaux_taxonomiques: niveaux, avec_variantes: diff, avec_corrige: true})
-    });
-    const d = await r.json();
-    if (!r.ok) { alert(d.error || 'Erreur.'); return; }
-    currentDevoir = { data: d.devoir, meta: {matiere, classe, lecon, type_eval, points} };
-    renderDevoir(d.devoir, lecon, matiere, classe, type_eval, points);
-    savedDevoirId = null;
-    // Recharge les quotas depuis le serveur pour refléter la consommation réelle
+    const r=await fetch(`${API}/ai/devoir`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,type_eval,duree_minutes:parseInt(duree),total_points:parseInt(points),niveaux_taxonomiques:niveaux,avec_variantes:diff,avec_corrige:true})});
+    const d=await r.json();
+    if (!r.ok) { alert(d.error||'Erreur.'); return; }
+    currentDevoir={data:d.devoir,meta:{matiere,classe,lecon,type_eval,points}};
+    renderDevoir(d.devoir,lecon,matiere,classe,type_eval,points);
+    savedDevoirId=null;
     await refreshSubscription();
-  } catch(e) {
-    alert('Erreur réseau.');
-  }
+  } catch(e) { alert('Erreur réseau.'); }
   document.getElementById('load-devoir').classList.remove('show');
   btn.disabled=false; btn.innerHTML='<i class="ti ti-file-text"></i> Composer le devoir';
 }
 
-function renderDevoir(d, lecon, matiere, classe, type, total) {
-  const qs = (d.questions||[]).map(q => `
+function renderDevoir(d,lecon,matiere,classe,type,total) {
+  const qs=(d.questions||[]).map(q=>`
     <div class="q-item">
-      <div class="q-header">
-        <span class="q-type">${q.type||'Question'}</span>
-        <span class="q-pts">${q.points} pt${q.points>1?'s':''}</span>
-      </div>
+      <div class="q-header"><span class="q-type">${q.type||'Question'}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
       <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Q${q.numero}.</strong> ${q.enonce}</div>
-      ${q.options ? `<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.join(' &nbsp;·&nbsp; ')}</div>` : ''}
-      ${q.bareme ? `<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>` : ''}
+      ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.join(' &nbsp;·&nbsp; ')}</div>`:''}
+      ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>`:''}
     </div>`).join('');
-  const totalCalc = (d.questions||[]).reduce((s,q)=>s+(q.points||0),0);
-  document.getElementById('res-devoir-title').textContent = `${d.titre||type} — ${matiere} ${classe}`;
-  document.getElementById('res-devoir-body').innerHTML = `
+  const totalCalc=(d.questions||[]).reduce((s,q)=>s+(q.points||0),0);
+  document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
+  document.getElementById('res-devoir-body').innerHTML=`
     ${d.consigne?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${d.consigne}</em>`:''}
     ${qs}
     <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Total : ${totalCalc} / ${total}</div>
@@ -1014,124 +832,63 @@ function renderDevoir(d, lecon, matiere, classe, type, total) {
   document.getElementById('res-devoir').classList.add('show');
 }
 
-// ============================================================
-// SAVE / EXPORT
-// ============================================================
 async function saveFiche() {
   if (!currentFiche) return;
-  const {data:f, meta} = currentFiche;
+  const {data:f,meta}=currentFiche;
   try {
-    const r = await fetch(`${API}/content/fiches`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({
-        titre: meta.lecon, matiere: meta.matiere, classe: meta.classe,
-        duree_minutes: meta.duree,
-        objectif_general: f.objectif_general,
-        objectifs_specifiques: f.objectifs_specifiques,
-        prerequis: f.prerequis, materiel: f.materiel,
-        phases: f.phases, competences: f.competences,
-        evaluation: f.evaluation, prolongements: f.prolongements,
-      })
-    });
-    const d = await r.json();
-    if (r.ok) {
-      savedFicheId = d.fiche?.id;
-      showToast('Fiche sauvegardée !');
-      loadHistory();
-    } else { alert(d.error); }
+    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
+    const d=await r.json();
+    if (r.ok) { savedFicheId=d.fiche?.id; showToast('Fiche sauvegardée !'); loadHistory(); }
+    else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
 }
 
 async function saveDevoir() {
   if (!currentDevoir) return;
-  const {data:dv, meta} = currentDevoir;
+  const {data:dv,meta}=currentDevoir;
   try {
-    const r = await fetch(`${API}/content/devoirs`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({
-        titre: dv.titre||meta.lecon, matiere: meta.matiere, classe: meta.classe,
-        type_eval: meta.type_eval, total_points: meta.points,
-        consigne: dv.consigne, questions: dv.questions,
-        variante_faible: dv.variante_faible, variante_fort: dv.variante_fort,
-        corrige_complet: dv.corrige_complet,
-      })
-    });
-    const d = await r.json();
-    if (r.ok) {
-      savedDevoirId = d.devoir?.id;
-      showToast('Devoir sauvegardé !');
-      loadHistory();
-    } else { alert(d.error); }
+    const r=await fetch(`${API}/content/devoirs`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:dv.titre||meta.lecon,matiere:meta.matiere,classe:meta.classe,type_eval:meta.type_eval,total_points:meta.points,consigne:dv.consigne,questions:dv.questions,variante_faible:dv.variante_faible,variante_fort:dv.variante_fort,corrige_complet:dv.corrige_complet})});
+    const d=await r.json();
+    if (r.ok) { savedDevoirId=d.devoir?.id; showToast('Devoir sauvegardé !'); loadHistory(); }
+    else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
 }
 
-function exportPDF(type) {
-  showToast('Export PDF disponible dans le plan Pro.');
-}
+function exportPDF(type) { showToast('Export PDF disponible dans le plan Pro.'); }
+function copyResult(type) { navigator.clipboard.writeText(document.getElementById('res-'+type+'-body').innerText).then(()=>showToast('Copié !')); }
 
-function copyResult(type) {
-  const el = document.getElementById('res-' + type + '-body');
-  navigator.clipboard.writeText(el.innerText).then(()=>showToast('Copié !'));
-}
-
-// ============================================================
-// HISTORIQUE
-// ============================================================
 async function loadHistory() {
   try {
-    const [rf, rd] = await Promise.all([
-      fetch(`${API}/content/fiches?limit=10`, {headers:{'Authorization':'Bearer '+token}}),
-      fetch(`${API}/content/devoirs?limit=10`, {headers:{'Authorization':'Bearer '+token}})
-    ]);
-    const df = await rf.json();
-    const dd = await rd.json();
-    const items = [
-      ...(df.fiches||[]).map(f=>({...f, _type:'fiche'})),
-      ...(dd.devoirs||[]).map(d=>({...d, _type:'devoir'})),
-    ].sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+    const [rf,rd]=await Promise.all([fetch(`${API}/content/fiches?limit=10`,{headers:{'Authorization':'Bearer '+token}}),fetch(`${API}/content/devoirs?limit=10`,{headers:{'Authorization':'Bearer '+token}})]);
+    const df=await rf.json(), dd=await rd.json();
+    const items=[...(df.fiches||[]).map(f=>({...f,_type:'fiche'})),...(dd.devoirs||[]).map(d=>({...d,_type:'devoir'}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
     renderHistory(items);
   } catch(e){}
 }
 
 function renderHistory(items) {
-  const el = document.getElementById('hist-list');
-  if (!items.length) {
-    el.innerHTML = '<div class="empty-state"><i class="ti ti-folders"></i><p>Aucune préparation sauvegardée.</p></div>';
-    return;
-  }
-  el.innerHTML = items.map(item => `
+  const el=document.getElementById('hist-list');
+  if (!items.length) { el.innerHTML='<div class="empty-state"><i class="ti ti-folders"></i><p>Aucune préparation sauvegardée.</p></div>'; return; }
+  el.innerHTML=items.map(item=>`
     <div class="hist-item">
       <div class="hist-icon"><i class="ti ti-${item._type==='fiche'?'clipboard-list':'file-text'}"></i></div>
-      <div class="hist-info">
-        <div class="hist-title">${item.titre}</div>
-        <div class="hist-meta">${item.matiere}${item.classe?' · '+item.classe:''} · ${new Date(item.created_at).toLocaleDateString('fr-FR')}</div>
-      </div>
+      <div class="hist-info"><div class="hist-title">${item.titre}</div><div class="hist-meta">${item.matiere}${item.classe?' · '+item.classe:''} · ${new Date(item.created_at).toLocaleDateString('fr-FR')}</div></div>
       <span class="hist-badge">${item._type==='fiche'?'Cours':'Devoir'}</span>
     </div>`).join('');
 }
 
-// ============================================================
-// ABONNEMENT
-// ============================================================
 function updateSubPanel() {
-  const sub = subscription;
-  if (!sub) {
-    document.getElementById('sub-info').innerHTML = '<div class="card" style="text-align:center;padding:1.5rem"><p style="color:var(--text-3)">Aucun abonnement actif.</p></div>';
-    return;
-  }
-  const jours = sub.date_fin ? Math.max(0, Math.ceil((new Date(sub.date_fin)-new Date())/(86400000))) : '∞';
-  const fUsed  = sub.fiches_utilisees ?? 0;
-  const fLimit = sub.fiches_limite === -1 ? '∞' : (sub.fiches_limite ?? 5);
-  const dUsed  = sub.devoirs_utilises ?? 0;
-  const dLimit = sub.devoirs_limite === -1 ? '∞' : (sub.devoirs_limite ?? 3);
-  const planLabel = (sub.plan||'Trial').charAt(0).toUpperCase()+(sub.plan||'Trial').slice(1);
-  document.getElementById('sub-info').innerHTML = `
+  const sub=subscription;
+  if (!sub) { document.getElementById('sub-info').innerHTML='<div class="card" style="text-align:center;padding:1.5rem"><p style="color:var(--text-3)">Aucun abonnement actif.</p></div>'; return; }
+  const jours=sub.date_fin?Math.max(0,Math.ceil((new Date(sub.date_fin)-new Date())/86400000)):'∞';
+  const fUsed=sub.fiches_utilisees??0, fLimit=sub.fiches_limite===-1?'∞':(sub.fiches_limite??5);
+  const dUsed=sub.devoirs_utilises??0, dLimit=sub.devoirs_limite===-1?'∞':(sub.devoirs_limite??3);
+  const planLabel=(sub.plan||'Trial').charAt(0).toUpperCase()+(sub.plan||'Trial').slice(1);
+  document.getElementById('sub-info').innerHTML=`
     <div class="sub-card">
       <div class="sub-plan">Abonnement actuel</div>
       <div class="sub-name">${planLabel}</div>
-      <div class="sub-dates">${sub.date_fin ? 'Expire le '+new Date(sub.date_fin).toLocaleDateString('fr-FR')+' ('+jours+' j)' : 'Sans expiration'}</div>
+      <div class="sub-dates">${sub.date_fin?'Expire le '+new Date(sub.date_fin).toLocaleDateString('fr-FR')+' ('+jours+' j)':'Sans expiration'}</div>
       <div class="sub-quota">
         <div class="sub-quota-item"><span class="sub-quota-num">${fUsed}/${fLimit}</span><span class="sub-quota-label">Fiches</span></div>
         <div class="sub-quota-item"><span class="sub-quota-num">${dUsed}/${dLimit}</span><span class="sub-quota-label">Devoirs</span></div>
@@ -1140,51 +897,33 @@ function updateSubPanel() {
     </div>`;
 }
 
-function selectPlan(el) {
-  document.querySelectorAll('.plan-option').forEach(p=>p.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function selectMethod(el) {
-  document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('selected'));
-  el.classList.add('selected');
-}
+function selectPlan(el) { document.querySelectorAll('.plan-option').forEach(p=>p.classList.remove('selected')); el.classList.add('selected'); }
+function selectMethod(el) { document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('selected')); el.classList.add('selected'); }
 
 async function submitPayment() {
-  const plan = document.querySelector('.plan-option.selected')?.dataset.plan;
-  const methode = document.querySelector('.pay-method.selected')?.dataset.method;
-  const reference_mm = document.getElementById('pay-reference').value.trim();
-  const telephone_mm = document.getElementById('pay-telephone').value.trim();
-  if (!reference_mm || !telephone_mm) { alert('Référence et numéro de téléphone requis.'); return; }
-  const btn = document.getElementById('btn-pay');
+  const plan=document.querySelector('.plan-option.selected')?.dataset.plan;
+  const methode=document.querySelector('.pay-method.selected')?.dataset.method;
+  const reference_mm=document.getElementById('pay-reference').value.trim();
+  const telephone_mm=document.getElementById('pay-telephone').value.trim();
+  if (!reference_mm||!telephone_mm) { alert('Référence et numéro de téléphone requis.'); return; }
+  const btn=document.getElementById('btn-pay');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Envoi...';
   try {
-    const r = await fetch(`${API}/subscriptions/request`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body: JSON.stringify({plan, methode, reference_mm, telephone_mm})
-    });
-    const d = await r.json();
-    if (r.ok) {
-      showToast('Demande envoyée ! Activation sous 24h.');
-      document.getElementById('pay-reference').value='';
-      document.getElementById('pay-telephone').value='';
-    } else { alert(d.error); }
+    const r=await fetch(`${API}/subscriptions/request`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({plan,methode,reference_mm,telephone_mm})});
+    const d=await r.json();
+    if (r.ok) { showToast('Demande envoyée ! Activation sous 24h.'); document.getElementById('pay-reference').value=''; document.getElementById('pay-telephone').value=''; }
+    else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
   btn.disabled=false; btn.innerHTML='<i class="ti ti-send"></i> Soumettre le paiement';
 }
 
-// ============================================================
-// UTILS
-// ============================================================
 function toggleChip(el) { el.classList.toggle('active'); }
 
 function showToast(msg) {
-  const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B5E20;color:#fff;padding:10px 20px;border-radius:20px;font-size:0.85rem;z-index:999;font-family:Inter,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.2)';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 2500);
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1B5E20;color:#fff;padding:10px 20px;border-radius:20px;font-size:0.85rem;z-index:999;font-family:Inter,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.2)';
+  t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
 }
 </script>
 </body>
