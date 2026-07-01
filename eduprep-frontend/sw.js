@@ -98,14 +98,14 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(e.request)
         .then(response => {
-          // Met a jour le cache avec la nouvelle version
+          // Cloner AVANT de mettre en cache
           if (response.ok) {
-            caches.open(CACHE_VERSION).then(cache => cache.put(e.request, response.clone()));
+            const responseClone = response.clone();
+            caches.open(CACHE_VERSION).then(cache => cache.put(e.request, responseClone));
           }
           return response;
         })
         .catch(() => {
-          // Offline : sert la page depuis le cache
           return caches.match(e.request) || caches.match(OFFLINE_PAGE);
         })
     );
@@ -118,7 +118,8 @@ self.addEventListener('fetch', e => {
       if (cached) return cached;
       return fetch(e.request).then(response => {
         if (response.ok && e.request.method === 'GET') {
-          caches.open(CACHE_VERSION).then(c => c.put(e.request, response.clone()));
+          const responseClone = response.clone();
+          caches.open(CACHE_VERSION).then(c => c.put(e.request, responseClone));
         }
         return response;
       }).catch(() => {
