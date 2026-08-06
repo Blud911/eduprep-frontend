@@ -49,6 +49,10 @@ h1,h2,h3 { font-family: 'Playfair Display', serif; }
 .form-group label { display: block; font-size: 0.775rem; font-weight: 500; color: var(--text-2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 .form-group input, .form-group select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; font-family: 'Inter', sans-serif; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
 .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--forest-light); box-shadow: 0 0 0 3px rgba(27,94,32,0.08); }
+.pwd-wrap { position: relative; }
+.pwd-wrap input { padding-right: 40px !important; }
+.pwd-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-3); padding: 4px; display: flex; align-items: center; font-size: 16px; }
+.pwd-toggle:hover { color: var(--forest); }
 .btn-full { width: 100%; padding: 12px; border-radius: var(--radius); font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; font-family: 'Inter', sans-serif; background: var(--forest); color: var(--white); display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; margin-top: 0.5rem; }
 .btn-full:hover { background: var(--forest-mid); }
 .btn-full:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -68,9 +72,9 @@ h1,h2,h3 { font-family: 'Playfair Display', serif; }
 .topbar-quota { font-size: 0.75rem; background: rgba(249,168,37,0.2); color: var(--gold); padding: 3px 8px; border-radius: 10px; }
 .btn-logout { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.8); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s; }
 .btn-logout:hover { background: rgba(255,255,255,0.2); }
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--white); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom); }
-.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 0.65rem; font-family: 'Inter', sans-serif; font-weight: 500; transition: color 0.15s; gap: 3px; position: relative; }
-.nav-item i { font-size: 22px; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--white); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom); overflow-x: auto; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 0.62rem; font-family: 'Inter', sans-serif; font-weight: 500; transition: color 0.15s; gap: 3px; position: relative; min-width: 54px; }
+.nav-item i { font-size: 20px; }
 .nav-item.active { color: var(--forest); }
 .app-content { flex: 1; padding: 1rem 1rem 80px; max-width: 680px; margin: 0 auto; width: 100%; }
 .panel { display: none; }
@@ -112,6 +116,15 @@ textarea { resize: vertical; min-height: 80px; }
 .result-body .q-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
 .result-body .q-type { font-size: 0.7rem; background: var(--forest-pale); color: var(--forest); padding: 2px 7px; border-radius: 10px; }
 .result-body .q-pts { font-size: 0.8rem; font-weight: 600; color: var(--gold-dark); }
+.result-body .plan-part { border-left: 3px solid var(--forest-light); padding: 4px 0 4px 10px; margin-bottom: 8px; }
+.result-body .plan-part-title { font-weight: 600; color: var(--forest); font-size: 0.85rem; }
+.result-body .plan-part-content { font-size: 0.825rem; color: var(--text-2); margin-top: 2px; }
+.result-body .criteres-list li { list-style: none; background: var(--forest-pale2); border-radius: 6px; padding: 6px 10px; margin-bottom: 4px; font-size: 0.8rem; }
+.result-body .competence-badge { background: var(--forest); color: var(--white); border-radius: 8px; padding: 8px 12px; font-size: 0.825rem; font-weight: 500; margin-bottom: 10px; line-height: 1.5; }
+.result-body .situation-box { background: var(--gold-light); border-left: 3px solid var(--gold); padding: 8px 10px; border-radius: 8px; font-size: 0.825rem; margin-bottom: 10px; font-style: italic; color: var(--text-2); }
+.result-body .habiletes-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 10px; }
+.result-body .habiletes-table th, .result-body .habiletes-table td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; vertical-align: top; }
+.result-body .habiletes-table th { background: var(--forest-pale); color: var(--forest); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .loading-block { display: none; padding: 2rem; text-align: center; color: var(--text-3); font-size: 0.875rem; }
 .loading-block.show { display: block; }
 .loading-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 8px; }
@@ -167,6 +180,34 @@ textarea { resize: vertical; min-height: 80px; }
 .ios-banner-arrow { position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%); width: 18px; height: 9px; overflow: hidden; }
 .ios-banner-arrow::after { content: ''; position: absolute; width: 14px; height: 14px; background: var(--white); border: 1px solid var(--border); transform: rotate(45deg); top: -8px; left: 2px; }
 
+/* ===== BANDEAU INSTALLATION SUR L'ECRAN DE CONNEXION (Android) ===== */
+.auth-install-banner {
+  display: none;
+  position: fixed; bottom: 20px; left: 12px; right: 12px; z-index: 200;
+  max-width: 420px; margin: 0 auto;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: slideUp 0.3s ease;
+}
+.auth-install-banner.show { display: flex; align-items: center; gap: 12px; }
+.auth-install-banner .btn-update { white-space: nowrap; }
+
+/* ===== ADAPTATION DESKTOP (app.html reste mobile-first par défaut) ===== */
+@media (min-width: 900px) {
+  .app-content { max-width: 960px; }
+  .bottom-nav {
+    width: 960px; max-width: calc(100vw - 40px); margin: 0 auto;
+    border-radius: 16px 16px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .chat-bubble-panel { width: 400px; height: 540px; }
+  .auth-card { max-width: 460px; }
+}
+@media (min-width: 1200px) {
+  .app-content { max-width: 1100px; }
+  .bottom-nav { width: 1100px; }
+}
+
 /* ===== BANDEAU MISE A JOUR ===== */
 .update-banner {
   display: none;
@@ -177,6 +218,43 @@ textarea { resize: vertical; min-height: 80px; }
 }
 .update-banner.show { display: flex; }
 .btn-update { background: var(--gold); color: var(--forest); border: none; border-radius: 8px; padding: 5px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; flex-shrink: 0; }
+
+/* ===== BULLE ASSISTANT PÉDAGOGIQUE ===== */
+.chat-bubble-btn {
+  position: fixed; right: 16px; bottom: 76px; z-index: 90;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--forest); color: var(--gold); border: none;
+  box-shadow: 0 4px 16px rgba(27,94,32,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; cursor: pointer; transition: transform 0.15s;
+}
+.chat-bubble-btn:hover { transform: scale(1.06); }
+.chat-bubble-btn.hide { display: none; }
+.chat-bubble-panel {
+  display: none;
+  position: fixed; right: 16px; bottom: 136px; z-index: 91;
+  width: 340px; max-width: calc(100vw - 32px);
+  height: 460px; max-height: calc(100vh - 200px);
+  background: var(--white); border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+  flex-direction: column; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.chat-bubble-panel.show { display: flex; }
+.chat-bubble-header { background: var(--forest); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.chat-bubble-header-title { color: var(--white); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.chat-bubble-close { background: none; border: none; color: rgba(255,255,255,0.8); cursor: pointer; font-size: 18px; padding: 2px; display: flex; }
+.chat-bubble-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+.chat-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 0.825rem; line-height: 1.5; white-space: pre-wrap; }
+.chat-msg-assistant { background: var(--white); border: 1px solid var(--border); color: var(--text); align-self: flex-start; border-bottom-left-radius: 3px; }
+.chat-msg-user { background: var(--forest); color: var(--white); align-self: flex-end; border-bottom-right-radius: 3px; }
+.chat-msg-error { background: var(--danger-bg); border: 1px solid #EF9A9A; color: var(--danger); align-self: flex-start; border-bottom-left-radius: 3px; }
+.chat-msg-loading { background: var(--white); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 3px; padding: 10px 14px; }
+.chat-bubble-input-row { display: flex; gap: 6px; padding: 10px; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--white); }
+.chat-bubble-input-row input { flex: 1; padding: 9px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 0.85rem; font-family: 'Inter', sans-serif; background: var(--surface); }
+.chat-bubble-input-row input:focus { outline: none; border-color: var(--forest-light); }
+.chat-bubble-send { width: 38px; height: 38px; border-radius: 50%; background: var(--forest); color: var(--white); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 16px; }
+.chat-bubble-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
@@ -202,11 +280,17 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
       <div class="form-group">
         <label>Mot de passe</label>
-        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+        <div class="pwd-wrap">
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="pwd-toggle" onclick="togglePwd('login-password',this)"><i class="ti ti-eye"></i></button>
+        </div>
       </div>
       <button class="btn-full" id="btn-login" onclick="doLogin()">
         <i class="ti ti-login"></i> Se connecter
       </button>
+      <p class="auth-link" style="margin-top:0.5rem">
+        <a onclick="openForgotPassword()" style="color:var(--text-3);font-size:0.8rem">Mot de passe oublié ?</a>
+      </p>
       <p class="auth-link">Pas encore de compte ? <a onclick="switchAuthTab('register', document.querySelectorAll('.auth-tab')[1])">Inscription gratuite</a></p>
     </div>
     <div id="form-register" style="display:none">
@@ -215,10 +299,20 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="form-group"><label>Prénom(s)</label><input type="text" id="reg-prenoms" placeholder="Vos prénoms"></div>
       <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="votre@email.com" autocomplete="email"></div>
       <div class="form-group"><label>Téléphone (Mobile Money)</label><input type="tel" id="reg-tel" placeholder="+225 0X XX XX XX XX"></div>
-      <div class="form-group"><label>Mot de passe</label><input type="password" id="reg-password" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+      <div class="form-group"><label>Mot de passe</label><div class="pwd-wrap"><input type="password" id="reg-password" placeholder="8 caractères minimum" autocomplete="new-password"><button type="button" class="pwd-toggle" onclick="togglePwd('reg-password',this)"><i class="ti ti-eye"></i></button></div></div>
       <button class="btn-full" id="btn-register" onclick="doRegister()"><i class="ti ti-user-plus"></i> Créer mon compte</button>
       <p class="auth-link">Déjà inscrit ? <a onclick="switchAuthTab('login', document.querySelectorAll('.auth-tab')[0])">Se connecter</a></p>
     </div>
+  </div>
+
+  <div class="auth-install-banner" id="auth-install-banner">
+    <div class="ios-banner-icon"><i class="ti ti-download"></i></div>
+    <div class="ios-banner-text">
+      <div class="ios-banner-title">Installer EduPrep CI</div>
+      <div class="ios-banner-sub">Accédez plus vite à vos fiches, même hors connexion.</div>
+    </div>
+    <button class="btn-update" onclick="installPWA()">Installer</button>
+    <button class="ios-banner-close" onclick="closeAuthInstallBanner()"><i class="ti ti-x"></i></button>
   </div>
 </div>
 
@@ -247,6 +341,11 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Matière</label>
             <select id="f-matiere">
+              <optgroup label="Domaines Préscolaire">
+                <option value="AEC" hidden>Arts, Expression et Création (AEC)</option>
+                <option value="AEM" hidden>Activités d'Éveil au Milieu (AEM)</option>
+                <option value="EDHC" hidden>EDHC — Droits de l'Homme et Citoyenneté</option>
+              </optgroup>
               <optgroup label="Matières générales">
                 <option value="Mathématiques">Mathématiques</option>
                 <option value="SVT">SVT</option>
@@ -264,14 +363,21 @@ textarea { resize: vertical; min-height: 80px; }
                 <option value="Français — Grammaire">Français — Grammaire</option>
                 <option value="Français — Conjugaison">Français — Conjugaison</option>
                 <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+                <option value="Français — Rédaction" hidden>Français — Rédaction</option>
+                <option value="Français — Composition" hidden>Français — Composition</option>
+                <option value="Français — Dissertation" hidden>Français — Dissertation</option>
+                <option value="Français — Commentaire" hidden>Français — Commentaire</option>
               </optgroup>
             </select>
           </div>
           <div class="form-group-app">
             <label>Classe</label>
-            <select id="f-classe">
+            <select id="f-classe" onchange="updateFrancaisOptions('f-matiere', this.value); updatePrescolaireOptions('f-matiere', this.value)">
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
               <optgroup label="Primaire">
-                <option>CP1</option><option>CP2</option><option>CE1</option>
+                <option selected>CP1</option><option>CP2</option><option>CE1</option>
                 <option>CE2</option><option>CM1</option><option>CM2</option>
               </optgroup>
               <optgroup label="Collège">
@@ -304,6 +410,28 @@ textarea { resize: vertical; min-height: 80px; }
             <select id="f-type">
               <option>Découverte</option><option>Approfondissement</option>
               <option>Révision</option><option>TP / Pratique</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Longueur de la fiche</label>
+            <select id="f-longueur">
+              <option value="">Standard (auto)</option>
+              <option value="300">Courte (~300 mots)</option>
+              <option value="600">Moyenne (~600 mots)</option>
+              <option value="1000">Détaillée (~1000 mots)</option>
+              <option value="1500">Très détaillée (~1500 mots)</option>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Niveau de détail</label>
+            <select id="f-detail">
+              <option value="">Normal</option>
+              <option value="simple">Simplifié</option>
+              <option value="detaille">Détaillé</option>
+              <option value="expert">Expert (inspection)</option>
             </select>
           </div>
         </div>
@@ -350,6 +478,11 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="form-group-app">
             <label>Matière</label>
             <select id="dv-matiere">
+              <optgroup label="Domaines Préscolaire">
+                <option value="AEC" hidden>Arts, Expression et Création (AEC)</option>
+                <option value="AEM" hidden>Activités d'Éveil au Milieu (AEM)</option>
+                <option value="EDHC" hidden>EDHC — Droits de l'Homme et Citoyenneté</option>
+              </optgroup>
               <optgroup label="Matières générales">
                 <option value="Mathématiques">Mathématiques</option>
                 <option value="SVT">SVT</option>
@@ -366,14 +499,21 @@ textarea { resize: vertical; min-height: 80px; }
                 <option value="Français — Grammaire">Français — Grammaire</option>
                 <option value="Français — Conjugaison">Français — Conjugaison</option>
                 <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+                <option value="Français — Rédaction" hidden>Français — Rédaction</option>
+                <option value="Français — Composition" hidden>Français — Composition</option>
+                <option value="Français — Dissertation" hidden>Français — Dissertation</option>
+                <option value="Français — Commentaire" hidden>Français — Commentaire</option>
               </optgroup>
             </select>
           </div>
           <div class="form-group-app">
             <label>Classe</label>
-            <select id="dv-classe">
+            <select id="dv-classe" onchange="updateFrancaisOptions('dv-matiere', this.value); updatePrescolaireOptions('dv-matiere', this.value)">
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
               <optgroup label="Primaire">
-                <option>CP1</option><option>CP2</option><option>CE1</option>
+                <option selected>CP1</option><option>CP2</option><option>CE1</option>
                 <option>CE2</option><option>CM1</option><option>CM2</option>
               </optgroup>
               <optgroup label="Collège">
@@ -392,7 +532,15 @@ textarea { resize: vertical; min-height: 80px; }
           </div>
         </div>
 
-        <div class="form-row">
+        <div class="form-group-app">
+          <label>Format</label>
+          <select id="dv-format" onchange="toggleExamenFields(this.value)">
+            <option value="standard">Devoir de classe</option>
+            <option value="examen">Sujet type examen national (CEPE, Entrée en 6e, BEPC, BAC)</option>
+          </select>
+        </div>
+
+        <div class="form-row" id="dv-standard-fields">
           <div class="form-group-app">
             <label>Type</label>
             <select id="dv-type">
@@ -406,6 +554,25 @@ textarea { resize: vertical; min-height: 80px; }
               <option value="20">20 min</option><option value="30">30 min</option>
               <option value="55">1 heure</option><option value="110">2 heures</option>
               <option value="180">3 heures</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" id="dv-examen-fields" style="display:none">
+          <div class="form-group-app">
+            <label>Examen</label>
+            <select id="dv-examen">
+              <option value="CEPE">CEPE</option>
+              <option value="Entree6e">Entrée en 6ème</option>
+              <option value="BEPC">BEPC</option>
+              <option value="BAC">BAC</option>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Durée</label>
+            <select id="dv-duree-examen">
+              <option value="60">1 heure</option><option value="120" selected>2 heures</option>
+              <option value="180">3 heures</option><option value="240">4 heures</option>
             </select>
           </div>
         </div>
@@ -462,6 +629,310 @@ textarea { resize: vertical; min-height: 80px; }
         </div>
         <div class="result-body" id="res-devoir-body"></div>
       </div>
+    </div>
+
+    <!-- PANEL PROGRESSION -->
+    <div id="panel-progression" class="panel">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-calendar-stats"></i> Progression annuelle</div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Matière</label>
+            <select id="pr-matiere">
+              <optgroup label="Domaines Préscolaire">
+                <option value="AEC" hidden>Arts, Expression et Création (AEC)</option>
+                <option value="AEM" hidden>Activités d'Éveil au Milieu (AEM)</option>
+                <option value="EDHC" hidden>EDHC — Droits de l'Homme et Citoyenneté</option>
+              </optgroup>
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="Informatique">Informatique</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Classe</label>
+            <select id="pr-classe" onchange="updatePrescolaireOptions('pr-matiere', this.value)">
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
+              <optgroup label="Primaire">
+                <option selected>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Année scolaire</label>
+            <input type="text" id="pr-annee" placeholder="Ex : 2026-2027">
+          </div>
+          <div class="form-group-app">
+            <label>Nombre de semaines</label>
+            <select id="pr-semaines">
+              <option value="30">30 semaines</option>
+              <option value="32" selected>32 semaines</option>
+              <option value="34">34 semaines</option>
+              <option value="36">36 semaines</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-app">
+          <label>Établissement (optionnel)</label>
+          <input type="text" id="pr-etablissement" placeholder="Nom de l'établissement">
+        </div>
+
+        <button class="btn-gen" id="btn-gen-progression" onclick="genererProgression()">
+          <i class="ti ti-calendar-stats"></i> Générer la progression
+        </button>
+      </div>
+
+      <div class="loading-block" id="load-progression">
+        <div class="loading-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <p>L'IA construit la progression annuelle...</p>
+      </div>
+
+      <div class="result-block" id="res-progression">
+        <div class="result-header">
+          <span class="result-header-left" id="res-progression-title">Progression générée</span>
+          <div class="result-actions-row">
+            <button class="btn-result-action" onclick="exportPDF('progression')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="copyResult('progression')" title="Copier"><i class="ti ti-copy"></i></button>
+          </div>
+        </div>
+        <div class="result-body" id="res-progression-body"></div>
+      </div>
+    </div>
+
+    <!-- PANEL REMEDIATION -->
+    <div id="panel-remediation" class="panel">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-first-aid-kit"></i> Fiche de remédiation</div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Matière</label>
+            <select id="rm-matiere">
+              <optgroup label="Domaines Préscolaire">
+                <option value="AEC" hidden>Arts, Expression et Création (AEC)</option>
+                <option value="AEM" hidden>Activités d'Éveil au Milieu (AEM)</option>
+                <option value="EDHC" hidden>EDHC — Droits de l'Homme et Citoyenneté</option>
+              </optgroup>
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="Informatique">Informatique</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Classe</label>
+            <select id="rm-classe" onchange="updatePrescolaireOptions('rm-matiere', this.value)">
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
+              <optgroup label="Primaire">
+                <option selected>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Durée de la séance</label>
+            <select id="rm-duree">
+              <option value="20">20 min</option>
+              <option value="30" selected>30 min</option>
+              <option value="45">45 min</option>
+              <option value="55">55 min</option>
+            </select>
+          </div>
+          <div class="form-group-app" style="visibility:hidden"></div>
+        </div>
+
+        <div class="form-group-app">
+          <label>Notion non maîtrisée</label>
+          <input type="text" id="rm-lecon" placeholder="Ex : La distinction futur simple / conditionnel...">
+        </div>
+
+        <div class="section-divider">Difficulté observée (optionnel)</div>
+        <div class="form-group-app">
+          <textarea id="rm-difficulte" placeholder="Ex : Les élèves confondent systématiquement les deux terminaisons à l'oral comme à l'écrit..."></textarea>
+        </div>
+
+        <button class="btn-gen" id="btn-gen-remediation" onclick="genererRemediation()">
+          <i class="ti ti-first-aid-kit"></i> Générer la remédiation
+        </button>
+      </div>
+
+      <div class="loading-block" id="load-remediation">
+        <div class="loading-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <p>L'IA construit la séance de remédiation...</p>
+      </div>
+
+      <div class="result-block" id="res-remediation">
+        <div class="result-header">
+          <span class="result-header-left" id="res-remediation-title">Remédiation générée</span>
+          <div class="result-actions-row">
+            <button class="btn-result-action" onclick="exportPDF('remediation')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="copyResult('remediation')" title="Copier"><i class="ti ti-copy"></i></button>
+          </div>
+        </div>
+        <div class="result-body" id="res-remediation-body"></div>
+      </div>
+    </div>
+
+    <!-- PANEL BANQUE DE QUESTIONS -->
+    <div id="panel-banque" class="panel">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-database"></i> Banque de questions</div>
+        <p style="font-size:0.8rem;color:var(--text-3);margin-bottom:0.75rem">Questions extraites automatiquement des devoirs déjà sauvegardés — les plus réutilisées apparaissent en premier.</p>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Matière</label>
+            <select id="bq-matiere">
+              <option value="">Toutes</option>
+              <option value="Mathématiques">Mathématiques</option>
+              <option value="SVT">SVT</option>
+              <option value="Physique-Chimie">Physique-Chimie</option>
+              <option value="Histoire-Géographie">Histoire-Géographie</option>
+              <option value="Anglais">Anglais</option>
+              <option value="Philosophie">Philosophie</option>
+              <option value="Économie/Gestion">Économie/Gestion</option>
+              <option value="Informatique">Informatique</option>
+              <option value="EPS">EPS</option>
+              <option value="Français">Français</option>
+              <option value="AEC">AEC</option>
+              <option value="AEM">AEM</option>
+              <option value="EDHC">EDHC</option>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Classe</label>
+            <select id="bq-classe">
+              <option value="">Toutes</option>
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
+              <optgroup label="Primaire">
+                <option>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Type de question</label>
+            <select id="bq-type">
+              <option value="">Tous</option>
+              <option value="QCM">QCM</option>
+              <option value="Vrai/Faux">Vrai/Faux</option>
+              <option value="Question ouverte">Question ouverte</option>
+              <option value="Calcul">Calcul</option>
+              <option value="Problème">Problème</option>
+              <option value="Rédaction courte">Rédaction courte</option>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Niveau taxonomique</label>
+            <select id="bq-niveau">
+              <option value="">Tous</option>
+              <option value="connaissance">Connaissance</option>
+              <option value="compréhension">Compréhension</option>
+              <option value="application">Application</option>
+              <option value="analyse">Analyse</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-app">
+          <label>Recherche dans l'énoncé</label>
+          <input type="text" id="bq-search" placeholder="Ex : fractions, participe passé...">
+        </div>
+
+        <button class="btn-gen" id="btn-search-banque" onclick="chargerBanque()">
+          <i class="ti ti-search"></i> Rechercher
+        </button>
+      </div>
+
+      <div class="loading-block" id="load-banque">
+        <div class="loading-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <p>Recherche dans la banque...</p>
+      </div>
+
+      <div id="banque-list"></div>
     </div>
 
     <!-- PANEL HISTORIQUE -->
@@ -521,9 +992,79 @@ textarea { resize: vertical; min-height: 80px; }
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchPanel('cours',this)"><i class="ti ti-clipboard-list"></i> Cours</button>
     <button class="nav-item" onclick="switchPanel('devoir',this)"><i class="ti ti-pencil"></i> Devoir</button>
+    <button class="nav-item" onclick="switchPanel('progression',this)"><i class="ti ti-calendar-stats"></i> Progression</button>
+    <button class="nav-item" onclick="switchPanel('remediation',this)"><i class="ti ti-first-aid-kit"></i> Remédiation</button>
+    <button class="nav-item" onclick="switchPanel('banque',this)"><i class="ti ti-database"></i> Banque</button>
     <button class="nav-item" onclick="switchPanel('historique',this)" id="nav-hist"><i class="ti ti-history"></i> Historique</button>
     <button class="nav-item" onclick="switchPanel('abonnement',this)" id="nav-sub"><i class="ti ti-credit-card"></i> Abonnement</button>
   </nav>
+
+  <!-- BULLE ASSISTANT PÉDAGOGIQUE -->
+  <button class="chat-bubble-btn" id="chat-bubble-btn" onclick="toggleChatBubble()" title="Assistant pédagogique">
+    <i class="ti ti-message-circle-2"></i>
+  </button>
+
+  <div class="chat-bubble-panel" id="chat-bubble-panel">
+    <div class="chat-bubble-header">
+      <div class="chat-bubble-header-title"><i class="ti ti-sparkles"></i> Assistant pédagogique</div>
+      <button class="chat-bubble-close" onclick="toggleChatBubble()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="chat-bubble-messages" id="chat-bubble-messages">
+      <div class="chat-msg chat-msg-assistant">
+        Bonjour ! Posez-moi une question pédagogique — une difficulté d'élève, une notion à expliquer autrement, une idée d'activité rapide...
+      </div>
+    </div>
+    <div class="chat-bubble-input-row">
+      <input type="text" id="chat-bubble-input" placeholder="Votre question..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+      <button class="chat-bubble-send" id="chat-bubble-send-btn" onclick="sendChatMessage()"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MOT DE PASSE OUBLIÉ -->
+<div class="modal-overlay" id="modal-forgot" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <h3 style="font-size:1rem;font-weight:600;color:var(--forest)">🔑 Mot de passe oublié</h3>
+      <button onclick="closeForgotPassword()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3)">×</button>
+    </div>
+    <div id="forgot-step-1">
+      <p style="font-size:0.875rem;color:var(--text-2);margin-bottom:1rem;line-height:1.6">Entrez votre adresse email. Vous recevrez un lien pour créer un nouveau mot de passe.</p>
+      <div style="margin-bottom:0.75rem">
+        <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-2);display:block;margin-bottom:4px">Email</label>
+        <input type="email" id="forgot-email" placeholder="votre@email.com" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);font-size:0.875rem;font-family:Inter,sans-serif">
+      </div>
+      <div id="forgot-msg" style="font-size:0.8rem;padding:8px 12px;border-radius:8px;margin-bottom:0.75rem;display:none"></div>
+      <button id="btn-forgot" onclick="submitForgotPassword()" style="width:100%;padding:11px;border-radius:10px;background:var(--forest);color:#fff;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px">
+        <i class="ti ti-send"></i> Envoyer le lien
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESET PASSWORD (quand l'utilisateur clique sur le lien) -->
+<div class="modal-overlay" id="modal-reset" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <h3 style="font-size:1rem;font-weight:600;color:var(--forest);margin-bottom:1rem">🔑 Nouveau mot de passe</h3>
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-2);display:block;margin-bottom:4px">Nouveau mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" id="reset-pwd" placeholder="8 caractères minimum" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);font-size:0.875rem;font-family:Inter,sans-serif">
+        <button type="button" class="pwd-toggle" onclick="togglePwd('reset-pwd',this)"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-2);display:block;margin-bottom:4px">Confirmer le mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" id="reset-pwd-confirm" placeholder="Répétez le mot de passe" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);font-size:0.875rem;font-family:Inter,sans-serif">
+        <button type="button" class="pwd-toggle" onclick="togglePwd('reset-pwd-confirm',this)"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <div id="reset-msg" style="font-size:0.8rem;padding:8px 12px;border-radius:8px;margin-bottom:0.75rem;display:none"></div>
+    <button id="btn-reset" onclick="submitResetPassword()" style="width:100%;padding:11px;border-radius:10px;background:var(--forest);color:#fff;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px">
+      <i class="ti ti-check"></i> Enregistrer le nouveau mot de passe
+    </button>
+  </div>
 </div>
 
 <!-- BANDEAU MISE A JOUR -->
@@ -548,16 +1089,88 @@ textarea { resize: vertical; min-height: 80px; }
 </div>
 
 <script>
-const API = 'https://eduprep-backend-km19.onrender.com/api';
+const API = 'https://eduprep-backend-t31j.onrender.com/api';
 let token = localStorage.getItem('edp_token');
 let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
-let currentFiche = null, currentDevoir = null;
+let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null;
 let savedFicheId = null, savedDevoirId = null;
 let deferredPrompt = null;
 let swRegistration = null;
 let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 let isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+// ============================================================
+// FILTRAGE DYNAMIQUE FRANÇAIS SELON LE CYCLE DE LA CLASSE
+// Composition : Collège (6e -> 3e), y compris référence BEPC
+// Dissertation / Commentaire : Lycée (2nde -> Terminale)
+// ============================================================
+const CLASSES_PRESCOLAIRE = ['Petite Section', 'Moyenne Section', 'Grande Section']; // production d'écrit hors de propos à ce niveau
+const CLASSES_PRIMAIRE_SANS_REDACTION = ['CP1', 'CP2']; // production d'écrit autonome pas encore au programme
+const CLASSES_PRIMAIRE_REDACTION = ['CE1', 'CE2', 'CM1', 'CM2'];
+const CLASSES_COLLEGE = ['6ème', '5ème', '4ème', '3ème'];
+
+function getCycleFromClasse(classe) {
+  if (CLASSES_PRESCOLAIRE.includes(classe)) return 'prescolaire';
+  if (CLASSES_PRIMAIRE_SANS_REDACTION.includes(classe)) return 'primaire-debut';
+  if (CLASSES_PRIMAIRE_REDACTION.includes(classe)) return 'primaire-redaction';
+  if (CLASSES_COLLEGE.includes(classe)) return 'college';
+  return 'lycee'; // 2nde/1ère/Terminale (toutes séries)
+}
+
+function updateFrancaisOptions(matiereSelectId, classe) {
+  const cycle = getCycleFromClasse(classe);
+  const select = document.getElementById(matiereSelectId);
+  if (!select) return;
+  const redacOpt = select.querySelector('option[value="Français — Rédaction"]');
+  const compoOpt = select.querySelector('option[value="Français — Composition"]');
+  const dissertOpt = select.querySelector('option[value="Français — Dissertation"]');
+  const commentOpt = select.querySelector('option[value="Français — Commentaire"]');
+  if (redacOpt) redacOpt.hidden = (cycle !== 'primaire-redaction');
+  if (compoOpt) compoOpt.hidden = (cycle !== 'college');
+  if (dissertOpt) dissertOpt.hidden = (cycle !== 'lycee');
+  if (commentOpt) commentOpt.hidden = (cycle !== 'lycee');
+  // Si l'option actuellement sélectionnée devient masquée, on revient au Français général
+  if (select.selectedOptions[0]?.hidden) select.value = 'Français';
+}
+
+// Domaines propres au préscolaire (AEC, AEM, EDHC) : masqués par défaut, visibles
+// uniquement pour Petite/Moyenne/Grande Section, sur le modèle de updateFrancaisOptions.
+function updatePrescolaireOptions(matiereSelectId, classe) {
+  const cycle = getCycleFromClasse(classe);
+  const select = document.getElementById(matiereSelectId);
+  if (!select) return;
+  const estPrescolaire = (cycle === 'prescolaire');
+  ['AEC', 'AEM', 'EDHC'].forEach(val => {
+    const opt = select.querySelector(`option[value="${val}"]`);
+    if (opt) opt.hidden = !estPrescolaire;
+  });
+  // Si l'option actuellement sélectionnée devient masquée (retour vers primaire/secondaire
+  // depuis un domaine préscolaire), on revient à Mathématiques par défaut
+  if (select.selectedOptions[0]?.hidden) select.value = 'Mathématiques';
+}
+
+function isRedactionLongue(matiere) {
+  return /Composition|Dissertation|Commentaire|Rédaction/i.test(matiere || '');
+}
+
+function togglePwd(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const icon = btn.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'ti ti-eye-off';
+  } else {
+    input.type = 'password';
+    icon.className = 'ti ti-eye';
+  }
+}
+
+function toggleExamenFields(format) {
+  const isExamen = format === 'examen';
+  document.getElementById('dv-standard-fields').style.display = isExamen ? 'none' : 'grid';
+  document.getElementById('dv-examen-fields').style.display = isExamen ? 'grid' : 'none';
+}
 
 // Android — bouton install natif
 window.addEventListener('beforeinstallprompt', e => {
@@ -565,7 +1178,25 @@ window.addEventListener('beforeinstallprompt', e => {
   deferredPrompt = e;
   const btn = document.getElementById('btn-install');
   if (btn) btn.style.display = 'flex';
+  // Si l'utilisateur n'est pas encore connecté (écran de connexion visible),
+  // proposer aussi l'installation directement là — avant, le bouton n'existait
+  // que dans la topbar, donc invisible tant qu'on n'était pas connecté.
+  showAuthInstallBannerIfNeeded();
 });
+
+function showAuthInstallBannerIfNeeded() {
+  if (!deferredPrompt) return;
+  const authScreen = document.getElementById('auth-screen');
+  if (!authScreen || authScreen.style.display === 'none') return;
+  const dismissed = localStorage.getItem('auth_install_banner_dismissed');
+  if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 3600 * 1000) return;
+  document.getElementById('auth-install-banner')?.classList.add('show');
+}
+
+function closeAuthInstallBanner() {
+  document.getElementById('auth-install-banner')?.classList.remove('show');
+  localStorage.setItem('auth_install_banner_dismissed', Date.now().toString());
+}
 
 window.addEventListener('appinstalled', () => {
   showToast('EduPrep CI installé avec succès !');
@@ -573,6 +1204,7 @@ window.addEventListener('appinstalled', () => {
   if (btn) btn.style.display = 'none';
   deferredPrompt = null;
   closeIosBanner();
+  document.getElementById('auth-install-banner')?.classList.remove('show');
 });
 
 async function installPWA() {
@@ -582,6 +1214,7 @@ async function installPWA() {
   if (outcome === 'accepted') showToast('EduPrep CI installé !');
   deferredPrompt = null;
   document.getElementById('btn-install').style.display = 'none';
+  document.getElementById('auth-install-banner')?.classList.remove('show');
 }
 
 // iOS — bandeau manuel
@@ -621,8 +1254,13 @@ function listenSW() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  checkResetToken();
   if (window.location.hash === '#register') switchAuthTab('register', document.querySelectorAll('.auth-tab')[1]);
   if (token && user) { showApp(); loadHistory(); refreshSubscription(); }
+  else { showAuthInstallBannerIfNeeded(); }
+  // Initialise le filtrage Français selon la classe déjà sélectionnée par défaut
+  updateFrancaisOptions('f-matiere', document.getElementById('f-classe').value);
+  updateFrancaisOptions('dv-matiere', document.getElementById('dv-classe').value);
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
       .then(reg => {
@@ -664,7 +1302,7 @@ async function doLogin() {
   try {
     const r = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error); return; }
+    if (!r.ok) { showAuthError(d.error || 'Email ou mot de passe incorrect.'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Se connecter'; return; }
     storeSession(d); showApp(); loadHistory();
   } catch(e) { showAuthError('Erreur de connexion. Vérifiez votre connexion internet.'); }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Se connecter';
@@ -683,7 +1321,7 @@ async function doRegister() {
   try {
     const r = await fetch(`${API}/auth/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({nom, prenoms, email, telephone, password}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error); return; }
+    if (!r.ok) { showAuthError(d.error); btn.disabled = false; btn.innerHTML = '<i class="ti ti-user-plus"></i> Créer mon compte'; return; }
     storeSession(d); showApp(); loadHistory();
   } catch(e) { showAuthError('Erreur réseau. Réessayez.'); }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-user-plus"></i> Créer mon compte';
@@ -702,6 +1340,97 @@ function storeSession(d) {
 }
 
 function showAuthError(msg) { const el=document.getElementById('auth-error'); el.textContent=msg; el.classList.add('show'); }
+
+// ============================================================
+// MOT DE PASSE OUBLIÉ
+// ============================================================
+function openForgotPassword() {
+  document.getElementById('modal-forgot').style.display = 'flex';
+  document.getElementById('forgot-email').value = document.getElementById('login-email').value || '';
+  document.getElementById('forgot-msg').style.display = 'none';
+}
+function closeForgotPassword() {
+  document.getElementById('modal-forgot').style.display = 'none';
+}
+async function submitForgotPassword() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const msg = document.getElementById('forgot-msg');
+  const btn = document.getElementById('btn-forgot');
+  if (!email) { showForgotMsg('Entrez votre adresse email.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Envoi...';
+  try {
+    const r = await fetch(`${API}/auth/forgot-password`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email})
+    });
+    const d = await r.json();
+    showForgotMsg(d.message || 'Lien envoyé ! Vérifiez votre boîte mail.', 'success');
+    btn.innerHTML = '<i class="ti ti-check"></i> Email envoyé';
+    setTimeout(() => closeForgotPassword(), 3000);
+  } catch(e) {
+    showForgotMsg('Erreur réseau. Réessayez.', 'error');
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Envoyer le lien';
+  }
+}
+function showForgotMsg(msg, type) {
+  const el = document.getElementById('forgot-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'error' ? '#FFEBEE' : '#E8F5E9';
+  el.style.color = type === 'error' ? '#C62828' : '#1B5E20';
+  el.style.border = type === 'error' ? '1px solid #EF9A9A' : '1px solid #A5D6A7';
+}
+
+// ============================================================
+// RESET PASSWORD (depuis le lien email)
+// ============================================================
+let resetToken = null;
+function checkResetToken() {
+  const params = new URLSearchParams(window.location.search);
+  resetToken = params.get('reset');
+  if (resetToken) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('modal-reset').style.display = 'flex';
+  }
+  const verified = params.get('verified');
+  if (verified === '1') {
+    showToast('✅ Email vérifié ! Vous pouvez maintenant générer vos fiches.');
+  }
+}
+async function submitResetPassword() {
+  const pwd = document.getElementById('reset-pwd').value;
+  const pwdConfirm = document.getElementById('reset-pwd-confirm').value;
+  const btn = document.getElementById('btn-reset');
+  if (!pwd || pwd.length < 8) { showResetMsg('Mot de passe trop court (8 caractères min).', 'error'); return; }
+  if (pwd !== pwdConfirm) { showResetMsg('Les mots de passe ne correspondent pas.', 'error'); return; }
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Enregistrement...';
+  try {
+    const r = await fetch(`${API}/auth/reset-password`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({token: resetToken, new_password: pwd})
+    });
+    const d = await r.json();
+    if (r.ok) {
+      showResetMsg('✅ Mot de passe réinitialisé ! Vous pouvez vous connecter.', 'success');
+      setTimeout(() => {
+        document.getElementById('modal-reset').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+        window.history.replaceState({}, '', '/app.html');
+      }, 2000);
+    } else {
+      showResetMsg(d.error || 'Erreur. Réessayez.', 'error');
+      btn.disabled = false; btn.innerHTML = '<i class="ti ti-check"></i> Enregistrer';
+    }
+  } catch(e) {
+    showResetMsg('Erreur réseau.', 'error');
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-check"></i> Enregistrer';
+  }
+}
+function showResetMsg(msg, type) {
+  const el = document.getElementById('reset-msg');
+  el.textContent = msg; el.style.display = 'block';
+  el.style.background = type === 'error' ? '#FFEBEE' : '#E8F5E9';
+  el.style.color = type === 'error' ? '#C62828' : '#1B5E20';
+  el.style.border = type === 'error' ? '1px solid #EF9A9A' : '1px solid #A5D6A7';
+}
 
 async function refreshSubscription() {
   try {
@@ -748,22 +1477,26 @@ async function genererFiche() {
   const duree=document.getElementById('f-duree').value;
   const type_seance=document.getElementById('f-type').value;
   const prerequis=document.getElementById('f-prerequis').value.trim();
+  const longueur=document.getElementById('f-longueur').value;
+  const niveau_detail=document.getElementById('f-detail').value;
   if (!lecon) { alert('Entrez le titre de la leçon.'); return; }
   const btn=document.getElementById('btn-gen-fiche');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Génération...';
   document.getElementById('res-fiche').classList.remove('show');
   document.getElementById('load-fiche').classList.add('show');
   try {
-    const r=await fetch(`${API}/ai/fiche`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,duree_minutes:parseInt(duree),type_seance,prerequis})});
+    const r=await fetch(`${API}/ai/fiche`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,duree_minutes:parseInt(duree),type_seance,prerequis,longueur_mots:longueur?parseInt(longueur):null,niveau_detail:niveau_detail||null})});
     const d=await r.json();
     if (!r.ok) { alert(d.error||'Erreur de génération.'); return; }
-    currentFiche={data:d.fiche,meta:{matiere,classe,lecon,duree}};
+    currentFiche={data:d.fiche,meta:{matiere,classe,lecon,duree,type_seance}};
     renderFiche(d.fiche,lecon,matiere,classe);
     savedFicheId=null;
     await refreshSubscription();
   } catch(e) { alert('Erreur réseau.'); }
-  document.getElementById('load-fiche').classList.remove('show');
-  btn.disabled=false; btn.innerHTML='<i class="ti ti-sparkles"></i> Générer la fiche';
+  finally {
+    document.getElementById('load-fiche').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-sparkles"></i> Générer la fiche';
+  }
 }
 
 function renderFiche(f,lecon,matiere,classe) {
@@ -772,11 +1505,16 @@ function renderFiche(f,lecon,matiere,classe) {
   const mat=(f.materiel||[]).join(', ');
   const comp=(f.competences||[]).map(c=>`<li>${c}</li>`).join('');
   const prol=(f.prolongements||[]).map(p=>`<li>${p}</li>`).join('');
+  const habiletesRows=(f.tableau_habiletes_contenus||[]).map(h=>`<tr><td>${h.habilete||''}</td><td>${h.contenu||''}</td></tr>`).join('');
+  const habiletesTable=habiletesRows?`<table class="habiletes-table"><thead><tr><th>Habileté</th><th>Contenu</th></tr></thead><tbody>${habiletesRows}</tbody></table>`:'';
   document.getElementById('res-fiche-title').textContent=`${lecon} — ${matiere} ${classe}`;
   document.getElementById('res-fiche-body').innerHTML=`
+    ${f.competence?`<div class="competence-badge"><i class="ti ti-target-arrow"></i> ${f.competence}</div>`:''}
+    ${f.exemple_situation?`<strong>Exemple de situation</strong><div class="situation-box">${f.exemple_situation}</div>`:''}
     <strong>Objectif général</strong>${f.objectif_general||''}
     <strong>Objectifs spécifiques</strong><ul>${objs}</ul>
     ${mat?`<strong>Matériel</strong>${mat}`:''}
+    ${habiletesTable?`<strong>Tableau des habiletés et des contenus</strong>${habiletesTable}`:''}
     <strong>Déroulement</strong><ul class="phase-list">${phases}</ul>
     <strong>Compétences visées</strong><ul>${comp}</ul>
     <strong>Évaluation formative</strong>${f.evaluation||''}
@@ -789,8 +1527,7 @@ async function genererDevoir() {
   const matiere=document.getElementById('dv-matiere').value;
   const classe=document.getElementById('dv-classe').value;
   const lecon=document.getElementById('dv-lecon').value.trim();
-  const type_eval=document.getElementById('dv-type').value;
-  const duree=document.getElementById('dv-duree').value;
+  const format=document.getElementById('dv-format').value;
   const points=document.getElementById('dv-points').value;
   const diff=document.getElementById('dv-diff').value==='1';
   const niveaux=[...document.querySelectorAll('#chips-niveaux .chip.active')].map(c=>c.textContent.toLowerCase());
@@ -800,19 +1537,42 @@ async function genererDevoir() {
   document.getElementById('res-devoir').classList.remove('show');
   document.getElementById('load-devoir').classList.add('show');
   try {
-    const r=await fetch(`${API}/ai/devoir`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,type_eval,duree_minutes:parseInt(duree),total_points:parseInt(points),niveaux_taxonomiques:niveaux,avec_variantes:diff,avec_corrige:true})});
-    const d=await r.json();
+    let r, d, type_eval, duree;
+    if (format === 'examen') {
+      const examen=document.getElementById('dv-examen').value;
+      duree=document.getElementById('dv-duree-examen').value;
+      type_eval=document.getElementById('dv-examen').selectedOptions[0].textContent;
+      r=await fetch(`${API}/ai/bac-bepc`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,examen,duree_minutes:parseInt(duree),total_points:parseInt(points)})});
+    } else {
+      type_eval=document.getElementById('dv-type').value;
+      duree=document.getElementById('dv-duree').value;
+      r=await fetch(`${API}/ai/devoir`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,type_eval,duree_minutes:parseInt(duree),total_points:parseInt(points),niveaux_taxonomiques:niveaux,avec_variantes:diff,avec_corrige:true})});
+    }
+    d=await r.json();
     if (!r.ok) { alert(d.error||'Erreur.'); return; }
     currentDevoir={data:d.devoir,meta:{matiere,classe,lecon,type_eval,points}};
     renderDevoir(d.devoir,lecon,matiere,classe,type_eval,points);
     savedDevoirId=null;
     await refreshSubscription();
   } catch(e) { alert('Erreur réseau.'); }
-  document.getElementById('load-devoir').classList.remove('show');
-  btn.disabled=false; btn.innerHTML='<i class="ti ti-file-text"></i> Composer le devoir';
+  finally {
+    document.getElementById('load-devoir').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-file-text"></i> Composer le devoir';
+  }
 }
 
 function renderDevoir(d,lecon,matiere,classe,type,total) {
+  // Format rédaction longue (composition / dissertation / commentaire / rédaction) : pas d'exercices notés
+  if (isRedactionLongue(matiere) && !Array.isArray(d.exercices) && !Array.isArray(d.questions)) {
+    renderDevoirRedaction(d,lecon,matiere,classe,type,total);
+    return;
+  }
+  // Nouveau format : épreuve complète par exercices (avec sous-questions + figures SVG)
+  if (Array.isArray(d.exercices)) {
+    renderDevoirExercices(d,lecon,matiere,classe,type,total);
+    return;
+  }
+  // Ancien format (compat) : tableau de questions plat
   const qs=(d.questions||[]).map(q=>`
     <div class="q-item">
       <div class="q-header"><span class="q-type">${q.type||'Question'}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
@@ -832,29 +1592,406 @@ function renderDevoir(d,lecon,matiere,classe,type,total) {
   document.getElementById('res-devoir').classList.add('show');
 }
 
+// Rendu épreuve complète : liste d'exercices, chacun avec contexte,
+// figure SVG optionnelle, et sous-questions numérotées (1.1, 1.2...)
+function renderDevoirExercices(d,lecon,matiere,classe,type,total) {
+  const exercices=(d.exercices||[]).map(ex=>{
+    const sousQuestions=(ex.questions||[]).map(q=>`
+      <div class="q-item">
+        <div class="q-header"><span class="q-type">${q.type||'Question'}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
+        <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">${q.numero}.</strong> ${q.enonce}</div>
+        ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.join(' &nbsp;·&nbsp; ')}</div>`:''}
+        ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>`:''}
+      </div>`).join('');
+    const figure=ex.figure_svg?`<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;text-align:center">${ex.figure_svg}</div>`:'';
+    return `
+      <div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px dashed var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <span style="font-weight:700;color:var(--forest);font-size:0.9rem">${ex.titre||'Exercice '+ex.numero}</span>
+          <span class="q-pts">${ex.points} pts</span>
+        </div>
+        ${ex.enonce_contexte?`<p style="font-size:0.825rem;color:var(--text-2);margin-bottom:6px">${ex.enonce_contexte}</p>`:''}
+        ${figure}
+        ${sousQuestions}
+      </div>`;
+  }).join('');
+  const totalCalc=(d.exercices||[]).reduce((s,ex)=>s+(ex.points||0),0);
+  document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
+  document.getElementById('res-devoir-body').innerHTML=`
+    ${d.consigne_generale?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:10px">${d.consigne_generale}</em>`:''}
+    ${exercices}
+    <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Total : ${totalCalc} / ${total}</div>
+    ${d.variante_faible?`<strong>Variante — Niveau faible</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_faible.note||''}</p>`:''}
+    ${d.variante_fort?`<strong>Variante — Niveau avancé</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_fort.note||''}</p>`:''}
+  `;
+  document.getElementById('res-devoir').classList.add('show');
+}
+
+// Rendu spécifique composition / dissertation / commentaire :
+// sujet unique + plan indicatif + corrigé rédigé + critères de notation
+function renderDevoirRedaction(d,lecon,matiere,classe,type,total) {
+  const planParts=(d.plan_indicatif?.developpement||[]).map(p=>`
+    <div class="plan-part">
+      <div class="plan-part-title">${p.partie||''} ${p.titre||''}</div>
+      <div class="plan-part-content">${p.contenu_attendu||''}</div>
+    </div>`).join('');
+  const criteres=(d.criteres_evaluation||[]).map(c=>`<li>${c}</li>`).join('');
+  document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
+  document.getElementById('res-devoir-body').innerHTML=`
+    ${d.consignes?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${d.consignes}</em>`:''}
+    <strong>Sujet</strong>${d.sujet||''}
+    ${d.plan_indicatif?.introduction?`<strong>Introduction attendue</strong>${d.plan_indicatif.introduction}`:''}
+    ${planParts?`<strong>Plan indicatif</strong>${planParts}`:''}
+    ${d.plan_indicatif?.conclusion?`<strong>Conclusion attendue</strong>${d.plan_indicatif.conclusion}`:''}
+    ${d.corrige_redige?`<strong>Corrigé rédigé (modèle)</strong>${d.corrige_redige}`:''}
+    ${criteres?`<strong>Critères de notation</strong><ul class="criteres-list">${criteres}</ul>`:''}
+    ${d.conseils_correcteur?`<strong>Conseils au correcteur</strong>${d.conseils_correcteur}`:''}
+    <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Barème total : ${total} points</div>
+  `;
+  document.getElementById('res-devoir').classList.add('show');
+}
+
+async function genererProgression() {
+  const matiere=document.getElementById('pr-matiere').value;
+  const classe=document.getElementById('pr-classe').value;
+  const annee_scolaire=document.getElementById('pr-annee').value.trim();
+  const nb_semaines=document.getElementById('pr-semaines').value;
+  const etablissement=document.getElementById('pr-etablissement').value.trim();
+  const btn=document.getElementById('btn-gen-progression');
+  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Génération...';
+  document.getElementById('res-progression').classList.remove('show');
+  document.getElementById('load-progression').classList.add('show');
+  try {
+    const r=await fetch(`${API}/ai/progression`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,annee_scolaire,nb_semaines:parseInt(nb_semaines),etablissement})});
+    const d=await r.json();
+    if (!r.ok) { alert(d.error||'Erreur de génération.'); return; }
+    currentProgression={data:d.progression,meta:{matiere,classe,annee_scolaire,etablissement}};
+    renderProgression(d.progression,matiere,classe);
+    await refreshSubscription();
+  } catch(e) { alert('Erreur réseau.'); }
+  finally {
+    document.getElementById('load-progression').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-calendar-stats"></i> Générer la progression';
+  }
+}
+
+function renderProgression(p,matiere,classe) {
+  const periodes=(p.periodes||[]).map(per=>{
+    const chapitres=(per.chapitres||[]).map(c=>`
+      <li class="phase-item">
+        <strong>${c.titre||''}</strong> · semaines ${c.semaine_debut||'?'}-${c.semaine_fin||'?'} · ${c.duree_heures||'?'}h
+        ${c.objectifs?`<br><span style="font-weight:400">${c.objectifs}</span>`:''}
+      </li>`).join('');
+    return `
+      <strong>${per.nom||'Période'} (semaines ${per.semaines||''})</strong>
+      <ul class="phase-list">${chapitres}</ul>`;
+  }).join('');
+  const evaluations=(p.evaluations_prevues||[]).map(e=>`<li>${e.periode||''} — semaine ${e.semaine||'?'} : ${e.type||'Évaluation'}${e.chapitres_couverts?' ('+e.chapitres_couverts.join(', ')+')':''}</li>`).join('');
+  document.getElementById('res-progression-title').textContent=`${p.titre||'Progression'} — ${matiere} ${classe}`;
+  document.getElementById('res-progression-body').innerHTML=`
+    ${periodes}
+    ${evaluations?`<strong>Évaluations prévues</strong><ul>${evaluations}</ul>`:''}
+    ${p.alertes_volume_horaire?`<strong style="color:var(--danger)">⚠ Alerte volume horaire</strong><p style="font-size:0.8rem;color:var(--text-2)">${p.alertes_volume_horaire}</p>`:''}
+    ${p.notes_pedagogiques?`<strong>Notes pédagogiques</strong><p style="font-size:0.8rem;color:var(--text-2)">${p.notes_pedagogiques}</p>`:''}
+  `;
+  document.getElementById('res-progression').classList.add('show');
+}
+
+async function genererRemediation() {
+  const matiere=document.getElementById('rm-matiere').value;
+  const classe=document.getElementById('rm-classe').value;
+  const lecon=document.getElementById('rm-lecon').value.trim();
+  const duree=document.getElementById('rm-duree').value;
+  const difficulte_observee=document.getElementById('rm-difficulte').value.trim();
+  if (!lecon) { alert('Entrez la notion non maîtrisée.'); return; }
+  const btn=document.getElementById('btn-gen-remediation');
+  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Génération...';
+  document.getElementById('res-remediation').classList.remove('show');
+  document.getElementById('load-remediation').classList.add('show');
+  try {
+    const r=await fetch(`${API}/ai/remediation`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({matiere,classe,titre_lecon:lecon,difficulte_observee,duree_minutes:parseInt(duree)})});
+    const d=await r.json();
+    if (!r.ok) { alert(d.error||'Erreur de génération.'); return; }
+    currentRemediation={data:d.remediation,meta:{matiere,classe,lecon,duree,difficulte_observee}};
+    renderRemediation(d.remediation,lecon,matiere,classe);
+    await refreshSubscription();
+  } catch(e) { alert('Erreur réseau.'); }
+  finally {
+    document.getElementById('load-remediation').classList.remove('show');
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-first-aid-kit"></i> Générer la remédiation';
+  }
+}
+
+function renderRemediation(rm,lecon,matiere,classe) {
+  const prerequis=(rm.prerequis_a_consolider||[]).map(p=>`<li>${p}</li>`).join('');
+  const activites=(rm.activites||[]).map(a=>`<li class="phase-item"><strong>${a.nom||''}</strong> · ${a.duree||''} — ${a.desc||''}${a.materiel?` <span style="color:var(--text-3)">(Matériel : ${a.materiel})</span>`:''}</li>`).join('');
+  const exercices=(rm.exercices_cibles||[]).map(ex=>`
+    <div class="q-item">
+      <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Exercice.</strong> ${ex.enonce||''}</div>
+      ${ex.correction?`<div style="font-size:0.8rem;color:var(--text-2);margin-top:4px"><em>Corrigé :</em> ${ex.correction}</div>`:''}
+      ${ex.point_de_vigilance?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-eye" style="font-size:11px"></i> ${ex.point_de_vigilance}</div>`:''}
+    </div>`).join('');
+  const criteres=(rm.criteres_reussite||[]).map(c=>`<li>${c}</li>`).join('');
+  document.getElementById('res-remediation-title').textContent=`${lecon} — ${matiere} ${classe}`;
+  document.getElementById('res-remediation-body').innerHTML=`
+    <strong>Diagnostic</strong>${rm.diagnostic||''}
+    <strong>Objectif de la remédiation</strong>${rm.objectif_remediation||''}
+    ${prerequis?`<strong>Prérequis à consolider</strong><ul>${prerequis}</ul>`:''}
+    <strong>Activités</strong><ul class="phase-list">${activites}</ul>
+    ${exercices?`<strong>Exercices de vérification</strong>${exercices}`:''}
+    ${criteres?`<strong>Critères de réussite</strong><ul>${criteres}</ul>`:''}
+    ${rm.conseils_enseignant?`<strong>Conseils</strong>${rm.conseils_enseignant}`:''}
+  `;
+  document.getElementById('res-remediation').classList.add('show');
+}
+
+// ============================================================
+// BANQUE DE QUESTIONS — branché sur GET /api/content/banque,
+// déjà existant côté backend (peuplé automatiquement à chaque
+// sauvegarde de devoir). Ici : uniquement la consultation/filtrage.
+// ============================================================
+async function chargerBanque() {
+  const matiere = document.getElementById('bq-matiere').value;
+  const classe = document.getElementById('bq-classe').value;
+  const type_q = document.getElementById('bq-type').value;
+  const niveau_taxo = document.getElementById('bq-niveau').value;
+  const search = document.getElementById('bq-search').value.trim();
+
+  const params = new URLSearchParams();
+  if (matiere) params.set('matiere', matiere);
+  if (classe) params.set('classe', classe);
+  if (type_q) params.set('type_q', type_q);
+  if (niveau_taxo) params.set('niveau_taxo', niveau_taxo);
+  if (search) params.set('search', search);
+
+  const btn = document.getElementById('btn-search-banque');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Recherche...';
+  document.getElementById('banque-list').innerHTML = '';
+  document.getElementById('load-banque').classList.add('show');
+  try {
+    const r = await fetch(`${API}/content/banque?${params.toString()}`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const d = await r.json();
+    if (!r.ok) { showToast(d.error || 'Erreur de recherche.'); return; }
+    renderBanque(d.questions || []);
+  } catch (e) { showToast('Erreur réseau.'); }
+  finally {
+    document.getElementById('load-banque').classList.remove('show');
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-search"></i> Rechercher';
+  }
+}
+
+function renderBanque(questions) {
+  const el = document.getElementById('banque-list');
+  if (!questions.length) {
+    el.innerHTML = '<div class="empty-state"><i class="ti ti-database-off"></i><p>Aucune question trouvée.<br>La banque se remplit automatiquement à chaque devoir sauvegardé.</p></div>';
+    return;
+  }
+  el.innerHTML = questions.map(q => `
+    <div class="card" style="margin-bottom:0.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${q.type_q ? `<span class="q-type">${q.type_q}</span>` : ''}
+          ${q.niveau_taxo ? `<span class="q-type" style="background:var(--gold-light);color:var(--gold-dark)">${q.niveau_taxo}</span>` : ''}
+          ${q.nb_usages ? `<span class="hist-badge"><i class="ti ti-repeat" style="font-size:10px"></i> ${q.nb_usages}×</span>` : ''}
+        </div>
+        ${q.points ? `<span class="q-pts">${q.points} pt${q.points > 1 ? 's' : ''}</span>` : ''}
+      </div>
+      <div style="font-size:0.875rem;color:var(--text);margin-bottom:4px">${q.enonce}</div>
+      <div style="font-size:0.75rem;color:var(--text-3);margin-bottom:8px">${q.matiere || ''}${q.classe ? ' · ' + q.classe : ''}</div>
+      ${q.bareme ? `<div style="font-size:0.75rem;color:var(--forest);margin-bottom:8px"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>` : ''}
+      <button class="btn-sm" onclick="utiliserQuestionBanque('${q.id}', this)"><i class="ti ti-copy"></i> Copier et marquer comme utilisée</button>
+    </div>`).join('');
+}
+
+async function utiliserQuestionBanque(id, btn) {
+  const card = btn.closest('.card');
+  const enonce = card.querySelector('div[style*="color:var(--text)"]').innerText;
+  navigator.clipboard.writeText(enonce).then(() => showToast('Énoncé copié !'));
+  try {
+    const r = await fetch(`${API}/content/banque/${id}/usage`, { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+    if (r.ok) { const d = await r.json(); showToast(`Copié — utilisée ${d.nb_usages}× au total`); }
+  } catch (e) {}
+}
+
+// ============================================================
+// BULLE ASSISTANT PÉDAGOGIQUE — branchée sur POST /api/ai/chat.
+// L'historique affiché ici est purement visuel côté client : chaque
+// appel au backend reste single-turn (pas de contexte de conversation
+// envoyé), conformément au scope MVP de la route.
+// ============================================================
+function toggleChatBubble() {
+  const panel = document.getElementById('chat-bubble-panel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) {
+    document.getElementById('chat-bubble-input').focus();
+  }
+}
+
+function appendChatMessage(text, type) {
+  const container = document.getElementById('chat-bubble-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg chat-msg-' + type;
+  if (type === 'loading') {
+    div.innerHTML = '<div class="loading-dots" style="margin-bottom:0"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>';
+  } else {
+    div.textContent = text;
+  }
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-bubble-input');
+  const message = input.value.trim();
+  if (!message) return;
+
+  const btn = document.getElementById('chat-bubble-send-btn');
+  input.value = '';
+  input.disabled = true; btn.disabled = true;
+
+  appendChatMessage(message, 'user');
+  const loadingEl = appendChatMessage('...', 'loading');
+
+  try {
+    const r = await fetch(`${API}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ message }),
+    });
+    const d = await r.json();
+    loadingEl.remove();
+    if (!r.ok) { appendChatMessage(d.error || 'Erreur de génération.', 'error'); return; }
+    appendChatMessage(d.reponse, 'assistant');
+    await refreshSubscription();
+  } catch (e) {
+    loadingEl.remove();
+    appendChatMessage('Erreur réseau. Réessayez.', 'error');
+  } finally {
+    input.disabled = false; btn.disabled = false; input.focus();
+  }
+}
+
 async function saveFiche() {
   if (!currentFiche) return;
   const {data:f,meta}=currentFiche;
   try {
-    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
+    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,competence:f.competence,exemple_situation:f.exemple_situation,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,tableau_habiletes_contenus:f.tableau_habiletes_contenus,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
     const d=await r.json();
     if (r.ok) { savedFicheId=d.fiche?.id; showToast('Fiche sauvegardée !'); loadHistory(); }
     else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
 }
 
+// FIX 03/08/2026 : l'enum PostgreSQL content_type (colonne devoirs.type_eval)
+// n'accepte que {fiche, devoir, interrogation, composition, tp_note} — le
+// select dv-type envoyait "Interrogation"/"Devoir surveillé"/"Composition"/
+// "TP noté" (casse + accents différents), et le mode examen envoyait
+// "BEPC"/"Baccalauréat"/etc., aucun des deux ne correspondant à l'enum.
+// Toute sauvegarde de devoir échouait en 500 ("invalid input value for
+// enum"), détecté seulement maintenant faute d'avoir testé une sauvegarde
+// jusqu'ici. Normalise vers une valeur valide avant l'envoi à /content/devoirs
+// (n'affecte pas /ai/devoir ni /ai/bac-bepc, qui ignorent cet enum).
+function mapTypeEvalToEnum(label) {
+  const table = {
+    'Interrogation': 'interrogation',
+    'Devoir surveillé': 'devoir',
+    'Composition': 'composition',
+    'TP noté': 'tp_note',
+  };
+  if (table[label]) return table[label];
+  // Mode examen (CEPE, Entrée en 6ème, BEPC, Baccalauréat...) : traité comme
+  // une composition — évaluation formelle et sommative, sémantiquement le
+  // plus proche parmi les valeurs disponibles.
+  return 'composition';
+}
+
 async function saveDevoir() {
   if (!currentDevoir) return;
   const {data:dv,meta}=currentDevoir;
+  const consigne = dv.consigne_generale || dv.consigne || dv.consignes || null;
   try {
-    const r=await fetch(`${API}/content/devoirs`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:dv.titre||meta.lecon,matiere:meta.matiere,classe:meta.classe,type_eval:meta.type_eval,total_points:meta.points,consigne:dv.consigne,questions:dv.questions,variante_faible:dv.variante_faible,variante_fort:dv.variante_fort,corrige_complet:dv.corrige_complet})});
+    const r=await fetch(`${API}/content/devoirs`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:dv.titre||meta.lecon,matiere:meta.matiere,classe:meta.classe,type_eval:mapTypeEvalToEnum(meta.type_eval),total_points:meta.points,consigne,structure_complete:dv,variante_faible:dv.variante_faible,variante_fort:dv.variante_fort,corrige_complet:dv.corrige_complet})});
     const d=await r.json();
     if (r.ok) { savedDevoirId=d.devoir?.id; showToast('Devoir sauvegardé !'); loadHistory(); }
     else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
 }
 
-function exportPDF(type) { showToast('Export PDF disponible dans le plan Pro.'); }
+function planAutorisePDF() {
+  return subscription?.plan === 'pro' || subscription?.plan === 'etablissement';
+}
+
+async function telechargerPDF(endpoint, body, filename) {
+  try {
+    const r = await fetch(`${API}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      let msg = 'Erreur lors de la génération du PDF.';
+      try { const d = await r.json(); msg = d.error || msg; } catch(e) {}
+      showToast(msg);
+      return;
+    }
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch(e) {
+    showToast('Erreur réseau lors de l\'export PDF.');
+  }
+}
+
+async function exportPDF(type) {
+  if (!planAutorisePDF()) { showToast('Export PDF disponible dans le plan Pro.'); return; }
+
+  if (type === 'fiche') {
+    if (!currentFiche) { showToast('Générez d\'abord une fiche.'); return; }
+    const m = currentFiche.meta;
+    const meta = { titre_lecon: m.lecon, matiere: m.matiere, classe: m.classe, duree_minutes: parseInt(m.duree)||55, type_seance: m.type_seance||'' };
+    const filename = `fiche_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF('/pdf/fiche-direct', { fiche: currentFiche.data, meta }, filename);
+    return;
+  }
+
+  if (type === 'devoir') {
+    if (!currentDevoir) { showToast('Générez d\'abord un devoir.'); return; }
+    // routes/pdf.js n'a pas de version "directe" pour les devoirs : il faut
+    // d'abord le sauvegarder en base. On le fait automatiquement si besoin,
+    // plutôt que de bloquer l'utilisateur avec un message d'erreur.
+    if (!savedDevoirId) {
+      showToast('Sauvegarde avant export...');
+      await saveDevoir();
+    }
+    if (!savedDevoirId) { showToast('Impossible de sauvegarder le devoir avant export.'); return; }
+    const m = currentDevoir.meta;
+    const filename = `devoir_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF(`/pdf/devoir/${savedDevoirId}`, {}, filename);
+    return;
+  }
+
+  if (type === 'progression') {
+    if (!currentProgression) { showToast('Générez d\'abord une progression.'); return; }
+    const m = currentProgression.meta;
+    const progressionAvecContexte = { ...currentProgression.data, matiere: m.matiere, classe: m.classe };
+    const meta = { enseignant: (user?.nom||'')+' '+(user?.prenoms||''), etablissement: m.etablissement||'', annee_scolaire: m.annee_scolaire||'' };
+    const filename = `progression_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF('/pdf/progression', { progression: progressionAvecContexte, meta }, filename);
+    return;
+  }
+
+  if (type === 'remediation') {
+    if (!currentRemediation) { showToast('Générez d\'abord une remédiation.'); return; }
+    const m = currentRemediation.meta;
+    const meta = { titre_lecon: m.lecon, matiere: m.matiere, classe: m.classe, duree_minutes: parseInt(m.duree)||30, difficulte_observee: m.difficulte_observee||'', enseignant: (user?.nom||'')+' '+(user?.prenoms||'') };
+    const filename = `remediation_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF('/pdf/remediation', { remediation: currentRemediation.data, meta }, filename);
+  }
+}
 function copyResult(type) { navigator.clipboard.writeText(document.getElementById('res-'+type+'-body').innerText).then(()=>showToast('Copié !')); }
 
 async function loadHistory() {

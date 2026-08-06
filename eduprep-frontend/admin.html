@@ -214,8 +214,8 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
     </div>
     <div class="field">
       <label>Mot de passe</label>
-      <input type="password" id="a-pwd" placeholder="••••••••" autocomplete="current-password"
-        onkeydown="if(event.key==='Enter')doAdminLogin()">
+      <div style="position:relative"><input type="password" id="a-pwd" placeholder="••••••••" autocomplete="current-password" style="padding-right:40px"
+        onkeydown="if(event.key==='Enter')doAdminLogin()"><button type="button" id="btn-eye-admin" onclick="togglePwdAdmin()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#757575;font-size:18px"><i class="ti ti-eye"></i></button></div>
     </div>
     <button class="btn-auth" id="btn-admin-login" onclick="doAdminLogin()">
       <i class="ti ti-lock"></i> Accéder au panneau admin
@@ -256,7 +256,8 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
     </nav>
     <div class="sidebar-footer">
       <p class="admin-info" id="admin-name-display">Admin</p>
-      <button class="btn-sidebar-logout" onclick="doLogout()">
+      <button onclick="openChangePwd()" style="width:100%;padding:7px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.75);font-size:0.8rem;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:6px"><i class="ti ti-key"></i> Changer mot de passe</button>
+<button class="btn-sidebar-logout" onclick="doLogout()">
         <i class="ti ti-logout"></i> Déconnexion
       </button>
     </div>
@@ -494,7 +495,7 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://eduprep-backend-km19.onrender.com/api';
+const API = 'https://eduprep-backend-t31j.onrender.com/api';
 let adminToken = localStorage.getItem('edp_admin_token');
 let adminUser  = JSON.parse(localStorage.getItem('edp_admin_user') || 'null');
 let allPayments = [], allUsers = [], allSubs = [];
@@ -514,24 +515,68 @@ async function doAdminLogin() {
   const pwd   = document.getElementById('a-pwd').value;
   if (!email || !pwd) return showAuthError('Email et mot de passe requis.');
   const btn = document.getElementById('btn-admin-login');
+  const resetBtn = () => { btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock"></i> Accéder au panneau admin'; };
   btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Connexion...';
   try {
     const r = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password:pwd}) });
     const d = await r.json();
-    if (!r.ok) { showAuthError(d.error || 'Erreur.'); return; }
-    if (d.user?.role !== 'admin') { showAuthError('Accès refusé — compte non administrateur.'); return; }
+    if (!r.ok) { showAuthError(d.error || 'Email ou mot de passe incorrect.'); resetBtn(); return; }
+    if (d.user?.role !== 'admin') { showAuthError('Accès refusé — compte non administrateur.'); resetBtn(); return; }
     adminToken = d.accessToken; adminUser = d.user;
     localStorage.setItem('edp_admin_token', adminToken);
     localStorage.setItem('edp_admin_user', JSON.stringify(adminUser));
     showAdmin(); loadDashboard();
-  } catch(e) { showAuthError('Erreur réseau.'); }
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock"></i> Accéder au panneau admin';
+  } catch(e) { showAuthError('Erreur réseau. Vérifiez votre connexion.'); resetBtn(); }
+}
+function togglePwdAdmin() {
+  const input = document.getElementById('a-pwd');
+  const btn = document.getElementById('btn-eye-admin');
+  if (input.type === 'password') { input.type = 'text'; btn.innerHTML = '<i class="ti ti-eye-off"></i>'; }
+  else { input.type = 'password'; btn.innerHTML = '<i class="ti ti-eye"></i>'; }
 }
 function showAuthError(msg) { const el=document.getElementById('a-error'); el.textContent=msg; el.classList.add('show'); }
 function showAdmin() {
   document.getElementById('auth-overlay').style.display='none';
   document.getElementById('admin-layout').classList.add('show');
   document.getElementById('admin-name-display').textContent = adminUser?.nom || 'Admin';
+}
+function openChangePwd() {
+  document.getElementById('modal-changepwd').style.display='flex';
+  document.getElementById('cp-old').value='';
+  document.getElementById('cp-new').value='';
+  document.getElementById('cp-confirm').value='';
+  document.getElementById('cp-msg').style.display='none';
+}
+function closeChangePwd() { document.getElementById('modal-changepwd').style.display='none'; }
+async function submitChangePwd() {
+  const oldPwd=document.getElementById('cp-old').value;
+  const newPwd=document.getElementById('cp-new').value;
+  const confirmPwd=document.getElementById('cp-confirm').value;
+  if (!oldPwd||!newPwd) return showCPMsg('Tous les champs sont requis.','error');
+  if (newPwd.length<8) return showCPMsg('8 caractères minimum.','error');
+  if (newPwd!==confirmPwd) return showCPMsg('Les mots de passe ne correspondent pas.','error');
+  const btn=document.getElementById('btn-cp-submit');
+  btn.disabled=true; btn.textContent='Enregistrement...';
+  try {
+    const r=await fetch(`${API}/auth/profile`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+adminToken},body:JSON.stringify({password:oldPwd,new_password:newPwd})});
+    const d=await r.json();
+    if (r.ok) { showCPMsg('✅ Mot de passe modifié ! Reconnexion...','success'); setTimeout(()=>{closeChangePwd();doLogout();},2000); }
+    else showCPMsg(d.error||'Erreur.','error');
+  } catch(e) { showCPMsg('Erreur réseau.','error'); }
+  btn.disabled=false; btn.textContent='Enregistrer';
+}
+function showCPMsg(msg,type) {
+  const el=document.getElementById('cp-msg');
+  el.textContent=msg; el.style.display='block';
+  el.style.background=type==='error'?'#FFEBEE':'#E8F5E9';
+  el.style.color=type==='error'?'#C62828':'#1B5E20';
+  el.style.border=type==='error'?'1px solid #EF9A9A':'1px solid #A5D6A7';
+}
+function toggleCPPwd(id,btnId) {
+  const input=document.getElementById(id);
+  const btn=document.getElementById(btnId);
+  if (input.type==='password'){input.type='text';btn.innerHTML='<i class="ti ti-eye-off"></i>';}
+  else{input.type='password';btn.innerHTML='<i class="ti ti-eye"></i>';}
 }
 function doLogout() { localStorage.removeItem('edp_admin_token'); localStorage.removeItem('edp_admin_user'); location.reload(); }
 
@@ -1027,5 +1072,38 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
   o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('show'); });
 });
 </script>
+<!-- MODAL CHANGER MOT DE PASSE -->
+<div id="modal-changepwd" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+      <h3 style="font-size:1rem;font-weight:600;color:#1B5E20">🔑 Changer le mot de passe</h3>
+      <button onclick="closeChangePwd()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#757575">×</button>
+    </div>
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:#4A4A4A;display:block;margin-bottom:4px">Mot de passe actuel</label>
+      <div style="position:relative">
+        <input type="password" id="cp-old" placeholder="••••••••" style="width:100%;padding:9px 40px 9px 12px;border-radius:8px;border:1px solid #C8E6C9;font-size:0.875rem;font-family:Inter,sans-serif">
+        <button type="button" onclick="toggleCPPwd('cp-old','btn-eye-old')" id="btn-eye-old" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#757575;font-size:16px"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:#4A4A4A;display:block;margin-bottom:4px">Nouveau mot de passe</label>
+      <div style="position:relative">
+        <input type="password" id="cp-new" placeholder="8 caractères minimum" style="width:100%;padding:9px 40px 9px 12px;border-radius:8px;border:1px solid #C8E6C9;font-size:0.875rem;font-family:Inter,sans-serif">
+        <button type="button" onclick="toggleCPPwd('cp-new','btn-eye-new')" id="btn-eye-new" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#757575;font-size:16px"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem">
+      <label style="font-size:0.7rem;font-weight:600;text-transform:uppercase;color:#4A4A4A;display:block;margin-bottom:4px">Confirmer le nouveau mot de passe</label>
+      <div style="position:relative">
+        <input type="password" id="cp-confirm" placeholder="Répétez le mot de passe" style="width:100%;padding:9px 40px 9px 12px;border-radius:8px;border:1px solid #C8E6C9;font-size:0.875rem;font-family:Inter,sans-serif">
+        <button type="button" onclick="toggleCPPwd('cp-confirm','btn-eye-confirm')" id="btn-eye-confirm" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#757575;font-size:16px"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <div id="cp-msg" style="font-size:0.8rem;padding:8px 12px;border-radius:8px;margin-bottom:0.75rem;display:none"></div>
+    <button id="btn-cp-submit" onclick="submitChangePwd()" style="width:100%;padding:11px;border-radius:10px;background:#1B5E20;color:#fff;border:none;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif">Enregistrer</button>
+  </div>
+</div>
+
 </body>
 </html>
