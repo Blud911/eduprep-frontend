@@ -97,6 +97,8 @@ textarea { resize: vertical; min-height: 80px; }
 .btn-gen:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-2); font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: background 0.12s; }
 .btn-sm:hover { background: var(--forest-pale); }
+.btn-sm:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-sm:disabled:hover { background: transparent; }
 .result-block { display: none; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 1rem; }
 .result-block.show { display: block; }
 .result-header { background: var(--forest); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
@@ -155,6 +157,9 @@ textarea { resize: vertical; min-height: 80px; }
 .payment-methods { display: flex; gap: 8px; margin-bottom: 10px; }
 .pay-method { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer; text-align: center; font-size: 0.75rem; font-weight: 600; transition: all 0.12s; }
 .pay-method.selected { border-color: var(--forest); background: var(--forest-pale); color: var(--forest); }
+.ton-select { display: flex; gap: 8px; }
+.ton-option { flex: 1; padding: 9px 6px; border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-2); background: var(--white); font-family: 'Inter', sans-serif; transition: all 0.12s; }
+.ton-option.selected { border-color: var(--forest); background: var(--forest-pale); color: var(--forest); }
 .notif-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; position: absolute; top: 6px; right: 6px; }
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-3); }
 .empty-state i { font-size: 40px; opacity: 0.25; display: block; margin-bottom: 12px; }
@@ -839,6 +844,184 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
     </div>
 
+    <!-- PANEL RUBRIQUE DE NOTATION -->
+    <div id="panel-rubrique" class="panel">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-list-check"></i> Grille de notation</div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Matière</label>
+            <select id="rb-matiere">
+              <optgroup label="Domaines Préscolaire">
+                <option value="AEC" hidden>Arts, Expression et Création (AEC)</option>
+                <option value="AEM" hidden>Activités d'Éveil au Milieu (AEM)</option>
+                <option value="EDHC" hidden>EDHC — Droits de l'Homme et Citoyenneté</option>
+              </optgroup>
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="Informatique">Informatique</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Classe</label>
+            <select id="rb-classe" onchange="updatePrescolaireOptions('rb-matiere', this.value)">
+              <optgroup label="Préscolaire">
+                <option>Petite Section</option><option>Moyenne Section</option><option>Grande Section</option>
+              </optgroup>
+              <optgroup label="Primaire">
+                <option selected>CP1</option><option>CP2</option><option>CE1</option>
+                <option>CE2</option><option>CM1</option><option>CM2</option>
+              </optgroup>
+              <optgroup label="Collège">
+                <option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option>
+              </optgroup>
+              <optgroup label="Lycée — 2nde">
+                <option>2nde A</option><option>2nde C</option>
+              </optgroup>
+              <optgroup label="Lycée — 1ère">
+                <option>1ère A</option><option>1ère C</option><option>1ère D</option>
+              </optgroup>
+              <optgroup label="Lycée — Terminale">
+                <option>Terminale A</option><option>Terminale C</option><option>Terminale D</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Type de devoir</label>
+            <select id="rb-type-devoir">
+              <option>Interrogation</option>
+              <option selected>Devoir surveillé</option>
+              <option>Composition</option>
+              <option>TP noté</option>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Barème total</label>
+            <input type="number" id="rb-bareme" value="20" min="1" max="100">
+          </div>
+        </div>
+
+        <button class="btn-gen" id="btn-gen-rubrique" onclick="genererRubrique()">
+          <i class="ti ti-list-check"></i> Générer la grille
+        </button>
+      </div>
+
+      <div class="loading-block" id="load-rubrique">
+        <div class="loading-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <p>L'IA construit la grille de notation...</p>
+      </div>
+
+      <div class="result-block" id="res-rubrique">
+        <div class="result-header">
+          <span class="result-header-left" id="res-rubrique-title">Grille générée</span>
+        </div>
+        <div class="result-body" id="res-rubrique-body"></div>
+        <div style="padding:0 1rem 1rem;display:flex;gap:8px">
+          <button class="btn-sm" disabled title="Bientôt disponible"><i class="ti ti-file-export"></i> Exporter PDF</button>
+          <button class="btn-sm" id="btn-ajuster-rubrique" onclick="toggleAjusterRubrique()"><i class="ti ti-edit"></i> Ajuster</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL APPRECIATION DE BULLETIN -->
+    <div id="panel-appreciation" class="panel">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-message-heart"></i> Appréciation de bulletin</div>
+
+        <div class="form-group-app">
+          <label>Nom de l'élève</label>
+          <input type="text" id="ap-nom-eleve" placeholder="Ex : Aïcha Koné">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group-app">
+            <label>Matière</label>
+            <select id="ap-matiere">
+              <optgroup label="Matières générales">
+                <option value="Mathématiques">Mathématiques</option>
+                <option value="SVT">SVT</option>
+                <option value="Physique-Chimie">Physique-Chimie</option>
+                <option value="Histoire-Géographie">Histoire-Géographie</option>
+                <option value="Anglais">Anglais</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Économie/Gestion">Économie/Gestion</option>
+                <option value="Informatique">Informatique</option>
+                <option value="EPS">EPS</option>
+              </optgroup>
+              <optgroup label="Français">
+                <option value="Français">Français (général)</option>
+                <option value="Français — Orthographe">Français — Orthographe</option>
+                <option value="Français — Grammaire">Français — Grammaire</option>
+                <option value="Français — Conjugaison">Français — Conjugaison</option>
+                <option value="Français — Lecture/Expression">Français — Lecture / Expression</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group-app">
+            <label>Trimestre</label>
+            <select id="ap-trimestre">
+              <option>1er trimestre</option>
+              <option>2e trimestre</option>
+              <option>3e trimestre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group-app">
+          <label>Niveau observé</label>
+          <textarea id="ap-niveau" placeholder="Ex : Résultats satisfaisants, progrès réguliers depuis le début du trimestre..."></textarea>
+        </div>
+
+        <div class="form-group-app">
+          <label>Ton</label>
+          <div class="ton-select" id="ap-ton-select">
+            <button type="button" class="ton-option selected" data-ton="encourageant" onclick="selectTon(this)">Encourageant</button>
+            <button type="button" class="ton-option" data-ton="neutre" onclick="selectTon(this)">Neutre</button>
+            <button type="button" class="ton-option" data-ton="exigeant" onclick="selectTon(this)">Exigeant</button>
+          </div>
+        </div>
+
+        <button class="btn-gen" id="btn-gen-appreciation" onclick="genererAppreciation()">
+          <i class="ti ti-message-heart"></i> Générer l'appréciation
+        </button>
+      </div>
+
+      <div class="loading-block" id="load-appreciation">
+        <div class="loading-dots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+        <p>L'IA rédige l'appréciation...</p>
+      </div>
+
+      <div class="result-block" id="res-appreciation">
+        <div class="result-header">
+          <span class="result-header-left" id="res-appreciation-title">Appréciation générée</span>
+        </div>
+        <div class="result-body" id="res-appreciation-body"></div>
+        <div style="padding:0 1rem 1rem;display:flex;gap:8px">
+          <button class="btn-sm" onclick="genererAppreciation()"><i class="ti ti-refresh"></i> Régénérer</button>
+          <button class="btn-sm" onclick="copierAppreciation()"><i class="ti ti-copy"></i> Copier</button>
+        </div>
+      </div>
+    </div>
+
     <!-- PANEL BANQUE DE QUESTIONS -->
     <div id="panel-banque" class="panel">
       <div class="card">
@@ -970,11 +1153,7 @@ textarea { resize: vertical; min-height: 80px; }
           <div class="pay-method" data-method="mtn_money" onclick="selectMethod(this)">MTN Money</div>
         </div>
         <div style="background:var(--gold-light);border:1px solid #FFD54F;border-radius:8px;padding:10px;font-size:0.8rem;color:var(--gold-dark);margin-bottom:1rem">
-          <strong>Comment payer :</strong> Envoyez le montant au numéro fourni, puis entrez la référence de transaction ci-dessous.
-        </div>
-        <div class="form-group-app">
-          <label>Référence de transaction</label>
-          <input type="text" id="pay-reference" placeholder="Ex : TXN-WAVE-123456">
+          <strong>Comment payer :</strong> Envoyez le montant au numéro fourni, puis renseignez le numéro Mobile Money utilisé ci-dessous.
         </div>
         <div class="form-group-app">
           <label>Numéro Mobile Money utilisé</label>
@@ -994,6 +1173,8 @@ textarea { resize: vertical; min-height: 80px; }
     <button class="nav-item" onclick="switchPanel('devoir',this)"><i class="ti ti-pencil"></i> Devoir</button>
     <button class="nav-item" onclick="switchPanel('progression',this)"><i class="ti ti-calendar-stats"></i> Progression</button>
     <button class="nav-item" onclick="switchPanel('remediation',this)"><i class="ti ti-first-aid-kit"></i> Remédiation</button>
+    <button class="nav-item" onclick="switchPanel('rubrique',this)"><i class="ti ti-list-check"></i> Barème</button>
+    <button class="nav-item" onclick="switchPanel('appreciation',this)"><i class="ti ti-message-heart"></i> Appréciation</button>
     <button class="nav-item" onclick="switchPanel('banque',this)"><i class="ti ti-database"></i> Banque</button>
     <button class="nav-item" onclick="switchPanel('historique',this)" id="nav-hist"><i class="ti ti-history"></i> Historique</button>
     <button class="nav-item" onclick="switchPanel('abonnement',this)" id="nav-sub"><i class="ti ti-credit-card"></i> Abonnement</button>
@@ -1093,7 +1274,7 @@ const API = 'https://eduprep-backend-t31j.onrender.com/api';
 let token = localStorage.getItem('edp_token');
 let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
-let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null;
+let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null, currentRubrique = null, currentAppreciation = null;
 let savedFicheId = null, savedDevoirId = null;
 let deferredPrompt = null;
 let swRegistration = null;
@@ -1152,6 +1333,20 @@ function updatePrescolaireOptions(matiereSelectId, classe) {
 
 function isRedactionLongue(matiere) {
   return /Composition|Dissertation|Commentaire|Rédaction/i.test(matiere || '');
+}
+
+// FIX SEC-XSS : échappement HTML pour tout champ texte généré par l'IA ou
+// saisi par l'utilisateur avant interpolation dans innerHTML. À utiliser sur
+// tout champ libre (titre, énoncé, description...) — jamais sur figure_svg
+// (déjà sécurisé côté backend par securiserFigureSVG, censé rester du SVG).
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function togglePwd(inputId, btn) {
@@ -1261,6 +1456,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initialise le filtrage Français selon la classe déjà sélectionnée par défaut
   updateFrancaisOptions('f-matiere', document.getElementById('f-classe').value);
   updateFrancaisOptions('dv-matiere', document.getElementById('dv-classe').value);
+  updatePrescolaireOptions('pr-matiere', document.getElementById('pr-classe').value);
+  updatePrescolaireOptions('rm-matiere', document.getElementById('rm-classe').value);
+  updatePrescolaireOptions('rb-matiere', document.getElementById('rb-classe').value);
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
       .then(reg => {
@@ -1500,24 +1698,24 @@ async function genererFiche() {
 }
 
 function renderFiche(f,lecon,matiere,classe) {
-  const phases=(f.phases||[]).map(p=>`<li class="phase-item"><strong>${p.nom}</strong> · ${p.duree} — ${p.desc}</li>`).join('');
-  const objs=(f.objectifs_specifiques||[]).map(o=>`<li>${o}</li>`).join('');
-  const mat=(f.materiel||[]).join(', ');
-  const comp=(f.competences||[]).map(c=>`<li>${c}</li>`).join('');
-  const prol=(f.prolongements||[]).map(p=>`<li>${p}</li>`).join('');
-  const habiletesRows=(f.tableau_habiletes_contenus||[]).map(h=>`<tr><td>${h.habilete||''}</td><td>${h.contenu||''}</td></tr>`).join('');
+  const phases=(f.phases||[]).map(p=>`<li class="phase-item"><strong>${escapeHtml(p.nom)}</strong> · ${escapeHtml(p.duree)} — ${escapeHtml(p.desc)}</li>`).join('');
+  const objs=(f.objectifs_specifiques||[]).map(o=>`<li>${escapeHtml(o)}</li>`).join('');
+  const mat=escapeHtml((f.materiel||[]).join(', '));
+  const comp=(f.competences||[]).map(c=>`<li>${escapeHtml(c)}</li>`).join('');
+  const prol=(f.prolongements||[]).map(p=>`<li>${escapeHtml(p)}</li>`).join('');
+  const habiletesRows=(f.tableau_habiletes_contenus||[]).map(h=>`<tr><td>${escapeHtml(h.habilete||'')}</td><td>${escapeHtml(h.contenu||'')}</td></tr>`).join('');
   const habiletesTable=habiletesRows?`<table class="habiletes-table"><thead><tr><th>Habileté</th><th>Contenu</th></tr></thead><tbody>${habiletesRows}</tbody></table>`:'';
   document.getElementById('res-fiche-title').textContent=`${lecon} — ${matiere} ${classe}`;
   document.getElementById('res-fiche-body').innerHTML=`
-    ${f.competence?`<div class="competence-badge"><i class="ti ti-target-arrow"></i> ${f.competence}</div>`:''}
-    ${f.exemple_situation?`<strong>Exemple de situation</strong><div class="situation-box">${f.exemple_situation}</div>`:''}
-    <strong>Objectif général</strong>${f.objectif_general||''}
+    ${f.competence?`<div class="competence-badge"><i class="ti ti-target-arrow"></i> ${escapeHtml(f.competence)}</div>`:''}
+    ${f.exemple_situation?`<strong>Exemple de situation</strong><div class="situation-box">${escapeHtml(f.exemple_situation)}</div>`:''}
+    <strong>Objectif général</strong>${escapeHtml(f.objectif_general||'')}
     <strong>Objectifs spécifiques</strong><ul>${objs}</ul>
     ${mat?`<strong>Matériel</strong>${mat}`:''}
     ${habiletesTable?`<strong>Tableau des habiletés et des contenus</strong>${habiletesTable}`:''}
     <strong>Déroulement</strong><ul class="phase-list">${phases}</ul>
     <strong>Compétences visées</strong><ul>${comp}</ul>
-    <strong>Évaluation formative</strong>${f.evaluation||''}
+    <strong>Évaluation formative</strong>${escapeHtml(f.evaluation||'')}
     ${prol?`<strong>Prolongements</strong><ul>${prol}</ul>`:''}
   `;
   document.getElementById('res-fiche').classList.add('show');
@@ -1575,19 +1773,19 @@ function renderDevoir(d,lecon,matiere,classe,type,total) {
   // Ancien format (compat) : tableau de questions plat
   const qs=(d.questions||[]).map(q=>`
     <div class="q-item">
-      <div class="q-header"><span class="q-type">${q.type||'Question'}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
-      <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Q${q.numero}.</strong> ${q.enonce}</div>
-      ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.join(' &nbsp;·&nbsp; ')}</div>`:''}
-      ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>`:''}
+      <div class="q-header"><span class="q-type">${escapeHtml(q.type||'Question')}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
+      <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Q${escapeHtml(q.numero)}.</strong> ${escapeHtml(q.enonce)}</div>
+      ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.map(escapeHtml).join(' &nbsp;·&nbsp; ')}</div>`:''}
+      ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${escapeHtml(q.bareme)}</div>`:''}
     </div>`).join('');
   const totalCalc=(d.questions||[]).reduce((s,q)=>s+(q.points||0),0);
   document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
   document.getElementById('res-devoir-body').innerHTML=`
-    ${d.consigne?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${d.consigne}</em>`:''}
+    ${d.consigne?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${escapeHtml(d.consigne)}</em>`:''}
     ${qs}
     <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Total : ${totalCalc} / ${total}</div>
-    ${d.variante_faible?`<strong>Variante — Niveau faible</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_faible.description||''}</p>`:''}
-    ${d.variante_fort?`<strong>Variante — Niveau avancé</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_fort.description||''}</p>`:''}
+    ${d.variante_faible?`<strong>Variante — Niveau faible</strong><p style="font-size:0.8rem;color:var(--text-3)">${escapeHtml(d.variante_faible.description||'')}</p>`:''}
+    ${d.variante_fort?`<strong>Variante — Niveau avancé</strong><p style="font-size:0.8rem;color:var(--text-3)">${escapeHtml(d.variante_fort.description||'')}</p>`:''}
   `;
   document.getElementById('res-devoir').classList.add('show');
 }
@@ -1598,19 +1796,22 @@ function renderDevoirExercices(d,lecon,matiere,classe,type,total) {
   const exercices=(d.exercices||[]).map(ex=>{
     const sousQuestions=(ex.questions||[]).map(q=>`
       <div class="q-item">
-        <div class="q-header"><span class="q-type">${q.type||'Question'}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
-        <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">${q.numero}.</strong> ${q.enonce}</div>
-        ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.join(' &nbsp;·&nbsp; ')}</div>`:''}
-        ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>`:''}
+        <div class="q-header"><span class="q-type">${escapeHtml(q.type||'Question')}</span><span class="q-pts">${q.points} pt${q.points>1?'s':''}</span></div>
+        <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">${escapeHtml(q.numero)}.</strong> ${escapeHtml(q.enonce)}</div>
+        ${q.options?`<div style="font-size:0.8rem;color:var(--text-3);margin-top:4px">${q.options.map(escapeHtml).join(' &nbsp;·&nbsp; ')}</div>`:''}
+        ${q.bareme?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-key" style="font-size:11px"></i> ${escapeHtml(q.bareme)}</div>`:''}
       </div>`).join('');
+    // FIX SEC-XSS : figure_svg n'est JAMAIS échappé — déjà sécurisé côté
+    // backend par securiserFigureSVG (routes/ai.js) et doit rester du SVG
+    // exploitable tel quel, pas du texte.
     const figure=ex.figure_svg?`<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;margin:8px 0;text-align:center">${ex.figure_svg}</div>`:'';
     return `
       <div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px dashed var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <span style="font-weight:700;color:var(--forest);font-size:0.9rem">${ex.titre||'Exercice '+ex.numero}</span>
+          <span style="font-weight:700;color:var(--forest);font-size:0.9rem">${escapeHtml(ex.titre||'Exercice '+ex.numero)}</span>
           <span class="q-pts">${ex.points} pts</span>
         </div>
-        ${ex.enonce_contexte?`<p style="font-size:0.825rem;color:var(--text-2);margin-bottom:6px">${ex.enonce_contexte}</p>`:''}
+        ${ex.enonce_contexte?`<p style="font-size:0.825rem;color:var(--text-2);margin-bottom:6px">${escapeHtml(ex.enonce_contexte)}</p>`:''}
         ${figure}
         ${sousQuestions}
       </div>`;
@@ -1618,11 +1819,11 @@ function renderDevoirExercices(d,lecon,matiere,classe,type,total) {
   const totalCalc=(d.exercices||[]).reduce((s,ex)=>s+(ex.points||0),0);
   document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
   document.getElementById('res-devoir-body').innerHTML=`
-    ${d.consigne_generale?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:10px">${d.consigne_generale}</em>`:''}
+    ${d.consigne_generale?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:10px">${escapeHtml(d.consigne_generale)}</em>`:''}
     ${exercices}
     <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Total : ${totalCalc} / ${total}</div>
-    ${d.variante_faible?`<strong>Variante — Niveau faible</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_faible.note||''}</p>`:''}
-    ${d.variante_fort?`<strong>Variante — Niveau avancé</strong><p style="font-size:0.8rem;color:var(--text-3)">${d.variante_fort.note||''}</p>`:''}
+    ${d.variante_faible?`<strong>Variante — Niveau faible</strong><p style="font-size:0.8rem;color:var(--text-3)">${escapeHtml(d.variante_faible.note||'')}</p>`:''}
+    ${d.variante_fort?`<strong>Variante — Niveau avancé</strong><p style="font-size:0.8rem;color:var(--text-3)">${escapeHtml(d.variante_fort.note||'')}</p>`:''}
   `;
   document.getElementById('res-devoir').classList.add('show');
 }
@@ -1632,20 +1833,20 @@ function renderDevoirExercices(d,lecon,matiere,classe,type,total) {
 function renderDevoirRedaction(d,lecon,matiere,classe,type,total) {
   const planParts=(d.plan_indicatif?.developpement||[]).map(p=>`
     <div class="plan-part">
-      <div class="plan-part-title">${p.partie||''} ${p.titre||''}</div>
-      <div class="plan-part-content">${p.contenu_attendu||''}</div>
+      <div class="plan-part-title">${escapeHtml(p.partie||'')} ${escapeHtml(p.titre||'')}</div>
+      <div class="plan-part-content">${escapeHtml(p.contenu_attendu||'')}</div>
     </div>`).join('');
-  const criteres=(d.criteres_evaluation||[]).map(c=>`<li>${c}</li>`).join('');
+  const criteres=(d.criteres_evaluation||[]).map(c=>`<li>${escapeHtml(c)}</li>`).join('');
   document.getElementById('res-devoir-title').textContent=`${d.titre||type} — ${matiere} ${classe}`;
   document.getElementById('res-devoir-body').innerHTML=`
-    ${d.consignes?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${d.consignes}</em>`:''}
-    <strong>Sujet</strong>${d.sujet||''}
-    ${d.plan_indicatif?.introduction?`<strong>Introduction attendue</strong>${d.plan_indicatif.introduction}`:''}
+    ${d.consignes?`<em style="color:var(--text-3);font-size:0.8rem;display:block;margin-bottom:8px">${escapeHtml(d.consignes)}</em>`:''}
+    <strong>Sujet</strong>${escapeHtml(d.sujet||'')}
+    ${d.plan_indicatif?.introduction?`<strong>Introduction attendue</strong>${escapeHtml(d.plan_indicatif.introduction)}`:''}
     ${planParts?`<strong>Plan indicatif</strong>${planParts}`:''}
-    ${d.plan_indicatif?.conclusion?`<strong>Conclusion attendue</strong>${d.plan_indicatif.conclusion}`:''}
-    ${d.corrige_redige?`<strong>Corrigé rédigé (modèle)</strong>${d.corrige_redige}`:''}
+    ${d.plan_indicatif?.conclusion?`<strong>Conclusion attendue</strong>${escapeHtml(d.plan_indicatif.conclusion)}`:''}
+    ${d.corrige_redige?`<strong>Corrigé rédigé (modèle)</strong>${escapeHtml(d.corrige_redige)}`:''}
     ${criteres?`<strong>Critères de notation</strong><ul class="criteres-list">${criteres}</ul>`:''}
-    ${d.conseils_correcteur?`<strong>Conseils au correcteur</strong>${d.conseils_correcteur}`:''}
+    ${d.conseils_correcteur?`<strong>Conseils au correcteur</strong>${escapeHtml(d.conseils_correcteur)}`:''}
     <div style="text-align:right;font-weight:600;color:var(--forest);font-size:0.875rem;margin-top:4px">Barème total : ${total} points</div>
   `;
   document.getElementById('res-devoir').classList.add('show');
@@ -1679,20 +1880,20 @@ function renderProgression(p,matiere,classe) {
   const periodes=(p.periodes||[]).map(per=>{
     const chapitres=(per.chapitres||[]).map(c=>`
       <li class="phase-item">
-        <strong>${c.titre||''}</strong> · semaines ${c.semaine_debut||'?'}-${c.semaine_fin||'?'} · ${c.duree_heures||'?'}h
-        ${c.objectifs?`<br><span style="font-weight:400">${c.objectifs}</span>`:''}
+        <strong>${escapeHtml(c.titre||'')}</strong> · semaines ${escapeHtml(c.semaine_debut||'?')}-${escapeHtml(c.semaine_fin||'?')} · ${escapeHtml(c.duree_heures||'?')}h
+        ${c.objectifs?`<br><span style="font-weight:400">${escapeHtml(c.objectifs)}</span>`:''}
       </li>`).join('');
     return `
-      <strong>${per.nom||'Période'} (semaines ${per.semaines||''})</strong>
+      <strong>${escapeHtml(per.nom||'Période')} (semaines ${escapeHtml(per.semaines||'')})</strong>
       <ul class="phase-list">${chapitres}</ul>`;
   }).join('');
-  const evaluations=(p.evaluations_prevues||[]).map(e=>`<li>${e.periode||''} — semaine ${e.semaine||'?'} : ${e.type||'Évaluation'}${e.chapitres_couverts?' ('+e.chapitres_couverts.join(', ')+')':''}</li>`).join('');
+  const evaluations=(p.evaluations_prevues||[]).map(e=>`<li>${escapeHtml(e.periode||'')} — semaine ${escapeHtml(e.semaine||'?')} : ${escapeHtml(e.type||'Évaluation')}${e.chapitres_couverts?' ('+e.chapitres_couverts.map(escapeHtml).join(', ')+')':''}</li>`).join('');
   document.getElementById('res-progression-title').textContent=`${p.titre||'Progression'} — ${matiere} ${classe}`;
   document.getElementById('res-progression-body').innerHTML=`
     ${periodes}
     ${evaluations?`<strong>Évaluations prévues</strong><ul>${evaluations}</ul>`:''}
-    ${p.alertes_volume_horaire?`<strong style="color:var(--danger)">⚠ Alerte volume horaire</strong><p style="font-size:0.8rem;color:var(--text-2)">${p.alertes_volume_horaire}</p>`:''}
-    ${p.notes_pedagogiques?`<strong>Notes pédagogiques</strong><p style="font-size:0.8rem;color:var(--text-2)">${p.notes_pedagogiques}</p>`:''}
+    ${p.alertes_volume_horaire?`<strong style="color:var(--danger)">⚠ Alerte volume horaire</strong><p style="font-size:0.8rem;color:var(--text-2)">${escapeHtml(p.alertes_volume_horaire)}</p>`:''}
+    ${p.notes_pedagogiques?`<strong>Notes pédagogiques</strong><p style="font-size:0.8rem;color:var(--text-2)">${escapeHtml(p.notes_pedagogiques)}</p>`:''}
   `;
   document.getElementById('res-progression').classList.add('show');
 }
@@ -1723,26 +1924,159 @@ async function genererRemediation() {
 }
 
 function renderRemediation(rm,lecon,matiere,classe) {
-  const prerequis=(rm.prerequis_a_consolider||[]).map(p=>`<li>${p}</li>`).join('');
-  const activites=(rm.activites||[]).map(a=>`<li class="phase-item"><strong>${a.nom||''}</strong> · ${a.duree||''} — ${a.desc||''}${a.materiel?` <span style="color:var(--text-3)">(Matériel : ${a.materiel})</span>`:''}</li>`).join('');
+  const prerequis=(rm.prerequis_a_consolider||[]).map(p=>`<li>${escapeHtml(p)}</li>`).join('');
+  const activites=(rm.activites||[]).map(a=>`<li class="phase-item"><strong>${escapeHtml(a.nom||'')}</strong> · ${escapeHtml(a.duree||'')} — ${escapeHtml(a.desc||'')}${a.materiel?` <span style="color:var(--text-3)">(Matériel : ${escapeHtml(a.materiel)})</span>`:''}</li>`).join('');
   const exercices=(rm.exercices_cibles||[]).map(ex=>`
     <div class="q-item">
-      <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Exercice.</strong> ${ex.enonce||''}</div>
-      ${ex.correction?`<div style="font-size:0.8rem;color:var(--text-2);margin-top:4px"><em>Corrigé :</em> ${ex.correction}</div>`:''}
-      ${ex.point_de_vigilance?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-eye" style="font-size:11px"></i> ${ex.point_de_vigilance}</div>`:''}
+      <div><strong style="display:inline;text-transform:none;letter-spacing:0;font-size:0.875rem;color:var(--text)">Exercice.</strong> ${escapeHtml(ex.enonce||'')}</div>
+      ${ex.correction?`<div style="font-size:0.8rem;color:var(--text-2);margin-top:4px"><em>Corrigé :</em> ${escapeHtml(ex.correction)}</div>`:''}
+      ${ex.point_de_vigilance?`<div style="font-size:0.75rem;color:var(--forest);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)"><i class="ti ti-eye" style="font-size:11px"></i> ${escapeHtml(ex.point_de_vigilance)}</div>`:''}
     </div>`).join('');
-  const criteres=(rm.criteres_reussite||[]).map(c=>`<li>${c}</li>`).join('');
+  const criteres=(rm.criteres_reussite||[]).map(c=>`<li>${escapeHtml(c)}</li>`).join('');
   document.getElementById('res-remediation-title').textContent=`${lecon} — ${matiere} ${classe}`;
   document.getElementById('res-remediation-body').innerHTML=`
-    <strong>Diagnostic</strong>${rm.diagnostic||''}
-    <strong>Objectif de la remédiation</strong>${rm.objectif_remediation||''}
+    <strong>Diagnostic</strong>${escapeHtml(rm.diagnostic||'')}
+    <strong>Objectif de la remédiation</strong>${escapeHtml(rm.objectif_remediation||'')}
     ${prerequis?`<strong>Prérequis à consolider</strong><ul>${prerequis}</ul>`:''}
     <strong>Activités</strong><ul class="phase-list">${activites}</ul>
     ${exercices?`<strong>Exercices de vérification</strong>${exercices}`:''}
     ${criteres?`<strong>Critères de réussite</strong><ul>${criteres}</ul>`:''}
-    ${rm.conseils_enseignant?`<strong>Conseils</strong>${rm.conseils_enseignant}`:''}
+    ${rm.conseils_enseignant?`<strong>Conseils</strong>${escapeHtml(rm.conseils_enseignant)}`:''}
   `;
   document.getElementById('res-remediation').classList.add('show');
+}
+
+// ============================================================
+// RUBRIQUE DE NOTATION — POST /api/ai/rubrique
+// ============================================================
+async function genererRubrique() {
+  const matiere = document.getElementById('rb-matiere').value;
+  const classe = document.getElementById('rb-classe').value;
+  const type_devoir = document.getElementById('rb-type-devoir').value;
+  const bareme_total = parseInt(document.getElementById('rb-bareme').value) || 20;
+  const btn = document.getElementById('btn-gen-rubrique');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Génération...';
+  document.getElementById('res-rubrique').classList.remove('show');
+  document.getElementById('load-rubrique').classList.add('show');
+  try {
+    const r = await fetch(`${API}/ai/rubrique`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ matiere, classe, type_devoir, bareme_total }) });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur de génération.'); return; }
+    currentRubrique = { data: d.rubrique, meta: { matiere, classe, type_devoir, bareme_total } };
+    renderRubrique(d.rubrique, bareme_total);
+    await refreshSubscription();
+  } catch(e) { alert('Erreur réseau.'); }
+  finally {
+    document.getElementById('load-rubrique').classList.remove('show');
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-list-check"></i> Générer la grille';
+  }
+}
+
+function renderRubrique(rb, bareme) {
+  const criteres = rb.criteres || [];
+  const total = criteres.reduce((s,c) => s + (Number(c.points) || 0), 0);
+  document.getElementById('res-rubrique-title').textContent = `Grille de notation — ${total}/${bareme}`;
+  document.getElementById('res-rubrique-body').innerHTML = `
+    <ul class="criteres-list" id="rubrique-criteres-list">
+      ${criteres.map((c,i) => `
+        <li data-idx="${i}" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div>
+            <strong style="display:block;color:var(--text);font-size:0.825rem;margin-bottom:2px">${escapeHtml(c.nom||'')}</strong>
+            <span style="color:var(--text-2)">${escapeHtml(c.description||'')}</span>
+          </div>
+          <span class="rubrique-pts-display" style="font-weight:600;color:var(--gold-dark);white-space:nowrap">${c.points ?? 0} pt${(c.points||0)>1?'s':''}</span>
+        </li>`).join('')}
+    </ul>
+    <div class="competence-badge" style="display:flex;justify-content:space-between;margin-top:10px;margin-bottom:0">
+      <span>Total</span><span id="rubrique-total-value">${total} / ${bareme}</span>
+    </div>
+  `;
+  document.getElementById('res-rubrique').classList.add('show');
+}
+
+// Édition manuelle des points avant export : bascule chaque valeur affichée
+// en <input type=number>, recalcule le total en direct, puis réécrit
+// currentRubrique.data au moment de la validation (le total n'est alors
+// plus garanti égal au barème — l'ajustement serveur ne s'applique qu'à
+// la génération IA, pas à une correction manuelle volontaire).
+function toggleAjusterRubrique() {
+  if (!currentRubrique) return;
+  const list = document.getElementById('rubrique-criteres-list');
+  const btn = document.getElementById('btn-ajuster-rubrique');
+  const isEditing = list.classList.toggle('editing');
+  if (isEditing) {
+    list.querySelectorAll('li').forEach(li => {
+      const idx = li.dataset.idx;
+      const disp = li.querySelector('.rubrique-pts-display');
+      const val = currentRubrique.data.criteres[idx].points ?? 0;
+      disp.outerHTML = `<input type="number" class="rubrique-pts-input" data-idx="${idx}" value="${val}" min="0" step="1" style="width:60px;text-align:right" oninput="recalculerTotalRubrique()">`;
+    });
+    btn.innerHTML = '<i class="ti ti-check"></i> Valider';
+  } else {
+    list.querySelectorAll('.rubrique-pts-input').forEach(input => {
+      currentRubrique.data.criteres[input.dataset.idx].points = Number(input.value) || 0;
+    });
+    renderRubrique(currentRubrique.data, currentRubrique.meta.bareme_total);
+    btn.innerHTML = '<i class="ti ti-edit"></i> Ajuster';
+  }
+}
+
+function recalculerTotalRubrique() {
+  let total = 0;
+  document.querySelectorAll('.rubrique-pts-input').forEach(input => { total += Number(input.value) || 0; });
+  document.getElementById('rubrique-total-value').textContent = `${total} / ${currentRubrique.meta.bareme_total}`;
+}
+
+// ============================================================
+// APPRECIATION DE BULLETIN — POST /api/ai/appreciation
+// ============================================================
+function selectTon(btn) {
+  btn.parentElement.querySelectorAll('.ton-option').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+async function genererAppreciation() {
+  const nom_eleve = document.getElementById('ap-nom-eleve').value.trim();
+  const matiere = document.getElementById('ap-matiere').value;
+  const trimestre = document.getElementById('ap-trimestre').value;
+  const niveau_observe = document.getElementById('ap-niveau').value.trim();
+  const ton = document.querySelector('#ap-ton-select .ton-option.selected').dataset.ton;
+  if (!nom_eleve || !niveau_observe) { alert('Entrez le nom de l\'élève et le niveau observé.'); return; }
+  const btn = document.getElementById('btn-gen-appreciation');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Génération...';
+  document.getElementById('res-appreciation').classList.remove('show');
+  document.getElementById('load-appreciation').classList.add('show');
+  try {
+    const r = await fetch(`${API}/ai/appreciation`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ nom_eleve, matiere, trimestre, niveau_observe, ton }) });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur de génération.'); return; }
+    currentAppreciation = { data: d.appreciation, meta: { nom_eleve, matiere, trimestre, niveau_observe, ton } };
+    renderAppreciation(d.appreciation);
+    await refreshSubscription();
+  } catch(e) { alert('Erreur réseau.'); }
+  finally {
+    document.getElementById('load-appreciation').classList.remove('show');
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-message-heart"></i> Générer l\'appréciation';
+  }
+}
+
+function renderAppreciation(ap) {
+  const texte = ap.texte || '';
+  const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
+  document.getElementById('res-appreciation-title').textContent = 'Appréciation générée';
+  document.getElementById('res-appreciation-body').innerHTML = `
+    <div id="appreciation-texte" style="white-space:pre-wrap">${escapeHtml(texte)}</div>
+    <div style="margin-top:10px;display:flex;justify-content:flex-end">
+      <span class="hist-badge">${nbMots} mot${nbMots>1?'s':''}</span>
+    </div>
+  `;
+  document.getElementById('res-appreciation').classList.add('show');
+}
+
+function copierAppreciation() {
+  const texte = document.getElementById('appreciation-texte');
+  if (!texte) return;
+  navigator.clipboard.writeText(texte.innerText).then(() => showToast('Copié !'));
 }
 
 // ============================================================
@@ -1790,15 +2124,15 @@ function renderBanque(questions) {
     <div class="card" style="margin-bottom:0.75rem">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${q.type_q ? `<span class="q-type">${q.type_q}</span>` : ''}
-          ${q.niveau_taxo ? `<span class="q-type" style="background:var(--gold-light);color:var(--gold-dark)">${q.niveau_taxo}</span>` : ''}
+          ${q.type_q ? `<span class="q-type">${escapeHtml(q.type_q)}</span>` : ''}
+          ${q.niveau_taxo ? `<span class="q-type" style="background:var(--gold-light);color:var(--gold-dark)">${escapeHtml(q.niveau_taxo)}</span>` : ''}
           ${q.nb_usages ? `<span class="hist-badge"><i class="ti ti-repeat" style="font-size:10px"></i> ${q.nb_usages}×</span>` : ''}
         </div>
         ${q.points ? `<span class="q-pts">${q.points} pt${q.points > 1 ? 's' : ''}</span>` : ''}
       </div>
-      <div style="font-size:0.875rem;color:var(--text);margin-bottom:4px">${q.enonce}</div>
-      <div style="font-size:0.75rem;color:var(--text-3);margin-bottom:8px">${q.matiere || ''}${q.classe ? ' · ' + q.classe : ''}</div>
-      ${q.bareme ? `<div style="font-size:0.75rem;color:var(--forest);margin-bottom:8px"><i class="ti ti-key" style="font-size:11px"></i> ${q.bareme}</div>` : ''}
+      <div style="font-size:0.875rem;color:var(--text);margin-bottom:4px">${escapeHtml(q.enonce)}</div>
+      <div style="font-size:0.75rem;color:var(--text-3);margin-bottom:8px">${escapeHtml(q.matiere || '')}${q.classe ? ' · ' + escapeHtml(q.classe) : ''}</div>
+      ${q.bareme ? `<div style="font-size:0.75rem;color:var(--forest);margin-bottom:8px"><i class="ti ti-key" style="font-size:11px"></i> ${escapeHtml(q.bareme)}</div>` : ''}
       <button class="btn-sm" onclick="utiliserQuestionBanque('${q.id}', this)"><i class="ti ti-copy"></i> Copier et marquer comme utilisée</button>
     </div>`).join('');
 }
@@ -2009,7 +2343,7 @@ function renderHistory(items) {
   el.innerHTML=items.map(item=>`
     <div class="hist-item">
       <div class="hist-icon"><i class="ti ti-${item._type==='fiche'?'clipboard-list':'file-text'}"></i></div>
-      <div class="hist-info"><div class="hist-title">${item.titre}</div><div class="hist-meta">${item.matiere}${item.classe?' · '+item.classe:''} · ${new Date(item.created_at).toLocaleDateString('fr-FR')}</div></div>
+      <div class="hist-info"><div class="hist-title">${escapeHtml(item.titre)}</div><div class="hist-meta">${escapeHtml(item.matiere)}${item.classe?' · '+escapeHtml(item.classe):''} · ${new Date(item.created_at).toLocaleDateString('fr-FR')}</div></div>
       <span class="hist-badge">${item._type==='fiche'?'Cours':'Devoir'}</span>
     </div>`).join('');
 }
@@ -2040,15 +2374,14 @@ function selectMethod(el) { document.querySelectorAll('.pay-method').forEach(m=>
 async function submitPayment() {
   const plan=document.querySelector('.plan-option.selected')?.dataset.plan;
   const methode=document.querySelector('.pay-method.selected')?.dataset.method;
-  const reference_mm=document.getElementById('pay-reference').value.trim();
   const telephone_mm=document.getElementById('pay-telephone').value.trim();
-  if (!reference_mm||!telephone_mm) { alert('Référence et numéro de téléphone requis.'); return; }
+  if (!telephone_mm) { alert('Numéro de téléphone requis.'); return; }
   const btn=document.getElementById('btn-pay');
   btn.disabled=true; btn.innerHTML='<i class="ti ti-loader"></i> Envoi...';
   try {
-    const r=await fetch(`${API}/subscriptions/request`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({plan,methode,reference_mm,telephone_mm})});
+    const r=await fetch(`${API}/subscriptions/request`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({plan,methode,reference_mm:null,telephone_mm})});
     const d=await r.json();
-    if (r.ok) { showToast('Demande envoyée ! Activation sous 24h.'); document.getElementById('pay-reference').value=''; document.getElementById('pay-telephone').value=''; }
+    if (r.ok) { showToast('Demande envoyée ! Activation sous 24h.'); document.getElementById('pay-telephone').value=''; }
     else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
   btn.disabled=false; btn.innerHTML='<i class="ti ti-send"></i> Soumettre le paiement';
