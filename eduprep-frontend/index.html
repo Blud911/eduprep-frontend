@@ -709,21 +709,46 @@ function resetDemo() {
   document.getElementById('demo-note').style.display = 'none';
 }
 
-const BACKEND = 'https://eduprep-backend-km19.onrender.com/api';
+const BACKEND = 'https://eduprep-backend-t31j.onrender.com/api';
+
+// FIX SEC-XSS : échappement HTML — voir app.html/admin.html pour le même
+// utilitaire. Ici la réponse vient de /api/ai/demo (publique, sans auth) :
+// même si l'impact reste limité au visiteur lui-même (rendu côté client,
+// rien n'est sauvegardé ni visible par un tiers), le contenu généré par
+// Mistral ne doit jamais être injecté brut dans innerHTML.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Rendu du texte libre (branche "string") : markdown minimal (**gras**,
+// sauts de ligne) appliqué APRÈS échappement HTML, jamais avant — sinon un
+// <br> ou <strong> déjà présent tel quel dans le texte casserait l'échappement.
+function renderTexteLibre(str) {
+  return '<p>' + escapeHtml(str)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>') + '</p>';
+}
 
 function renderFicheDemo(data, lecon, matiere, classe) {
   document.getElementById('demo-loading').classList.remove('show');
   let html = '';
   if (data && typeof data === 'object') {
-    if (data.objectifs) { html += '<strong>🎯 Objectifs</strong><ul>'; (Array.isArray(data.objectifs) ? data.objectifs : [data.objectifs]).forEach(o => { html += '<li>' + o + '</li>'; }); html += '</ul>'; }
-    if (data.materiel) { html += '<strong>📦 Matériel</strong><p>' + (Array.isArray(data.materiel) ? data.materiel.join(', ') : data.materiel) + '</p>'; }
-    if (data.introduction || data.mise_en_situation) { html += '<strong>🔰 Introduction</strong><p>' + (data.introduction || data.mise_en_situation) + '</p>'; }
-    if (data.deroulement) { html += '<strong>📋 Déroulement</strong>'; (Array.isArray(data.deroulement) ? data.deroulement : [data.deroulement]).forEach(p => { if (typeof p === 'object' && p !== null) { html += '<p><strong style="font-size:0.8rem;color:var(--forest);display:inline">' + (p.phase||p.titre||p.etape||'') + '</strong>'; var c = p.contenu||p.description||p.activites||''; if (typeof c === 'object') c = JSON.stringify(c); if (c) html += ' — ' + c; html += '</p>'; } else { html += '<p>' + p + '</p>'; } }); }
-    if (data.evaluation) { html += '<strong>✅ Évaluation</strong><p>' + (typeof data.evaluation === 'object' ? JSON.stringify(data.evaluation) : data.evaluation) + '</p>'; }
-    if (data.competences) { html += '<strong>📚 Compétences</strong><p>' + (Array.isArray(data.competences) ? data.competences.join(' · ') : data.competences) + '</p>'; }
-    if (!html) html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    if (data.objectifs) { html += '<strong>🎯 Objectifs</strong><ul>'; (Array.isArray(data.objectifs) ? data.objectifs : [data.objectifs]).forEach(o => { html += '<li>' + escapeHtml(o) + '</li>'; }); html += '</ul>'; }
+    if (data.materiel) { html += '<strong>📦 Matériel</strong><p>' + escapeHtml(Array.isArray(data.materiel) ? data.materiel.join(', ') : data.materiel) + '</p>'; }
+    if (data.introduction || data.mise_en_situation) { html += '<strong>🔰 Introduction</strong><p>' + escapeHtml(data.introduction || data.mise_en_situation) + '</p>'; }
+    if (data.deroulement) { html += '<strong>📋 Déroulement</strong>'; (Array.isArray(data.deroulement) ? data.deroulement : [data.deroulement]).forEach(p => { if (typeof p === 'object' && p !== null) { html += '<p><strong style="font-size:0.8rem;color:var(--forest);display:inline">' + escapeHtml(p.phase||p.titre||p.etape||'') + '</strong>'; var c = p.contenu||p.description||p.activites||''; if (typeof c === 'object') c = JSON.stringify(c); if (c) html += ' — ' + escapeHtml(c); html += '</p>'; } else { html += '<p>' + escapeHtml(p) + '</p>'; } }); }
+    if (data.evaluation) { html += '<strong>✅ Évaluation</strong><p>' + escapeHtml(typeof data.evaluation === 'object' ? JSON.stringify(data.evaluation) : data.evaluation) + '</p>'; }
+    if (data.competences) { html += '<strong>📚 Compétences</strong><p>' + escapeHtml(Array.isArray(data.competences) ? data.competences.join(' · ') : data.competences) + '</p>'; }
+    if (!html) html = '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
   } else if (typeof data === 'string') {
-    html = '<p>' + data.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    html = renderTexteLibre(data);
   } else { html = '<p style="color:#c62828">Format inattendu.</p>'; }
   document.querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Fiche générée';
   document.getElementById('demo-result-body').innerHTML = html;
@@ -736,12 +761,12 @@ function renderDevoirDemo(data, matiere, classe, type_eval) {
   document.getElementById('demo-loading').classList.remove('show');
   let html = '';
   if (data && typeof data === 'object') {
-    if (data.consignes) { html += '<strong>📌 Consignes</strong><p>' + data.consignes + '</p>'; }
-    if (data.questions) { html += '<strong>📝 Questions</strong><ul>'; (Array.isArray(data.questions) ? data.questions : [data.questions]).forEach((q, i) => { if (typeof q === 'object' && q !== null) { html += '<li><strong style="display:inline;color:var(--forest)">Q' + (i+1) + (q.points ? ' (' + q.points + ' pts)' : '') + '</strong> — ' + (q.question||q.enonce||q.texte||JSON.stringify(q)) + '</li>'; } else { html += '<li>' + q + '</li>'; } }); html += '</ul>'; }
-    if (data.bareme || data.total) { html += '<strong>📊 Barème</strong><p>' + (data.bareme ? (typeof data.bareme === 'object' ? JSON.stringify(data.bareme) : data.bareme) : 'Total : ' + data.total + ' pts') + '</p>'; }
-    if (!html) html = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    if (data.consignes) { html += '<strong>📌 Consignes</strong><p>' + escapeHtml(data.consignes) + '</p>'; }
+    if (data.questions) { html += '<strong>📝 Questions</strong><ul>'; (Array.isArray(data.questions) ? data.questions : [data.questions]).forEach((q, i) => { if (typeof q === 'object' && q !== null) { html += '<li><strong style="display:inline;color:var(--forest)">Q' + (i+1) + (q.points ? ' (' + q.points + ' pts)' : '') + '</strong> — ' + escapeHtml(q.question||q.enonce||q.texte||JSON.stringify(q)) + '</li>'; } else { html += '<li>' + escapeHtml(q) + '</li>'; } }); html += '</ul>'; }
+    if (data.bareme || data.total) { html += '<strong>📊 Barème</strong><p>' + (data.bareme ? escapeHtml(typeof data.bareme === 'object' ? JSON.stringify(data.bareme) : data.bareme) : 'Total : ' + escapeHtml(data.total) + ' pts') + '</p>'; }
+    if (!html) html = '<pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre>';
   } else if (typeof data === 'string') {
-    html = '<p>' + data.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    html = renderTexteLibre(data);
   } else { html = '<p style="color:#c62828">Format inattendu.</p>'; }
   document.querySelector('.demo-result-header span').innerHTML = '<i class="ti ti-check" style="margin-right:4px"></i> Devoir généré';
   document.getElementById('demo-result-body').innerHTML = html;

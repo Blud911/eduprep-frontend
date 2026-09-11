@@ -2210,7 +2210,11 @@ async function saveFiche() {
   if (!currentFiche) return;
   const {data:f,meta}=currentFiche;
   try {
-    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,competence:f.competence,exemple_situation:f.exemple_situation,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,tableau_habiletes_contenus:f.tableau_habiletes_contenus,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
+    // FIX : type_seance manquait ici alors que POST /content/fiches le
+    // défaute à 'decouverte' quand absent — la fiche sauvegardée (et donc
+    // exportée depuis /pdf/fiche/:id) perdait silencieusement le type de
+    // séance réellement choisi (Application, Évaluation...).
+    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,type_seance:meta.type_seance,competence:f.competence,exemple_situation:f.exemple_situation,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,tableau_habiletes_contenus:f.tableau_habiletes_contenus,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
     const d=await r.json();
     if (r.ok) { savedFicheId=d.fiche?.id; showToast('Fiche sauvegardée !'); loadHistory(); }
     else alert(d.error);
@@ -2285,10 +2289,17 @@ async function exportPDF(type) {
 
   if (type === 'fiche') {
     if (!currentFiche) { showToast('Générez d\'abord une fiche.'); return; }
+    // FIX : alignée sur le pattern devoir — sauvegarde silencieuse si pas
+    // encore persistée, puis export toujours depuis /pdf/fiche/:id (jamais
+    // fiche-direct) pour que le PDF reflète la version réellement stockée.
+    if (!savedFicheId) {
+      showToast('Sauvegarde avant export...');
+      await saveFiche();
+    }
+    if (!savedFicheId) { showToast('Impossible de sauvegarder la fiche avant export.'); return; }
     const m = currentFiche.meta;
-    const meta = { titre_lecon: m.lecon, matiere: m.matiere, classe: m.classe, duree_minutes: parseInt(m.duree)||55, type_seance: m.type_seance||'' };
     const filename = `fiche_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
-    await telechargerPDF('/pdf/fiche-direct', { fiche: currentFiche.data, meta }, filename);
+    await telechargerPDF(`/pdf/fiche/${savedFicheId}`, {}, filename);
     return;
   }
 
