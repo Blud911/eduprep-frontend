@@ -466,9 +466,10 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="result-block" id="res-fiche">
         <div class="result-header">
           <span class="result-header-left" id="res-fiche-title">Fiche générée</span>
-          <div class="result-actions-row">
+          <div class="result-actions-row" id="f-actions-row">
             <button class="btn-result-action" onclick="saveFiche()" title="Sauvegarder"><i class="ti ti-bookmark"></i></button>
             <button class="btn-result-action" onclick="exportPDF('fiche')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="modifierFiche()" title="Modifier"><i class="ti ti-pencil"></i></button>
             <button class="btn-result-action" onclick="copyResult('fiche')" title="Copier"><i class="ti ti-copy"></i></button>
           </div>
         </div>
@@ -1289,6 +1290,7 @@ let currentFiche = null, currentDevoir = null, currentProgression = null, curren
 let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null, savedRemediationId = null, savedRubriqueId = null;
 let rmEditState = null;
 let rbEditState = null;
+let fEditState = null;
 let deferredPrompt = null;
 let swRegistration = null;
 let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1719,6 +1721,7 @@ function renderFiche(f,lecon,matiere,classe) {
   const habiletesRows=(f.tableau_habiletes_contenus||[]).map(h=>`<tr><td>${escapeHtml(h.habilete||'')}</td><td>${escapeHtml(h.contenu||'')}</td></tr>`).join('');
   const habiletesTable=habiletesRows?`<table class="habiletes-table"><thead><tr><th>Habileté</th><th>Contenu</th></tr></thead><tbody>${habiletesRows}</tbody></table>`:'';
   document.getElementById('res-fiche-title').textContent=`${lecon} — ${matiere} ${classe}`;
+  document.getElementById('f-actions-row').style.display = '';
   document.getElementById('res-fiche-body').innerHTML=`
     ${f.competence?`<div class="competence-badge"><i class="ti ti-target-arrow"></i> ${escapeHtml(f.competence)}</div>`:''}
     ${f.exemple_situation?`<strong>Exemple de situation</strong><div class="situation-box">${escapeHtml(f.exemple_situation)}</div>`:''}
@@ -2540,6 +2543,133 @@ async function saveFiche() {
     if (r.ok) { savedFicheId=d.fiche?.id; showToast('Fiche sauvegardée !'); loadHistory(); }
     else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
+}
+
+// Étape 4 (édition) : sauvegarde silencieuse si pas encore persistée, puis
+// bascule le result-body en formulaire d'édition. fEditState est une copie
+// de travail de currentFiche.data — helpers génériques par nom de champ
+// (mêmes principes que remediation) : fUpdateListItem/fRemoveListItem/
+// fAddListItem pour les 5 champs TEXT[] (objectifs_specifiques, prerequis,
+// materiel, competences, prolongements), fUpdateObjetItem/fRemoveObjetItem/
+// fAddObjetItem pour les 2 champs JSONB tableau d'objets (tableau_
+// habiletes_contenus, phases). role_enseignant/role_eleve n'existent pas
+// dans ce schéma (jamais affichés) — hors scope, pas de champ pour eux ici.
+async function modifierFiche() {
+  if (!currentFiche) return;
+  if (!savedFicheId) {
+    showToast('Sauvegarde avant édition...');
+    await saveFiche();
+    if (!savedFicheId) { showToast('Impossible de sauvegarder la fiche avant édition.'); return; }
+  }
+  fEditState = JSON.parse(JSON.stringify(currentFiche.data));
+  ['objectifs_specifiques','prerequis','materiel','competences','prolongements','tableau_habiletes_contenus','phases'].forEach(k => {
+    if (!Array.isArray(fEditState[k])) fEditState[k] = [];
+  });
+  renderFicheEditForm();
+}
+
+function fUpdateListItem(field, i, val) { fEditState[field][i] = val; }
+function fRemoveListItem(field, i) { fEditState[field].splice(i, 1); renderFicheEditForm(); }
+function fAddListItem(field) { fEditState[field].push(''); renderFicheEditForm(); }
+
+const FICHE_OBJET_TEMPLATES = {
+  tableau_habiletes_contenus: { habilete: '', contenu: '' },
+  phases: { nom: '', duree: '', desc: '', methode: '' },
+};
+function fUpdateObjetItem(field, i, subfield, val) { fEditState[field][i][subfield] = val; }
+function fRemoveObjetItem(field, i) { fEditState[field].splice(i, 1); renderFicheEditForm(); }
+function fAddObjetItem(field) { fEditState[field].push({ ...FICHE_OBJET_TEMPLATES[field] }); renderFicheEditForm(); }
+
+function ficheListEditorHtml(field, label) {
+  const rows = fEditState[field].map((v, i) => `
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input type="text" value="${escapeHtml(v)}" oninput="fUpdateListItem('${field}',${i},this.value)">
+      <button class="btn-icon-sm" onclick="fRemoveListItem('${field}',${i})" title="Supprimer"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+  return `<div class="form-group-app"><label>${label}</label>${rows}</div>
+    <button class="btn-sm" onclick="fAddListItem('${field}')"><i class="ti ti-plus"></i> Ajouter</button>`;
+}
+
+function ficheObjetBlocksHtml(field, label, subfields) {
+  const blocks = fEditState[field].map((obj, i) => `
+    <div class="q-item">
+      <div class="q-header"><span class="q-type">${label} ${i + 1}</span><button class="btn-icon-sm" onclick="fRemoveObjetItem('${field}',${i})" title="Supprimer"><i class="ti ti-trash"></i></button></div>
+      ${subfields.map((sf, si) => `<div class="form-group-app" style="${si === subfields.length - 1 ? 'margin-bottom:0' : ''}"><label>${sf.label}</label>${
+        sf.type === 'textarea'
+          ? `<textarea oninput="fUpdateObjetItem('${field}',${i},'${sf.key}',this.value)">${escapeHtml(obj[sf.key] || '')}</textarea>`
+          : `<input type="text" value="${escapeHtml(obj[sf.key] || '')}" oninput="fUpdateObjetItem('${field}',${i},'${sf.key}',this.value)">`
+      }</div>`).join('')}
+    </div>`).join('');
+  return `<div class="section-divider">${label}</div>${blocks}<button class="btn-sm" onclick="fAddObjetItem('${field}')"><i class="ti ti-plus"></i> Ajouter</button>`;
+}
+
+function renderFicheEditForm() {
+  const f = fEditState;
+  document.getElementById('f-actions-row').style.display = 'none';
+  document.getElementById('res-fiche-body').innerHTML = `
+    <div class="form-group-app"><label>Compétence</label><textarea oninput="fEditState.competence=this.value" style="min-height:50px">${escapeHtml(f.competence || '')}</textarea></div>
+    <div class="form-group-app"><label>Exemple de situation</label><textarea oninput="fEditState.exemple_situation=this.value" style="min-height:60px">${escapeHtml(f.exemple_situation || '')}</textarea></div>
+    <div class="form-group-app"><label>Objectif général</label><textarea oninput="fEditState.objectif_general=this.value" style="min-height:60px">${escapeHtml(f.objectif_general || '')}</textarea></div>
+
+    ${ficheListEditorHtml('objectifs_specifiques', 'Objectifs spécifiques')}
+    ${ficheListEditorHtml('prerequis', 'Prérequis')}
+    ${ficheListEditorHtml('materiel', 'Matériel')}
+
+    ${ficheObjetBlocksHtml('tableau_habiletes_contenus', 'Habileté / contenu', [
+      { key: 'habilete', label: 'Habileté' },
+      { key: 'contenu', label: 'Contenu' },
+    ])}
+
+    ${ficheObjetBlocksHtml('phases', 'Phase', [
+      { key: 'nom', label: 'Nom' },
+      { key: 'duree', label: 'Durée' },
+      { key: 'desc', label: 'Description', type: 'textarea' },
+      { key: 'methode', label: 'Méthode' },
+    ])}
+
+    ${ficheListEditorHtml('competences', 'Compétences visées')}
+
+    <div class="form-group-app" style="margin-top:1.25rem"><label>Évaluation formative</label><textarea oninput="fEditState.evaluation=this.value" style="min-height:60px">${escapeHtml(f.evaluation || '')}</textarea></div>
+
+    ${ficheListEditorHtml('prolongements', 'Prolongements')}
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-sm" onclick="annulerEditionFiche()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerFiche()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function annulerEditionFiche() {
+  if (!currentFiche) return;
+  fEditState = null;
+  const m = currentFiche.meta;
+  renderFiche(currentFiche.data, m.lecon, m.matiere, m.classe);
+}
+
+async function enregistrerFiche() {
+  if (!fEditState) return;
+  try {
+    const r = await fetch(`${API}/content/fiches/${savedFicheId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        competence: fEditState.competence, exemple_situation: fEditState.exemple_situation,
+        objectif_general: fEditState.objectif_general, objectifs_specifiques: fEditState.objectifs_specifiques,
+        prerequis: fEditState.prerequis, materiel: fEditState.materiel,
+        tableau_habiletes_contenus: fEditState.tableau_habiletes_contenus, phases: fEditState.phases,
+        competences: fEditState.competences, evaluation: fEditState.evaluation,
+        prolongements: fEditState.prolongements,
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur lors de la mise à jour.'); return; }
+    currentFiche.data = fEditState;
+    fEditState = null;
+    const m = currentFiche.meta;
+    renderFiche(currentFiche.data, m.lecon, m.matiere, m.classe);
+    showToast('Fiche mise à jour !');
+  } catch (e) { alert('Erreur réseau.'); }
 }
 
 // FIX 03/08/2026 : l'enum PostgreSQL content_type (colonne devoirs.type_eval)
