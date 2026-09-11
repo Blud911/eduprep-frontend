@@ -106,6 +106,8 @@ textarea { resize: vertical; min-height: 80px; }
 .result-actions-row { display: flex; gap: 6px; }
 .btn-result-action { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.15); border: none; cursor: pointer; color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .btn-result-action:hover { background: rgba(255,255,255,0.25); }
+.btn-icon-sm { width: 28px; height: 28px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); cursor: pointer; color: var(--text-2); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.btn-icon-sm:hover { background: var(--forest-pale); color: var(--forest); }
 .result-body { padding: 1rem; font-size: 0.875rem; line-height: 1.7; color: var(--text-2); }
 .result-body strong { color: var(--text); display: block; margin: 10px 0 3px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .result-body strong:first-child { margin-top: 0; }
@@ -2016,16 +2018,16 @@ function renderRemediationEditForm() {
   const prereqRows = rm.prerequis_a_consolider.map((p, i) => `
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <input type="text" value="${escapeHtml(p)}" oninput="rmUpdateListItem('prerequis_a_consolider',${i},this.value)">
-      <button class="btn-result-action" onclick="rmRemoveListItem('prerequis_a_consolider',${i})" title="Supprimer" style="flex-shrink:0"><i class="ti ti-trash"></i></button>
+      <button class="btn-icon-sm" onclick="rmRemoveListItem('prerequis_a_consolider',${i})" title="Supprimer"><i class="ti ti-trash"></i></button>
     </div>`).join('');
   const critRows = rm.criteres_reussite.map((c, i) => `
     <div style="display:flex;gap:6px;margin-bottom:6px">
       <input type="text" value="${escapeHtml(c)}" oninput="rmUpdateListItem('criteres_reussite',${i},this.value)">
-      <button class="btn-result-action" onclick="rmRemoveListItem('criteres_reussite',${i})" title="Supprimer" style="flex-shrink:0"><i class="ti ti-trash"></i></button>
+      <button class="btn-icon-sm" onclick="rmRemoveListItem('criteres_reussite',${i})" title="Supprimer"><i class="ti ti-trash"></i></button>
     </div>`).join('');
   const activiteBlocks = rm.activites.map((a, i) => `
     <div class="q-item">
-      <div class="q-header"><span class="q-type">Activité ${i + 1}</span><button class="btn-result-action" onclick="rmRemoveActivite(${i})" title="Supprimer l'activité"><i class="ti ti-trash"></i></button></div>
+      <div class="q-header"><span class="q-type">Activité ${i + 1}</span><button class="btn-icon-sm" onclick="rmRemoveActivite(${i})" title="Supprimer l'activité"><i class="ti ti-trash"></i></button></div>
       <div class="form-group-app"><label>Nom</label><input type="text" value="${escapeHtml(a.nom || '')}" oninput="rmUpdateActivite(${i},'nom',this.value)"></div>
       <div class="form-group-app"><label>Durée</label><input type="text" value="${escapeHtml(a.duree || '')}" oninput="rmUpdateActivite(${i},'duree',this.value)"></div>
       <div class="form-group-app"><label>Description</label><textarea oninput="rmUpdateActivite(${i},'desc',this.value)">${escapeHtml(a.desc || '')}</textarea></div>
@@ -2033,7 +2035,7 @@ function renderRemediationEditForm() {
     </div>`).join('');
   const exerciceBlocks = rm.exercices_cibles.map((ex, i) => `
     <div class="q-item">
-      <div class="q-header"><span class="q-type">Exercice ${i + 1}</span><button class="btn-result-action" onclick="rmRemoveExercice(${i})" title="Supprimer l'exercice"><i class="ti ti-trash"></i></button></div>
+      <div class="q-header"><span class="q-type">Exercice ${i + 1}</span><button class="btn-icon-sm" onclick="rmRemoveExercice(${i})" title="Supprimer l'exercice"><i class="ti ti-trash"></i></button></div>
       <div class="form-group-app"><label>Énoncé</label><textarea oninput="rmUpdateExercice(${i},'enonce',this.value)">${escapeHtml(ex.enonce || '')}</textarea></div>
       <div class="form-group-app"><label>Corrigé</label><textarea oninput="rmUpdateExercice(${i},'correction',this.value)">${escapeHtml(ex.correction || '')}</textarea></div>
       <div class="form-group-app" style="margin-bottom:0"><label>Point de vigilance</label><textarea oninput="rmUpdateExercice(${i},'point_de_vigilance',this.value)">${escapeHtml(ex.point_de_vigilance || '')}</textarea></div>
