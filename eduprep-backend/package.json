@@ -1,7 +1,7 @@
 {
   "name": "eduprep-backend",
   "version": "1.0.0",
-  "description": "Backend API EduPrep CI \u2014 Pr\u00e9paration de cours IA pour enseignants ivoiriens",
+  "description": "Backend API EduPrep CI — Préparation de cours IA pour enseignants ivoiriens",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -20,6 +20,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.13",
+    "pdfkit": "^0.19.1",
     "pg": "^8.12.0",
     "uuid": "^10.0.0",
     "validator": "^13.12.0"
