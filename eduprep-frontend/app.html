@@ -2530,6 +2530,23 @@ async function sendChatMessage() {
   }
 }
 
+// FIX 11/09/2026 : le select #f-type envoie son libellé affiché
+// ('Découverte', 'Approfondissement', 'Révision', 'TP / Pratique'), mais
+// fiches.type_seance est l'enum Postgres seance_type ('decouverte',
+// 'approfondissement', 'revision', 'evaluation', 'tp_pratique') — toute
+// sauvegarde échouait en 500 ("invalid input value for enum"), jamais
+// détecté faute d'avoir testé une sauvegarde jusqu'ici (même classe de bug
+// que mapTypeEvalToEnum pour les devoirs, ci-dessous).
+function mapTypeSeanceToEnum(label) {
+  const table = {
+    'Découverte': 'decouverte',
+    'Approfondissement': 'approfondissement',
+    'Révision': 'revision',
+    'TP / Pratique': 'tp_pratique',
+  };
+  return table[label] || 'decouverte';
+}
+
 async function saveFiche() {
   if (!currentFiche) return;
   const {data:f,meta}=currentFiche;
@@ -2538,7 +2555,7 @@ async function saveFiche() {
     // défaute à 'decouverte' quand absent — la fiche sauvegardée (et donc
     // exportée depuis /pdf/fiche/:id) perdait silencieusement le type de
     // séance réellement choisi (Application, Évaluation...).
-    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,type_seance:meta.type_seance,competence:f.competence,exemple_situation:f.exemple_situation,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,tableau_habiletes_contenus:f.tableau_habiletes_contenus,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
+    const r=await fetch(`${API}/content/fiches`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({titre:meta.lecon,matiere:meta.matiere,classe:meta.classe,duree_minutes:meta.duree,type_seance:mapTypeSeanceToEnum(meta.type_seance),competence:f.competence,exemple_situation:f.exemple_situation,objectif_general:f.objectif_general,objectifs_specifiques:f.objectifs_specifiques,prerequis:f.prerequis,materiel:f.materiel,tableau_habiletes_contenus:f.tableau_habiletes_contenus,phases:f.phases,competences:f.competences,evaluation:f.evaluation,prolongements:f.prolongements})});
     const d=await r.json();
     if (r.ok) { savedFicheId=d.fiche?.id; showToast('Fiche sauvegardée !'); loadHistory(); }
     else alert(d.error);
