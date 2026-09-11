@@ -936,10 +936,14 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="result-block" id="res-rubrique">
         <div class="result-header">
           <span class="result-header-left" id="res-rubrique-title">Grille générée</span>
+          <div class="result-actions-row" id="rb-actions-row">
+            <button class="btn-result-action" onclick="exportPDF('rubrique')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="modifierRubrique()" title="Modifier"><i class="ti ti-pencil"></i></button>
+            <button class="btn-result-action" onclick="copyResult('rubrique')" title="Copier"><i class="ti ti-copy"></i></button>
+          </div>
         </div>
         <div class="result-body" id="res-rubrique-body"></div>
-        <div style="padding:0 1rem 1rem;display:flex;gap:8px">
-          <button class="btn-sm" disabled title="Bientôt disponible"><i class="ti ti-file-export"></i> Exporter PDF</button>
+        <div style="padding:0 1rem 1rem;display:flex;gap:8px" id="rb-ajuster-row">
           <button class="btn-sm" id="btn-ajuster-rubrique" onclick="toggleAjusterRubrique()"><i class="ti ti-edit"></i> Ajuster</button>
         </div>
       </div>
@@ -1282,8 +1286,9 @@ let token = localStorage.getItem('edp_token');
 let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
 let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null, currentRubrique = null, currentAppreciation = null;
-let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null, savedRemediationId = null;
+let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null, savedRemediationId = null, savedRubriqueId = null;
 let rmEditState = null;
+let rbEditState = null;
 let deferredPrompt = null;
 let swRegistration = null;
 let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -2116,6 +2121,7 @@ async function genererRubrique() {
     const d = await r.json();
     if (!r.ok) { alert(d.error || 'Erreur de génération.'); return; }
     currentRubrique = { data: d.rubrique, meta: { matiere, classe, type_devoir, bareme_total } };
+    savedRubriqueId = null;
     renderRubrique(d.rubrique, bareme_total);
     await refreshSubscription();
   } catch(e) { alert('Erreur réseau.'); }
@@ -2129,6 +2135,8 @@ function renderRubrique(rb, bareme) {
   const criteres = rb.criteres || [];
   const total = criteres.reduce((s,c) => s + (Number(c.points) || 0), 0);
   document.getElementById('res-rubrique-title').textContent = `Grille de notation — ${total}/${bareme}`;
+  document.getElementById('rb-actions-row').style.display = '';
+  document.getElementById('rb-ajuster-row').style.display = '';
   document.getElementById('res-rubrique-body').innerHTML = `
     <ul class="criteres-list" id="rubrique-criteres-list">
       ${criteres.map((c,i) => `
@@ -2178,6 +2186,100 @@ function recalculerTotalRubrique() {
   let total = 0;
   document.querySelectorAll('.rubrique-pts-input').forEach(input => { total += Number(input.value) || 0; });
   document.getElementById('rubrique-total-value').textContent = `${total} / ${currentRubrique.meta.bareme_total}`;
+}
+
+// Sauvegarde silencieuse (POST /content/rubriques) — réutilisée par
+// l'export PDF et l'édition, qui exigent toutes deux un ID persisté.
+async function saveRubrique() {
+  if (!currentRubrique) return;
+  const { data: rb, meta } = currentRubrique;
+  try {
+    const r = await fetch(`${API}/content/rubriques`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        matiere: meta.matiere, classe: meta.classe, type_devoir: meta.type_devoir,
+        bareme_total: meta.bareme_total, criteres: rb.criteres,
+      }),
+    });
+    const d = await r.json();
+    if (r.ok) savedRubriqueId = d.rubrique?.id;
+    else alert(d.error);
+  } catch (e) { alert('Erreur réseau.'); }
+}
+
+// Étape 4 (édition) : sauvegarde silencieuse si pas encore persistée, puis
+// bascule le result-body en formulaire d'édition. `points` reste en
+// lecture seule ici (affiché, jamais dans un <input>) : PUT /content/
+// rubriques/:id remplace toute la colonne JSONB sans recalcul serveur
+// (cf. note dans routes/content.js), donc rbEditState ne touche jamais
+// c.points — seuls nom/description passent par un handler ; points reste
+// tel que cloné depuis currentRubrique.data (0 pour un critère ajouté ici),
+// ce qui préserve le total déjà calculé par generateRubriquePDF côté
+// export plutôt que de le recalculer côté client.
+async function modifierRubrique() {
+  if (!currentRubrique) return;
+  if (!savedRubriqueId) {
+    showToast('Sauvegarde avant édition...');
+    await saveRubrique();
+    if (!savedRubriqueId) { showToast('Impossible de sauvegarder la grille avant édition.'); return; }
+  }
+  rbEditState = JSON.parse(JSON.stringify(currentRubrique.data.criteres || []));
+  renderRubriqueEditForm();
+}
+
+function rbUpdateCritere(i, field, val) { rbEditState[i][field] = val; }
+function rbRemoveCritere(i) { rbEditState.splice(i, 1); renderRubriqueEditForm(); }
+function rbAddCritere() { rbEditState.push({ nom: '', description: '', points: 0 }); renderRubriqueEditForm(); }
+
+function renderRubriqueEditForm() {
+  const blocks = rbEditState.map((c, i) => `
+    <div class="q-item">
+      <div class="q-header">
+        <span class="q-type">Critère ${i + 1}</span>
+        <span style="display:flex;align-items:center;gap:8px">
+          <span style="font-weight:600;color:var(--gold-dark);font-size:0.8rem" title="Points — calculé côté serveur, non modifiable ici">${Number(c.points) || 0} pt${(Number(c.points) || 0) > 1 ? 's' : ''}</span>
+          <button class="btn-icon-sm" onclick="rbRemoveCritere(${i})" title="Supprimer le critère"><i class="ti ti-trash"></i></button>
+        </span>
+      </div>
+      <div class="form-group-app"><label>Nom</label><input type="text" value="${escapeHtml(c.nom || '')}" oninput="rbUpdateCritere(${i},'nom',this.value)"></div>
+      <div class="form-group-app" style="margin-bottom:0"><label>Description</label><textarea oninput="rbUpdateCritere(${i},'description',this.value)">${escapeHtml(c.description || '')}</textarea></div>
+    </div>`).join('');
+
+  document.getElementById('rb-actions-row').style.display = 'none';
+  document.getElementById('rb-ajuster-row').style.display = 'none';
+  document.getElementById('res-rubrique-body').innerHTML = `
+    ${blocks}
+    <button class="btn-sm" onclick="rbAddCritere()"><i class="ti ti-plus"></i> Ajouter un critère</button>
+    <div style="font-size:0.75rem;color:var(--text-3);margin-top:10px">Les points restent calculés automatiquement et ne sont pas modifiables depuis ce formulaire.</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-sm" onclick="annulerEditionRubrique()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerRubrique()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function annulerEditionRubrique() {
+  if (!currentRubrique) return;
+  rbEditState = null;
+  renderRubrique(currentRubrique.data, currentRubrique.meta.bareme_total);
+}
+
+async function enregistrerRubrique() {
+  if (!rbEditState) return;
+  try {
+    const r = await fetch(`${API}/content/rubriques/${savedRubriqueId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ criteres: rbEditState }),
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur lors de la mise à jour.'); return; }
+    currentRubrique.data.criteres = rbEditState;
+    rbEditState = null;
+    renderRubrique(currentRubrique.data, currentRubrique.meta.bareme_total);
+    showToast('Grille mise à jour !');
+  } catch (e) { alert('Erreur réseau.'); }
 }
 
 // ============================================================
@@ -2578,6 +2680,19 @@ async function exportPDF(type) {
     const m = currentAppreciation.meta;
     const filename = `appreciation_${m.nom_eleve}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
     await telechargerPDF(`/pdf/appreciation/${savedAppreciationId}`, {}, filename);
+    return;
+  }
+
+  if (type === 'rubrique') {
+    if (!currentRubrique) { showToast('Générez d\'abord une grille.'); return; }
+    if (!savedRubriqueId) {
+      showToast('Sauvegarde avant export...');
+      await saveRubrique();
+    }
+    if (!savedRubriqueId) { showToast('Impossible de sauvegarder la grille avant export.'); return; }
+    const m = currentRubrique.meta;
+    const filename = `rubrique_${m.matiere}_${m.type_devoir}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF(`/pdf/rubrique/${savedRubriqueId}`, {}, filename);
   }
 }
 function copyResult(type) { navigator.clipboard.writeText(document.getElementById('res-'+type+'-body').innerText).then(()=>showToast('Copié !')); }
