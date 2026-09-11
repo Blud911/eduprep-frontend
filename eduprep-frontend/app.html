@@ -1013,11 +1013,15 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="result-block" id="res-appreciation">
         <div class="result-header">
           <span class="result-header-left" id="res-appreciation-title">Appréciation générée</span>
+          <div class="result-actions-row" id="ap-actions-row">
+            <button class="btn-result-action" onclick="exportPDF('appreciation')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="modifierAppreciation()" title="Modifier"><i class="ti ti-pencil"></i></button>
+            <button class="btn-result-action" onclick="copierAppreciation()" title="Copier"><i class="ti ti-copy"></i></button>
+          </div>
         </div>
         <div class="result-body" id="res-appreciation-body"></div>
         <div style="padding:0 1rem 1rem;display:flex;gap:8px">
           <button class="btn-sm" onclick="genererAppreciation()"><i class="ti ti-refresh"></i> Régénérer</button>
-          <button class="btn-sm" onclick="copierAppreciation()"><i class="ti ti-copy"></i> Copier</button>
         </div>
       </div>
     </div>
@@ -1275,7 +1279,7 @@ let token = localStorage.getItem('edp_token');
 let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
 let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null, currentRubrique = null, currentAppreciation = null;
-let savedFicheId = null, savedDevoirId = null;
+let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null;
 let deferredPrompt = null;
 let swRegistration = null;
 let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -2051,6 +2055,7 @@ async function genererAppreciation() {
     const d = await r.json();
     if (!r.ok) { alert(d.error || 'Erreur de génération.'); return; }
     currentAppreciation = { data: d.appreciation, meta: { nom_eleve, matiere, trimestre, niveau_observe, ton } };
+    savedAppreciationId = null;
     renderAppreciation(d.appreciation);
     await refreshSubscription();
   } catch(e) { alert('Erreur réseau.'); }
@@ -2064,6 +2069,7 @@ function renderAppreciation(ap) {
   const texte = ap.texte || '';
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
   document.getElementById('res-appreciation-title').textContent = 'Appréciation générée';
+  document.getElementById('ap-actions-row').style.display = '';
   document.getElementById('res-appreciation-body').innerHTML = `
     <div id="appreciation-texte" style="white-space:pre-wrap">${escapeHtml(texte)}</div>
     <div style="margin-top:10px;display:flex;justify-content:flex-end">
@@ -2077,6 +2083,70 @@ function copierAppreciation() {
   const texte = document.getElementById('appreciation-texte');
   if (!texte) return;
   navigator.clipboard.writeText(texte.innerText).then(() => showToast('Copié !'));
+}
+
+// Sauvegarde silencieuse (POST /content/appreciations) — réutilisée par
+// l'export PDF et l'édition, qui exigent toutes deux un ID persisté.
+async function saveAppreciation() {
+  if (!currentAppreciation) return;
+  const { data: ap, meta } = currentAppreciation;
+  try {
+    const r = await fetch(`${API}/content/appreciations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        nom_eleve: meta.nom_eleve, matiere: meta.matiere, trimestre: meta.trimestre,
+        niveau_observe: meta.niveau_observe, ton: meta.ton, texte: ap.texte,
+      }),
+    });
+    const d = await r.json();
+    if (r.ok) savedAppreciationId = d.appreciation?.id;
+    else alert(d.error);
+  } catch (e) { alert('Erreur réseau.'); }
+}
+
+// Étape 4 (édition) : sauvegarde silencieuse si pas encore persistée, puis
+// bascule le result-body en mode édition (textarea). L'export PDF reste
+// toujours servi depuis /pdf/appreciation/:id (jamais le texte brut de
+// génération), donc "Enregistrer" doit passer par PUT avant tout export.
+async function modifierAppreciation() {
+  if (!currentAppreciation) return;
+  if (!savedAppreciationId) {
+    showToast('Sauvegarde avant édition...');
+    await saveAppreciation();
+    if (!savedAppreciationId) { showToast("Impossible de sauvegarder l'appréciation avant édition."); return; }
+  }
+  const texte = currentAppreciation.data.texte || '';
+  document.getElementById('ap-actions-row').style.display = 'none';
+  document.getElementById('res-appreciation-body').innerHTML = `
+    <textarea id="ap-edit-textarea" style="width:100%;min-height:140px;font:inherit">${escapeHtml(texte)}</textarea>
+    <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn-sm" onclick="annulerEditionAppreciation()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerAppreciation()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function annulerEditionAppreciation() {
+  if (!currentAppreciation) return;
+  renderAppreciation(currentAppreciation.data);
+}
+
+async function enregistrerAppreciation() {
+  const val = document.getElementById('ap-edit-textarea').value.trim();
+  if (!val) { alert('Le texte ne peut pas être vide.'); return; }
+  try {
+    const r = await fetch(`${API}/content/appreciations/${savedAppreciationId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ texte: val }),
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur lors de la mise à jour.'); return; }
+    currentAppreciation.data.texte = val;
+    renderAppreciation(currentAppreciation.data);
+    showToast('Appréciation mise à jour !');
+  } catch (e) { alert('Erreur réseau.'); }
 }
 
 // ============================================================
@@ -2335,6 +2405,22 @@ async function exportPDF(type) {
     const meta = { titre_lecon: m.lecon, matiere: m.matiere, classe: m.classe, duree_minutes: parseInt(m.duree)||30, difficulte_observee: m.difficulte_observee||'', enseignant: (user?.nom||'')+' '+(user?.prenoms||'') };
     const filename = `remediation_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
     await telechargerPDF('/pdf/remediation', { remediation: currentRemediation.data, meta }, filename);
+    return;
+  }
+
+  if (type === 'appreciation') {
+    if (!currentAppreciation) { showToast('Générez d\'abord une appréciation.'); return; }
+    // Sauvegarde silencieuse si pas encore persistée, puis export toujours
+    // depuis /pdf/appreciation/:id (jamais le texte brut de génération) pour
+    // que le PDF reflète la version réellement stockée (et donc éditée).
+    if (!savedAppreciationId) {
+      showToast('Sauvegarde avant export...');
+      await saveAppreciation();
+    }
+    if (!savedAppreciationId) { showToast("Impossible de sauvegarder l'appréciation avant export."); return; }
+    const m = currentAppreciation.meta;
+    const filename = `appreciation_${m.nom_eleve}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
+    await telechargerPDF(`/pdf/appreciation/${savedAppreciationId}`, {}, filename);
   }
 }
 function copyResult(type) { navigator.clipboard.writeText(document.getElementById('res-'+type+'-body').innerText).then(()=>showToast('Copié !')); }
