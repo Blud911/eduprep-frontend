@@ -835,8 +835,9 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="result-block" id="res-remediation">
         <div class="result-header">
           <span class="result-header-left" id="res-remediation-title">Remédiation générée</span>
-          <div class="result-actions-row">
+          <div class="result-actions-row" id="rm-actions-row">
             <button class="btn-result-action" onclick="exportPDF('remediation')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="modifierRemediation()" title="Modifier"><i class="ti ti-pencil"></i></button>
             <button class="btn-result-action" onclick="copyResult('remediation')" title="Copier"><i class="ti ti-copy"></i></button>
           </div>
         </div>
@@ -1279,7 +1280,8 @@ let token = localStorage.getItem('edp_token');
 let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
 let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null, currentRubrique = null, currentAppreciation = null;
-let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null;
+let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null, savedRemediationId = null;
+let rmEditState = null;
 let deferredPrompt = null;
 let swRegistration = null;
 let isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1918,6 +1920,7 @@ async function genererRemediation() {
     const d=await r.json();
     if (!r.ok) { alert(d.error||'Erreur de génération.'); return; }
     currentRemediation={data:d.remediation,meta:{matiere,classe,lecon,duree,difficulte_observee}};
+    savedRemediationId = null;
     renderRemediation(d.remediation,lecon,matiere,classe);
     await refreshSubscription();
   } catch(e) { alert('Erreur réseau.'); }
@@ -1938,6 +1941,7 @@ function renderRemediation(rm,lecon,matiere,classe) {
     </div>`).join('');
   const criteres=(rm.criteres_reussite||[]).map(c=>`<li>${escapeHtml(c)}</li>`).join('');
   document.getElementById('res-remediation-title').textContent=`${lecon} — ${matiere} ${classe}`;
+  document.getElementById('rm-actions-row').style.display = '';
   document.getElementById('res-remediation-body').innerHTML=`
     <strong>Diagnostic</strong>${escapeHtml(rm.diagnostic||'')}
     <strong>Objectif de la remédiation</strong>${escapeHtml(rm.objectif_remediation||'')}
@@ -1948,6 +1952,149 @@ function renderRemediation(rm,lecon,matiere,classe) {
     ${rm.conseils_enseignant?`<strong>Conseils</strong>${escapeHtml(rm.conseils_enseignant)}`:''}
   `;
   document.getElementById('res-remediation').classList.add('show');
+}
+
+// Sauvegarde silencieuse (POST /content/remediations) — réutilisée par
+// l'export PDF et l'édition, qui exigent toutes deux un ID persisté.
+async function saveRemediation() {
+  if (!currentRemediation) return;
+  const { data: rm, meta } = currentRemediation;
+  try {
+    const r = await fetch(`${API}/content/remediations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        titre_lecon: meta.lecon, matiere: meta.matiere, classe: meta.classe,
+        duree_minutes: parseInt(meta.duree) || 30, difficulte_observee: meta.difficulte_observee,
+        diagnostic: rm.diagnostic, objectif_remediation: rm.objectif_remediation,
+        prerequis_a_consolider: rm.prerequis_a_consolider, activites: rm.activites,
+        exercices_cibles: rm.exercices_cibles, criteres_reussite: rm.criteres_reussite,
+        conseils_enseignant: rm.conseils_enseignant,
+      }),
+    });
+    const d = await r.json();
+    if (r.ok) savedRemediationId = d.remediation?.id;
+    else alert(d.error);
+  } catch (e) { alert('Erreur réseau.'); }
+}
+
+// Étape 4 (édition) : sauvegarde silencieuse si pas encore persistée, puis
+// bascule le result-body en formulaire d'édition (rmEditState = copie de
+// travail éditée en place par les handlers ci-dessous, re-rendue en entier
+// à chaque ajout/suppression pour garder les index cohérents ; les champs
+// texte simples mettent juste à jour rmEditState sans re-rendu, pour ne
+// pas perdre le focus pendant la frappe).
+async function modifierRemediation() {
+  if (!currentRemediation) return;
+  if (!savedRemediationId) {
+    showToast('Sauvegarde avant édition...');
+    await saveRemediation();
+    if (!savedRemediationId) { showToast('Impossible de sauvegarder la remédiation avant édition.'); return; }
+  }
+  rmEditState = JSON.parse(JSON.stringify(currentRemediation.data));
+  if (!Array.isArray(rmEditState.prerequis_a_consolider)) rmEditState.prerequis_a_consolider = [];
+  if (!Array.isArray(rmEditState.criteres_reussite)) rmEditState.criteres_reussite = [];
+  if (!Array.isArray(rmEditState.activites)) rmEditState.activites = [];
+  if (!Array.isArray(rmEditState.exercices_cibles)) rmEditState.exercices_cibles = [];
+  renderRemediationEditForm();
+}
+
+function rmUpdateListItem(field, i, val) { rmEditState[field][i] = val; }
+function rmRemoveListItem(field, i) { rmEditState[field].splice(i, 1); renderRemediationEditForm(); }
+function rmAddListItem(field) { rmEditState[field].push(''); renderRemediationEditForm(); }
+
+function rmUpdateActivite(i, field, val) { rmEditState.activites[i][field] = val; }
+function rmRemoveActivite(i) { rmEditState.activites.splice(i, 1); renderRemediationEditForm(); }
+function rmAddActivite() { rmEditState.activites.push({ nom: '', duree: '', desc: '', materiel: '' }); renderRemediationEditForm(); }
+
+function rmUpdateExercice(i, field, val) { rmEditState.exercices_cibles[i][field] = val; }
+function rmRemoveExercice(i) { rmEditState.exercices_cibles.splice(i, 1); renderRemediationEditForm(); }
+function rmAddExercice() { rmEditState.exercices_cibles.push({ enonce: '', correction: '', point_de_vigilance: '' }); renderRemediationEditForm(); }
+
+function renderRemediationEditForm() {
+  const rm = rmEditState;
+  const prereqRows = rm.prerequis_a_consolider.map((p, i) => `
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input type="text" value="${escapeHtml(p)}" oninput="rmUpdateListItem('prerequis_a_consolider',${i},this.value)">
+      <button class="btn-result-action" onclick="rmRemoveListItem('prerequis_a_consolider',${i})" title="Supprimer" style="flex-shrink:0"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+  const critRows = rm.criteres_reussite.map((c, i) => `
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input type="text" value="${escapeHtml(c)}" oninput="rmUpdateListItem('criteres_reussite',${i},this.value)">
+      <button class="btn-result-action" onclick="rmRemoveListItem('criteres_reussite',${i})" title="Supprimer" style="flex-shrink:0"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+  const activiteBlocks = rm.activites.map((a, i) => `
+    <div class="q-item">
+      <div class="q-header"><span class="q-type">Activité ${i + 1}</span><button class="btn-result-action" onclick="rmRemoveActivite(${i})" title="Supprimer l'activité"><i class="ti ti-trash"></i></button></div>
+      <div class="form-group-app"><label>Nom</label><input type="text" value="${escapeHtml(a.nom || '')}" oninput="rmUpdateActivite(${i},'nom',this.value)"></div>
+      <div class="form-group-app"><label>Durée</label><input type="text" value="${escapeHtml(a.duree || '')}" oninput="rmUpdateActivite(${i},'duree',this.value)"></div>
+      <div class="form-group-app"><label>Description</label><textarea oninput="rmUpdateActivite(${i},'desc',this.value)">${escapeHtml(a.desc || '')}</textarea></div>
+      <div class="form-group-app" style="margin-bottom:0"><label>Matériel</label><input type="text" value="${escapeHtml(a.materiel || '')}" oninput="rmUpdateActivite(${i},'materiel',this.value)"></div>
+    </div>`).join('');
+  const exerciceBlocks = rm.exercices_cibles.map((ex, i) => `
+    <div class="q-item">
+      <div class="q-header"><span class="q-type">Exercice ${i + 1}</span><button class="btn-result-action" onclick="rmRemoveExercice(${i})" title="Supprimer l'exercice"><i class="ti ti-trash"></i></button></div>
+      <div class="form-group-app"><label>Énoncé</label><textarea oninput="rmUpdateExercice(${i},'enonce',this.value)">${escapeHtml(ex.enonce || '')}</textarea></div>
+      <div class="form-group-app"><label>Corrigé</label><textarea oninput="rmUpdateExercice(${i},'correction',this.value)">${escapeHtml(ex.correction || '')}</textarea></div>
+      <div class="form-group-app" style="margin-bottom:0"><label>Point de vigilance</label><textarea oninput="rmUpdateExercice(${i},'point_de_vigilance',this.value)">${escapeHtml(ex.point_de_vigilance || '')}</textarea></div>
+    </div>`).join('');
+
+  document.getElementById('rm-actions-row').style.display = 'none';
+  document.getElementById('res-remediation-body').innerHTML = `
+    <div class="form-group-app"><label>Diagnostic</label><textarea id="rm-edit-diagnostic" oninput="rmEditState.diagnostic=this.value" style="min-height:80px">${escapeHtml(rm.diagnostic || '')}</textarea></div>
+    <div class="form-group-app"><label>Objectif de la remédiation</label><textarea oninput="rmEditState.objectif_remediation=this.value" style="min-height:60px">${escapeHtml(rm.objectif_remediation || '')}</textarea></div>
+
+    <div class="form-group-app"><label>Prérequis à consolider</label>${prereqRows}</div>
+    <button class="btn-sm" onclick="rmAddListItem('prerequis_a_consolider')"><i class="ti ti-plus"></i> Ajouter</button>
+
+    <div class="section-divider">Activités</div>
+    ${activiteBlocks}
+    <button class="btn-sm" onclick="rmAddActivite()"><i class="ti ti-plus"></i> Ajouter une activité</button>
+
+    <div class="section-divider">Exercices de vérification</div>
+    ${exerciceBlocks}
+    <button class="btn-sm" onclick="rmAddExercice()"><i class="ti ti-plus"></i> Ajouter un exercice</button>
+
+    <div class="form-group-app" style="margin-top:1.25rem"><label>Critères de réussite</label>${critRows}</div>
+    <button class="btn-sm" onclick="rmAddListItem('criteres_reussite')"><i class="ti ti-plus"></i> Ajouter</button>
+
+    <div class="form-group-app" style="margin-top:1.25rem"><label>Conseils à l'enseignant</label><textarea oninput="rmEditState.conseils_enseignant=this.value" style="min-height:60px">${escapeHtml(rm.conseils_enseignant || '')}</textarea></div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-sm" onclick="annulerEditionRemediation()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerRemediation()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function annulerEditionRemediation() {
+  if (!currentRemediation) return;
+  rmEditState = null;
+  const m = currentRemediation.meta;
+  renderRemediation(currentRemediation.data, m.lecon, m.matiere, m.classe);
+}
+
+async function enregistrerRemediation() {
+  if (!rmEditState) return;
+  try {
+    const r = await fetch(`${API}/content/remediations/${savedRemediationId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        diagnostic: rmEditState.diagnostic, objectif_remediation: rmEditState.objectif_remediation,
+        prerequis_a_consolider: rmEditState.prerequis_a_consolider, activites: rmEditState.activites,
+        exercices_cibles: rmEditState.exercices_cibles, criteres_reussite: rmEditState.criteres_reussite,
+        conseils_enseignant: rmEditState.conseils_enseignant,
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur lors de la mise à jour.'); return; }
+    currentRemediation.data = rmEditState;
+    rmEditState = null;
+    const m = currentRemediation.meta;
+    renderRemediation(currentRemediation.data, m.lecon, m.matiere, m.classe);
+    showToast('Remédiation mise à jour !');
+  } catch (e) { alert('Erreur réseau.'); }
 }
 
 // ============================================================
@@ -2401,10 +2548,18 @@ async function exportPDF(type) {
 
   if (type === 'remediation') {
     if (!currentRemediation) { showToast('Générez d\'abord une remédiation.'); return; }
+    // Étape 4 : migration vers le pattern sauvegarde-puis-export-par-ID (sur
+    // le modèle fiche/appréciation) — export toujours depuis
+    // /pdf/remediation/:id (jamais les données brutes de génération), pour
+    // que le PDF reflète la version réellement stockée (et donc éditée).
+    if (!savedRemediationId) {
+      showToast('Sauvegarde avant export...');
+      await saveRemediation();
+    }
+    if (!savedRemediationId) { showToast('Impossible de sauvegarder la remédiation avant export.'); return; }
     const m = currentRemediation.meta;
-    const meta = { titre_lecon: m.lecon, matiere: m.matiere, classe: m.classe, duree_minutes: parseInt(m.duree)||30, difficulte_observee: m.difficulte_observee||'', enseignant: (user?.nom||'')+' '+(user?.prenoms||'') };
     const filename = `remediation_${m.matiere}_${m.classe}.pdf`.replace(/[^a-zA-Z0-9_.-]/g,'_');
-    await telechargerPDF('/pdf/remediation', { remediation: currentRemediation.data, meta }, filename);
+    await telechargerPDF(`/pdf/remediation/${savedRemediationId}`, {}, filename);
     return;
   }
 
