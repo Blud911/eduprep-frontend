@@ -496,6 +496,22 @@ body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(
 
 <script>
 const API = 'https://eduprep-backend-t31j.onrender.com/api';
+
+// FIX SEC-XSS : échappement HTML — les champs saisis par les enseignants
+// (nom, prénoms, téléphone, référence de paiement...) sont rendus ici sans
+// filtre côté backend (routes/content.js notamment) ; sans échappement, un
+// enseignant pourrait injecter du script exécuté dans la session de l'admin
+// qui consulte ces listes.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let adminToken = localStorage.getItem('edp_admin_token');
 let adminUser  = JSON.parse(localStorage.getItem('edp_admin_user') || 'null');
 let allPayments = [], allUsers = [], allSubs = [];
@@ -622,7 +638,7 @@ async function loadDashboard() {
     document.getElementById('dash-pending-list').innerHTML = list.length
       ? `<table class="data-table"><thead><tr><th>Enseignant</th><th>Plan</th><th>Montant</th><th>Méthode</th><th>Date</th><th>Action</th></tr></thead><tbody>${
           list.map(p=>`<tr>
-            <td><strong>${p.nom} ${p.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span></td>
+            <td><strong>${escapeHtml(p.nom)} ${escapeHtml(p.prenoms||'')}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${escapeHtml(p.email)}</span></td>
             <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
             <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
             <td>${formatMethod(p.methode)}</td>
@@ -639,8 +655,8 @@ async function loadDashboard() {
     document.getElementById('dash-users-list').innerHTML = users.length
       ? `<table class="data-table"><thead><tr><th>Nom</th><th>Email</th><th>Plan</th><th>Inscription</th></tr></thead><tbody>${
           users.map(u=>`<tr>
-            <td><strong>${u.nom} ${u.prenoms||''}</strong></td>
-            <td>${u.email}</td>
+            <td><strong>${escapeHtml(u.nom)} ${escapeHtml(u.prenoms||'')}</strong></td>
+            <td>${escapeHtml(u.email)}</td>
             <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'trial'}</span></td>
             <td>${formatDate(u.created_at)}</td>
           </tr>`).join('')}</tbody></table>`
@@ -669,11 +685,11 @@ function renderPaymentsTable(payments) {
   const tbody = document.getElementById('pay-tbody');
   if (!payments.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-credit-card"></i><p>Aucun paiement.</p></div></td></tr>'; return; }
   tbody.innerHTML = payments.map(p=>`<tr>
-    <td><strong>${p.nom} ${p.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${p.email}</span></td>
+    <td><strong>${escapeHtml(p.nom)} ${escapeHtml(p.prenoms||'')}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${escapeHtml(p.email)}</span></td>
     <td><span class="badge badge-${p.plan}">${p.plan}</span></td>
     <td><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></td>
     <td>${formatMethod(p.methode)}</td>
-    <td style="font-family:monospace;font-size:0.8rem">${p.reference_mm||'—'}</td>
+    <td style="font-family:monospace;font-size:0.8rem">${escapeHtml(p.reference_mm||'—')}</td>
     <td>${formatDate(p.created_at)}</td>
     <td>${badgeStatus(p.status)}</td>
     <td style="display:flex;gap:4px;flex-wrap:wrap">
@@ -695,17 +711,17 @@ function openPaymentModal(id) {
   const p = allPayments.find(x=>x.id===id); if (!p) return;
   document.getElementById('modal-pay-title').textContent = `Paiement — ${p.nom} ${p.prenoms||''}`;
   document.getElementById('modal-pay-body').innerHTML = `
-    <div class="detail-row"><span class="detail-label">Enseignant</span><span class="detail-value">${p.nom} ${p.prenoms||''}</span></div>
-    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${p.email}</span></div>
-    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${p.telephone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Enseignant</span><span class="detail-value">${escapeHtml(p.nom)} ${escapeHtml(p.prenoms||'')}</span></div>
+    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${escapeHtml(p.email)}</span></div>
+    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${escapeHtml(p.telephone||'—')}</span></div>
     <div class="detail-row"><span class="detail-label">Plan demandé</span><span class="detail-value"><span class="badge badge-${p.plan}">${p.plan}</span></span></div>
     <div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value"><strong>${(p.montant||0).toLocaleString('fr-FR')} FCFA</strong></span></div>
     <div class="detail-row"><span class="detail-label">Méthode</span><span class="detail-value">${formatMethod(p.methode)}</span></div>
-    <div class="detail-row"><span class="detail-label">Référence MM</span><span class="detail-value" style="font-family:monospace">${p.reference_mm||'—'}</span></div>
-    <div class="detail-row"><span class="detail-label">N° Mobile Money</span><span class="detail-value">${p.telephone_mm||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Référence MM</span><span class="detail-value" style="font-family:monospace">${escapeHtml(p.reference_mm||'—')}</span></div>
+    <div class="detail-row"><span class="detail-label">N° Mobile Money</span><span class="detail-value">${escapeHtml(p.telephone_mm||'—')}</span></div>
     <div class="detail-row"><span class="detail-label">Soumis le</span><span class="detail-value">${formatDate(p.created_at)}</span></div>
     <div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">${badgeStatus(p.status)}</span></div>
-    ${p.note_admin?`<div class="detail-row"><span class="detail-label">Note admin</span><span class="detail-value">${p.note_admin}</span></div>`:''}
+    ${p.note_admin?`<div class="detail-row"><span class="detail-label">Note admin</span><span class="detail-value">${escapeHtml(p.note_admin)}</span></div>`:''}
     ${p.status==='pending'?`<div class="modal-field" style="margin-top:1rem"><label>Note admin (optionnel)</label><textarea id="modal-pay-note" placeholder="Raison..."></textarea></div>`:''}
   `;
   document.getElementById('modal-pay-actions').innerHTML = p.status==='pending'?`
@@ -764,11 +780,11 @@ function renderUsersTable(users) {
   if (!users.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="ti ti-users"></i><p>Aucun utilisateur.</p></div></td></tr>'; return; }
   tbody.innerHTML = users.map(u=>`<tr>
     <td>
-      <strong>${u.nom} ${u.prenoms||''}</strong>
+      <strong>${escapeHtml(u.nom)} ${escapeHtml(u.prenoms||'')}</strong>
       ${!u.is_active?'<span class="badge badge-expired" style="margin-left:4px">désactivé</span>':''}
     </td>
-    <td style="font-size:0.8rem">${u.email}</td>
-    <td>${u.telephone||'—'}</td>
+    <td style="font-size:0.8rem">${escapeHtml(u.email)}</td>
+    <td>${escapeHtml(u.telephone||'—')}</td>
     <td><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></td>
     <td>${badgeStatus(u.sub_status||'')}</td>
     <td>${u.date_fin?formatDate(u.date_fin):'—'}</td>
@@ -794,9 +810,9 @@ async function openUserModal(id) {
   // Charger le détail complet (subs + payments)
   let subsHtml = '<p style="color:var(--text-3);font-size:0.8rem">Chargement...</p>';
   document.getElementById('modal-user-body').innerHTML = `
-    <div class="detail-row"><span class="detail-label">Nom complet</span><span class="detail-value">${u.nom} ${u.prenoms||''}</span></div>
-    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${u.email}</span></div>
-    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${u.telephone||'—'}</span></div>
+    <div class="detail-row"><span class="detail-label">Nom complet</span><span class="detail-value">${escapeHtml(u.nom)} ${escapeHtml(u.prenoms||'')}</span></div>
+    <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${escapeHtml(u.email)}</span></div>
+    <div class="detail-row"><span class="detail-label">Téléphone</span><span class="detail-value">${escapeHtml(u.telephone||'—')}</span></div>
     <div class="detail-row"><span class="detail-label">Plan actuel</span><span class="detail-value"><span class="badge badge-${u.plan||'trial'}">${u.plan||'—'}</span></span></div>
     <div class="detail-row"><span class="detail-label">Abonnement</span><span class="detail-value">${badgeStatus(u.sub_status||'')}${u.date_fin?' · expire '+formatDate(u.date_fin):''}</span></div>
     <div class="detail-row"><span class="detail-label">Compte</span><span class="detail-value">${u.is_active?'<span style="color:var(--forest)">Actif</span>':'<span style="color:var(--danger)">Désactivé</span>'}</span></div>
@@ -805,18 +821,29 @@ async function openUserModal(id) {
     <p class="section-title">Abonnements</p>
     <div id="modal-user-subs">${subsHtml}</div>
   `;
+  // FIX SEC-XSS-2 : "Réabonner" et "Supprimer" ne passent plus par un onclick
+  // avec u.email/u.nom/u.prenoms interpolés dans une chaîne JS — un nom ou
+  // email contenant une apostrophe pouvait rompre la chaîne et injecter du JS
+  // arbitraire dans la session admin (échapper le HTML ne protège pas ce
+  // contexte : le navigateur décode les entités d'un attribut avant
+  // d'exécuter son contenu comme JS). Les deux boutons ont un id fixe
+  // (un seul user affiché à la fois dans cette modale) et leur handler est
+  // attaché en JS avec les vraies valeurs de `u`, sans jamais repasser par du
+  // texte HTML — l'injection n'est plus possible par construction.
   document.getElementById('modal-user-actions').innerHTML = `
     <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-user')">Fermer</button>
-    <button class="btn-modal btn-modal-warning" onclick="openRenewForUser('${u.id}','${u.email}')">
+    <button class="btn-modal btn-modal-warning" id="btn-user-renew">
       <i class="ti ti-refresh"></i> Réabonner
     </button>
     <button class="btn-modal ${u.is_active?'btn-modal-reject':'btn-modal-confirm'}" onclick="toggleUser('${u.id}',${u.is_active});closeModal('modal-user')">
       <i class="ti ti-${u.is_active?'user-off':'user-check'}"></i> ${u.is_active?'Désactiver':'Activer'}
     </button>
-    <button class="btn-modal btn-modal-reject" style="background:#B71C1C" onclick="deleteUser('${u.id}','${u.nom} ${u.prenoms||''}')">
+    <button class="btn-modal btn-modal-reject" style="background:#B71C1C" id="btn-user-delete">
       <i class="ti ti-trash"></i> Supprimer
     </button>
   `;
+  document.getElementById('btn-user-renew').onclick = () => openRenewForUser(u.id, u.email);
+  document.getElementById('btn-user-delete').onclick = () => deleteUser(u.id, `${u.nom} ${u.prenoms||''}`);
   document.getElementById('modal-user').classList.add('show');
 
   // Charger subs
@@ -885,7 +912,7 @@ function renderSubscriptionsTable(subs) {
     const fichesPct = s.fiches_limite>0 ? Math.round(s.fiches_utilisees/s.fiches_limite*100) : 0;
     const devoirsPct = s.devoirs_limite>0 ? Math.round(s.devoirs_utilises/s.devoirs_limite*100) : 0;
     return `<tr>
-      <td><strong>${s.nom} ${s.prenoms||''}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${s.email}</span></td>
+      <td><strong>${escapeHtml(s.nom)} ${escapeHtml(s.prenoms||'')}</strong><br><span style="font-size:0.75rem;color:var(--text-3)">${escapeHtml(s.email)}</span></td>
       <td><span class="badge badge-${s.plan}">${s.plan}</span></td>
       <td>${badgeStatus(s.status)}</td>
       <td>${formatDate(s.date_debut)}</td>
@@ -956,7 +983,7 @@ function searchUserByEmail() {
     const found = allUsers.find(u=>u.email.toLowerCase()===email.toLowerCase());
     if (found) {
       currentSubModal.userId = found.id;
-      el.innerHTML = `<i class="ti ti-check" style="color:var(--forest)"></i> ${found.nom} ${found.prenoms||''} — <span class="badge badge-${found.plan||'trial'}">${found.plan||'trial'}</span>`;
+      el.innerHTML = `<i class="ti ti-check" style="color:var(--forest)"></i> ${escapeHtml(found.nom)} ${escapeHtml(found.prenoms||'')} — <span class="badge badge-${found.plan||'trial'}">${found.plan||'trial'}</span>`;
     } else {
       currentSubModal.userId = null;
       el.innerHTML = email.length>5 ? '<span style="color:var(--text-3)">Utilisateur non trouvé dans la liste chargée.</span>' : '';
