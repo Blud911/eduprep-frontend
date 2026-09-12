@@ -629,9 +629,10 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="result-block" id="res-devoir">
         <div class="result-header">
           <span class="result-header-left" id="res-devoir-title">Devoir généré</span>
-          <div class="result-actions-row">
+          <div class="result-actions-row" id="dv-actions-row">
             <button class="btn-result-action" onclick="saveDevoir()" title="Sauvegarder"><i class="ti ti-bookmark"></i></button>
             <button class="btn-result-action" onclick="exportPDF('devoir')" title="Export PDF"><i class="ti ti-file-export"></i></button>
+            <button class="btn-result-action" onclick="modifierDevoir()" title="Modifier"><i class="ti ti-pencil"></i></button>
             <button class="btn-result-action" onclick="copyResult('devoir')" title="Copier"><i class="ti ti-copy"></i></button>
           </div>
         </div>
@@ -1288,6 +1289,7 @@ let user = JSON.parse(localStorage.getItem('edp_user') || 'null');
 let subscription = JSON.parse(localStorage.getItem('edp_sub') || 'null');
 let currentFiche = null, currentDevoir = null, currentProgression = null, currentRemediation = null, currentRubrique = null, currentAppreciation = null;
 let savedFicheId = null, savedDevoirId = null, savedAppreciationId = null, savedRemediationId = null, savedRubriqueId = null;
+let dvEditState = null;
 let rmEditState = null;
 let rbEditState = null;
 let fEditState = null;
@@ -2722,6 +2724,226 @@ async function saveDevoir() {
     if (r.ok) { savedDevoirId=d.devoir?.id; showToast('Devoir sauvegardé !'); loadHistory(); }
     else alert(d.error);
   } catch(e) { alert('Erreur réseau.'); }
+}
+
+// Étape 4 (édition) : sauvegarde silencieuse si pas encore persistée, puis
+// bascule le result-body en formulaire d'édition. dvEditState est une copie
+// de travail de currentDevoir.data (= structure_complete) — 3 formulaires
+// dédiés selon la forme générée (exercices / questions plat / rédaction),
+// même dispatch que renderDevoir(). Champs éditables (cadrage validé) :
+// énoncés, consignes, corrections (reponse), barème (points) par question ;
+// le barème par exercice n'est pas saisi directement, il est recalculé à
+// l'enregistrement comme somme des points de ses sous-questions (c'est le
+// point par SOUS-question, pas par exercice, qui alimente réellement le PDF
+// via flattenExercices côté serveur). PUT /content/devoirs/:id exige
+// `questions` et `structure_complete` ensemble (voir commentaire routes/
+// content.js sur cette route) : dvDeriveQuestions() réimplémente ici
+// flattenExercices/flattenRedaction pour reconstruire `questions` avant
+// l'envoi, sans jamais faire confiance au serveur pour ce recalcul.
+async function modifierDevoir() {
+  if (!currentDevoir) return;
+  if (!savedDevoirId) {
+    showToast('Sauvegarde avant édition...');
+    await saveDevoir();
+    if (!savedDevoirId) { showToast('Impossible de sauvegarder le devoir avant édition.'); return; }
+  }
+  dvEditState = JSON.parse(JSON.stringify(currentDevoir.data));
+  const m = currentDevoir.meta;
+  if (isRedactionLongue(m.matiere) && !Array.isArray(dvEditState.exercices) && !Array.isArray(dvEditState.questions)) {
+    renderDevoirEditRedaction();
+    return;
+  }
+  if (Array.isArray(dvEditState.exercices)) {
+    renderDevoirEditExercices();
+    return;
+  }
+  if (!Array.isArray(dvEditState.questions)) dvEditState.questions = [];
+  renderDevoirEditFlat();
+}
+
+function annulerEditionDevoir() {
+  if (!currentDevoir) return;
+  dvEditState = null;
+  const m = currentDevoir.meta;
+  renderDevoir(currentDevoir.data, m.lecon, m.matiere, m.classe, m.type_eval, m.points);
+}
+
+// Bandeau total/avertissement : non-bloquant (cadrage validé), affiché
+// uniquement quand un total par points a un sens (exercices / questions
+// plat) — pas pour la rédaction, qui n'a pas de sous-points.
+function dvComputeTotal() {
+  const d = dvEditState;
+  if (Array.isArray(d.exercices)) {
+    return d.exercices.reduce((s, ex) => s + (ex.questions || []).reduce((s2, q) => s2 + (Number(q.points) || 0), 0), 0);
+  }
+  if (Array.isArray(d.questions)) {
+    return d.questions.reduce((s, q) => s + (Number(q.points) || 0), 0);
+  }
+  return null;
+}
+function dvTotalBannerHtml(total) {
+  if (total === null) return '';
+  const attendu = Number(currentDevoir.meta.points) || 0;
+  const mismatch = Number(total) !== attendu;
+  return `<div style="${mismatch ? 'background:#fdecea;color:#b71c1c;border:1px solid #f5c6cb' : 'background:var(--surface);color:var(--forest);border:1px solid var(--border)'};border-radius:6px;padding:8px 10px;font-size:0.8rem;margin:10px 0;text-align:right">${mismatch ? '<i class="ti ti-alert-triangle"></i> ' : ''}Total : ${total} / ${attendu} pts${mismatch ? ' — ne correspond plus à la note globale du devoir' : ''}</div>`;
+}
+function dvRecalcTotal() {
+  const el = document.getElementById('dv-edit-total-banner');
+  if (el) el.innerHTML = dvTotalBannerHtml(dvComputeTotal());
+}
+
+function dvUpdateSousQuestion(exI, qI, field, val) { dvEditState.exercices[exI].questions[qI][field] = val; }
+function dvUpdateSousQuestionPoints(exI, qI, val) { dvEditState.exercices[exI].questions[qI].points = Number(val) || 0; dvRecalcTotal(); }
+function dvUpdateExercice(exI, field, val) { dvEditState.exercices[exI][field] = val; }
+
+function renderDevoirEditExercices() {
+  const d = dvEditState;
+  const exercicesHtml = (d.exercices || []).map((ex, exI) => {
+    const questionsHtml = (ex.questions || []).map((q, qI) => `
+      <div class="q-item">
+        <div class="q-header"><span class="q-type">${escapeHtml(q.numero != null ? q.numero : qI + 1)} — ${escapeHtml(q.type || 'Question')}</span>
+          <span><input type="number" min="0" step="1" value="${q.points ?? 0}" style="width:56px;text-align:right" oninput="dvUpdateSousQuestionPoints(${exI},${qI},this.value)"> pts</span>
+        </div>
+        <div class="form-group-app"><label>Énoncé</label><textarea oninput="dvUpdateSousQuestion(${exI},${qI},'enonce',this.value)">${escapeHtml(q.enonce || '')}</textarea></div>
+        ${q.options && q.options.length ? `<div style="font-size:0.8rem;color:var(--text-3);margin-bottom:6px">${q.options.map(escapeHtml).join(' &nbsp;·&nbsp; ')}</div>` : ''}
+        <div class="form-group-app" style="margin-bottom:0"><label>Correction</label><textarea oninput="dvUpdateSousQuestion(${exI},${qI},'reponse',this.value)">${escapeHtml(q.reponse || '')}</textarea></div>
+      </div>`).join('');
+    return `
+      <div class="section-divider">${escapeHtml(ex.titre || 'Exercice ' + (ex.numero != null ? ex.numero : exI + 1))}</div>
+      <div class="form-group-app"><label>Énoncé / contexte de l'exercice</label><textarea oninput="dvUpdateExercice(${exI},'enonce_contexte',this.value)">${escapeHtml(ex.enonce_contexte || '')}</textarea></div>
+      ${questionsHtml}`;
+  }).join('');
+
+  document.getElementById('dv-actions-row').style.display = 'none';
+  document.getElementById('res-devoir-body').innerHTML = `
+    <div class="form-group-app"><label>Consigne générale</label><textarea oninput="dvEditState.consigne_generale=this.value" style="min-height:60px">${escapeHtml(d.consigne_generale || '')}</textarea></div>
+    ${exercicesHtml}
+    <div id="dv-edit-total-banner">${dvTotalBannerHtml(dvComputeTotal())}</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-sm" onclick="annulerEditionDevoir()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerDevoir()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function dvUpdateFlatQuestion(qI, field, val) { dvEditState.questions[qI][field] = val; }
+function dvUpdateFlatQuestionPoints(qI, val) { dvEditState.questions[qI].points = Number(val) || 0; dvRecalcTotal(); }
+
+function renderDevoirEditFlat() {
+  const d = dvEditState;
+  const questionsHtml = (d.questions || []).map((q, qI) => `
+    <div class="q-item">
+      <div class="q-header"><span class="q-type">Q${escapeHtml(q.numero != null ? q.numero : qI + 1)} — ${escapeHtml(q.type || 'Question')}</span>
+        <span><input type="number" min="0" step="1" value="${q.points ?? 0}" style="width:56px;text-align:right" oninput="dvUpdateFlatQuestionPoints(${qI},this.value)"> pts</span>
+      </div>
+      <div class="form-group-app"><label>Énoncé</label><textarea oninput="dvUpdateFlatQuestion(${qI},'enonce',this.value)">${escapeHtml(q.enonce || '')}</textarea></div>
+      ${q.options && q.options.length ? `<div style="font-size:0.8rem;color:var(--text-3);margin-bottom:6px">${q.options.map(escapeHtml).join(' &nbsp;·&nbsp; ')}</div>` : ''}
+      <div class="form-group-app" style="margin-bottom:0"><label>Correction</label><textarea oninput="dvUpdateFlatQuestion(${qI},'reponse',this.value)">${escapeHtml(q.reponse || '')}</textarea></div>
+    </div>`).join('');
+
+  document.getElementById('dv-actions-row').style.display = 'none';
+  document.getElementById('res-devoir-body').innerHTML = `
+    <div class="form-group-app"><label>Consigne</label><textarea oninput="dvEditState.consigne=this.value" style="min-height:60px">${escapeHtml(d.consigne || '')}</textarea></div>
+    ${questionsHtml}
+    <div id="dv-edit-total-banner">${dvTotalBannerHtml(dvComputeTotal())}</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn-sm" onclick="annulerEditionDevoir()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerDevoir()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+function dvUpdateCritere(i, val) { dvEditState.criteres_evaluation[i] = val; }
+function dvRemoveCritere(i) { dvEditState.criteres_evaluation.splice(i, 1); renderDevoirEditRedaction(); }
+function dvAddCritere() { dvEditState.criteres_evaluation.push(''); renderDevoirEditRedaction(); }
+
+function renderDevoirEditRedaction() {
+  const d = dvEditState;
+  if (!Array.isArray(d.criteres_evaluation)) d.criteres_evaluation = [];
+  const critRows = d.criteres_evaluation.map((c, i) => `
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <input type="text" value="${escapeHtml(c)}" oninput="dvUpdateCritere(${i},this.value)">
+      <button class="btn-icon-sm" onclick="dvRemoveCritere(${i})" title="Supprimer"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+
+  document.getElementById('dv-actions-row').style.display = 'none';
+  document.getElementById('res-devoir-body').innerHTML = `
+    <div class="form-group-app"><label>Consignes</label><textarea oninput="dvEditState.consignes=this.value" style="min-height:60px">${escapeHtml(d.consignes || '')}</textarea></div>
+    <div class="form-group-app"><label>Sujet</label><textarea oninput="dvEditState.sujet=this.value" style="min-height:80px">${escapeHtml(d.sujet || '')}</textarea></div>
+    <div class="form-group-app"><label>Corrigé rédigé (modèle)</label><textarea oninput="dvEditState.corrige_redige=this.value" style="min-height:100px">${escapeHtml(d.corrige_redige || '')}</textarea></div>
+    <div class="form-group-app" style="margin-bottom:0"><label>Critères de notation</label>${critRows}</div>
+    <button class="btn-sm" onclick="dvAddCritere()"><i class="ti ti-plus"></i> Ajouter</button>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem">
+      <button class="btn-sm" onclick="annulerEditionDevoir()">Annuler</button>
+      <button class="btn-sm" onclick="enregistrerDevoir()"><i class="ti ti-device-floppy"></i> Enregistrer</button>
+    </div>
+  `;
+}
+
+// Mêmes fonctions que flattenExercices/flattenRedaction/deriveQuestions
+// côté serveur (routes/content.js) — réimplémentées ici car PUT
+// /content/devoirs/:id ne reconstruit jamais `questions` lui-même
+// (contrairement à POST) : le client doit envoyer les deux, synchronisés.
+function dvFlattenExercices(exercices) {
+  const out = [];
+  (exercices || []).forEach(ex => {
+    (ex.questions || []).forEach(q => {
+      out.push({
+        numero: q.numero, type: q.type || null, enonce: q.enonce,
+        points: q.points || null, niveau: q.niveau || null, bareme: q.bareme || null,
+        reponse: q.reponse || null, options: q.options || null,
+        exercice_numero: ex.numero, exercice_titre: ex.titre || null,
+        figure_svg: ex.figure_svg || null,
+      });
+    });
+  });
+  return out;
+}
+function dvFlattenRedaction(d, totalPoints) {
+  return [{
+    numero: 1, type: 'Redaction', enonce: d.sujet || '', points: totalPoints || null,
+    niveau: null, bareme: Array.isArray(d.criteres_evaluation) ? d.criteres_evaluation.join(' ; ') : null,
+    reponse: d.corrige_redige || null,
+  }];
+}
+function dvDeriveQuestions(structureComplete, totalPoints) {
+  if (Array.isArray(structureComplete.exercices)) return dvFlattenExercices(structureComplete.exercices);
+  if (structureComplete.sujet || structureComplete.plan_indicatif) return dvFlattenRedaction(structureComplete, totalPoints);
+  if (Array.isArray(structureComplete.questions)) return structureComplete.questions;
+  return [];
+}
+
+async function enregistrerDevoir() {
+  if (!dvEditState) return;
+  // Le barème par exercice n'est pas édité directement (voir commentaire
+  // sur modifierDevoir) : on le recalcule ici à partir des sous-questions
+  // pour rester cohérent avec ce qui est réellement exporté dans le PDF.
+  if (Array.isArray(dvEditState.exercices)) {
+    dvEditState.exercices.forEach(ex => {
+      ex.points = (ex.questions || []).reduce((s, q) => s + (Number(q.points) || 0), 0);
+    });
+  }
+  const structureComplete = dvEditState;
+  // Même dérivation que saveDevoir() : `consigne` est une colonne à part
+  // (lue par generateDevoirPDF), distincte de structure_complete — il faut
+  // la renvoyer explicitement sinon l'édition de la consigne générale ne
+  // se refléterait jamais dans le PDF exporté.
+  const consigne = structureComplete.consigne_generale || structureComplete.consigne || structureComplete.consignes || null;
+  const questions = dvDeriveQuestions(structureComplete, currentDevoir.meta.points);
+  try {
+    const r = await fetch(`${API}/content/devoirs/${savedDevoirId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ structure_complete: structureComplete, questions, consigne }),
+    });
+    const d = await r.json();
+    if (!r.ok) { alert(d.error || 'Erreur lors de la mise à jour.'); return; }
+    currentDevoir.data = structureComplete;
+    dvEditState = null;
+    const m = currentDevoir.meta;
+    renderDevoir(currentDevoir.data, m.lecon, m.matiere, m.classe, m.type_eval, m.points);
+    showToast('Devoir mis à jour !');
+  } catch (e) { alert('Erreur réseau.'); }
 }
 
 function planAutorisePDF() {
